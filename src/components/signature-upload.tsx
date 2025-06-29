@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import SignaturePad = require('signature_pad');
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,7 +14,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon, UploadCloud, X, Save } from 'lucide-react';
+import { Calendar as CalendarIcon, Eraser, Save, X } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Signature } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -29,26 +30,57 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
   const [name, setName] = useState(signature?.name || '');
   const [date, setDate] = useState<Date | undefined>(signature?.date || undefined);
   const [remarks, setRemarks] = useState(signature?.remarks || '');
-  const [signatureDataUrl, setSignatureDataUrl] = useState(signature?.signatureDataUrl || '');
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSignatureDataUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const signaturePadRef = useRef<SignaturePad | null>(null);
+
+  const isSaved = !!(signature && signature.signatureDataUrl);
+
+  useEffect(() => {
+    if (isSaved || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(255, 255, 255)',
+        penColor: 'rgb(0, 0, 0)'
+    });
+    signaturePadRef.current = signaturePad;
+
+    function resizeCanvas() {
+      if (canvasRef.current) {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+            ctx.scale(ratio, ratio);
+        }
+        signaturePad.clear();
+      }
     }
-  };
-  
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    return () => {
+        window.removeEventListener("resize", resizeCanvas);
+    };
+  }, [isSaved]);
+
+
   const handleSave = () => {
-    if(!name || !date || !signatureDataUrl) {
-      // Basic validation feedback
-      alert("Please provide name, date, and signature image.");
+    if(!name || !date) {
+      alert("Please provide name and date.");
       return;
     }
-    const newSignature: Signature = { name, date, remarks, signatureDataUrl };
+    if (signaturePadRef.current?.isEmpty()) {
+        alert("Please provide a signature.");
+        return;
+    }
+    
+    const dataUrl = signaturePadRef.current!.toDataURL('image/png');
+
+    const newSignature: Signature = { name, date, remarks, signatureDataUrl: dataUrl };
     onUpdate(newSignature);
   };
   
@@ -57,10 +89,13 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
       setName('');
       setDate(undefined);
       setRemarks('');
-      setSignatureDataUrl('');
   }
-
-  const isSaved = signature && signature.signatureDataUrl === signatureDataUrl && signature.name === name;
+  
+  const handleClearPad = () => {
+      if (signaturePadRef.current) {
+          signaturePadRef.current.clear();
+      }
+  }
 
   if(isSaved) {
       return (
@@ -121,20 +156,16 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
         </div>
 
         <div className="space-y-2">
-            <Label>Signature Image</Label>
-            {signatureDataUrl ? (
-                <div className="relative w-fit">
-                    <Image src={signatureDataUrl} alt="Signature Preview" width={200} height={100} className="border rounded-md bg-white" data-ai-hint="signature drawing"/>
-                    <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 bg-background rounded-full h-7 w-7" onClick={() => setSignatureDataUrl('')}><X className="h-4 w-4" /></Button>
-                </div>
-            ) : (
-                <div className="relative border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center">
-                    <UploadCloud className="h-8 w-8 text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">Upload signature</p>
-                    <Input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                </div>
-            )}
+            <Label>Signature</Label>
+            <div className="relative w-full aspect-video bg-white rounded-md border">
+              <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full rounded-md" />
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={handleClearPad}>
+                <Eraser className="mr-2 h-4 w-4" />
+                Clear
+            </Button>
         </div>
+
 
         <div className="space-y-2">
             <Label htmlFor={`remarks-${title}`}>Remarks (Optional)</Label>
