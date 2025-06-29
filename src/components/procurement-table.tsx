@@ -18,8 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Loader2, Trash2 } from 'lucide-react';
-import type { Procurement } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+import type { Procurement, ProjectType } from "@/lib/types";
+import { formatCurrency, cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +39,23 @@ interface ProcurementTableProps {
   onEdit: (procurement: Procurement) => void;
   onDelete: (id: string) => Promise<void>;
 }
+
+const getProjectTypeStyles = (projectType: ProjectType): string => {
+  switch (projectType) {
+    case 'ILCDB-DWIA':
+      return 'bg-primary/10 text-primary border-primary/20';
+    case 'SPARK':
+      return 'bg-accent/10 text-[hsl(var(--accent))] border-accent/20';
+    case 'TECH4ED-DTC':
+      return 'bg-chart-2/20 text-[hsl(var(--chart-2))] border-chart-2/30';
+    case 'PROJECT CLICK':
+      return 'bg-chart-4/20 text-[hsl(var(--chart-4))] border-chart-4/30';
+    case 'OTHERS':
+    default:
+      return 'bg-muted text-muted-foreground border-border';
+  }
+};
+
 
 export function ProcurementTable({ procurements, onEdit, onDelete }: ProcurementTableProps) {
   const [sortKey, setSortKey] = React.useState<SortKey>('createdAt');
@@ -116,6 +133,11 @@ export function ProcurementTable({ procurements, onEdit, onDelete }: Procurement
                   </Button>
                 </TableHead>
                 <TableHead>
+                  <Button variant="ghost" onClick={() => handleSort('projectType')}>
+                    Project Type {renderSortArrow('projectType')}
+                  </Button>
+                </TableHead>
+                <TableHead>
                   <Button variant="ghost" onClick={() => handleSort('amount')}>
                     Amount {renderSortArrow('amount')}
                   </Button>
@@ -133,6 +155,9 @@ export function ProcurementTable({ procurements, onEdit, onDelete }: Procurement
                 const completedPhases = procurement.phases.filter(p => p.isCompleted).length;
                 const totalPhases = procurement.phases.length;
                 const progress = getProgress(procurement);
+                const projectDisplayName = procurement.projectType === 'OTHERS'
+                  ? (procurement.otherProjectType || 'Others')
+                  : procurement.projectType;
 
                 return (
                   <TableRow key={procurement.id}>
@@ -142,10 +167,12 @@ export function ProcurementTable({ procurements, onEdit, onDelete }: Procurement
                         </Link>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{procurement.title}</span>
-                        <Badge variant="secondary" className="w-fit mt-1">{procurement.projectType}</Badge>
-                      </div>
+                      <span className="font-medium">{procurement.title}</span>
+                    </TableCell>
+                    <TableCell>
+                        <Badge variant="outline" className={cn("w-fit", getProjectTypeStyles(procurement.projectType))}>
+                            {projectDisplayName}
+                        </Badge>
                     </TableCell>
                     <TableCell>{formatCurrency(procurement.amount)}</TableCell>
                     <TableCell>
