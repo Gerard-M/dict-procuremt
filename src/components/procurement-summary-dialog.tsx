@@ -107,20 +107,40 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
                            <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
                                 <h4 className="font-semibold mb-2 text-gray-600">Submitted By</h4>
                                 {phase.submittedBy ? (
-                                    <div className="space-y-1">
-                                        <p><strong>Name:</strong> {phase.submittedBy.name}</p>
-                                        <p><strong>Date:</strong> {phase.submittedBy.date ? format(new Date(phase.submittedBy.date), 'PPP') : 'N/A'}</p>
-                                        <p><strong>Remarks:</strong> {phase.submittedBy.remarks || 'None'}</p>
+                                    <div className="space-y-2">
+                                        {phase.submittedBy.signatureDataUrl && (
+                                            <div>
+                                                <p className="text-xs font-medium text-gray-500">Signature</p>
+                                                <div className="mt-1 border bg-white rounded-md p-1">
+                                                    <img src={phase.submittedBy.signatureDataUrl} alt="Signature" className="h-20 w-full object-contain" />
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p><strong>Name:</strong> {phase.submittedBy.name}</p>
+                                            <p><strong>Date:</strong> {phase.submittedBy.date ? format(new Date(phase.submittedBy.date), 'PPP') : 'N/A'}</p>
+                                            <p><strong>Remarks:</strong> {phase.submittedBy.remarks || 'None'}</p>
+                                        </div>
                                     </div>
                                 ) : <p className="text-gray-400">Not yet submitted.</p>}
                            </div>
                            <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
                                 <h4 className="font-semibold mb-2 text-gray-600">Received By</h4>
                                 {phase.receivedBy ? (
-                                    <div className="space-y-1">
-                                        <p><strong>Name:</strong> {phase.receivedBy.name}</p>
-                                        <p><strong>Date:</strong> {phase.receivedBy.date ? format(new Date(phase.receivedBy.date), 'PPP') : 'N/A'}</p>
-                                        <p><strong>Remarks:</strong> {phase.receivedBy.remarks || 'None'}</p>
+                                    <div className="space-y-2">
+                                        {phase.receivedBy.signatureDataUrl && (
+                                            <div>
+                                                <p className="text-xs font-medium text-gray-500">Signature</p>
+                                                <div className="mt-1 border bg-white rounded-md p-1">
+                                                    <img src={phase.receivedBy.signatureDataUrl} alt="Signature" className="h-20 w-full object-contain" />
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p><strong>Name:</strong> {phase.receivedBy.name}</p>
+                                            <p><strong>Date:</strong> {phase.receivedBy.date ? format(new Date(phase.receivedBy.date), 'PPP') : 'N/A'}</p>
+                                            <p><strong>Remarks:</strong> {phase.receivedBy.remarks || 'None'}</p>
+                                        </div>
                                     </div>
                                 ) : <p className="text-gray-400">Not yet received.</p>}
                            </div>
