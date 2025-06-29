@@ -70,7 +70,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
         <div className="container mx-auto flex items-center justify-between gap-4 p-4">
           <div className="flex items-center gap-4">
             <Briefcase className="h-8 w-8" />
-            <h1 className="text-2xl font-bold font-headline">ProcureFlow</h1>
+            <h1 className="text-2xl font-bold font-headline">ILCDB Procurement System</h1>
           </div>
           <Button asChild variant="secondary">
             <Link href="/">

@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'ProcureFlow',
+  title: 'ILCDB Procurement System',
   description: 'ILCDB Procurement Management System',
 };
 

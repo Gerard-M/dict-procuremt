@@ -17,7 +17,7 @@ function Header() {
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex items-center gap-4 p-4">
         <Briefcase className="h-8 w-8" />
-        <h1 className="text-2xl font-bold font-headline">ProcureFlow</h1>
+        <h1 className="text-2xl font-bold font-headline">ILCDB Procurement System</h1>
       </div>
     </header>
   );
