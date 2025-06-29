@@ -55,6 +55,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     
     if (phaseWithCompletion.isCompleted) {
         setActiveTab(getActiveTab(newPhases));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
     // Persist changes
