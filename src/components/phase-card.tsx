@@ -14,9 +14,9 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SignatureUpload } from '@/components/signature-upload';
 import { Separator } from './ui/separator';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, Lock } from 'lucide-react';
 
-export function PhaseCard({ phase, onUpdate }: { phase: ProcurementPhase; onUpdate: (updatedPhase: ProcurementPhase) => Promise<void> }) {
+export function PhaseCard({ phase, onUpdate, disabled }: { phase: ProcurementPhase; onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>, disabled?: boolean }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -37,6 +37,22 @@ export function PhaseCard({ phase, onUpdate }: { phase: ProcurementPhase; onUpda
     setIsSaving(false);
   };
   
+  if (disabled) {
+    return (
+        <Card className="shadow-lg">
+             <CardHeader>
+                <CardTitle className="text-xl font-headline">{phase.name}</CardTitle>
+                <CardDescription>Responsible Unit: {phase.unit}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center justify-center text-center py-20 bg-muted/50 rounded-b-lg">
+                <Lock className="w-12 h-12 text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold">Phase Locked</h3>
+                <p className="text-muted-foreground">Please complete the previous phase to unlock.</p>
+            </CardContent>
+        </Card>
+    )
+  }
+
   return (
     <Card className="shadow-lg">
       <CardHeader>

@@ -1,22 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Briefcase, ChevronLeft, CheckCircle2, Circle } from 'lucide-react';
+import { Briefcase, ChevronLeft, Check, Circle } from 'lucide-react';
 import type { Procurement } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
+  CardDescription,
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PhaseCard } from '@/components/phase-card';
 import { updateProcurement } from '@/lib/data';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 // Helper to parse the serialized procurement object
@@ -39,20 +38,18 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
   const { toast } = useToast();
 
   const handlePhaseUpdate = async (updatedPhase: any) => {
-    const newPhases = procurement.phases.map(p => p.id === updatedPhase.id ? updatedPhase : p);
+    const isCompleted = !!updatedPhase.submittedBy && !!updatedPhase.receivedBy;
+    const phaseWithCompletion = { ...updatedPhase, isCompleted };
+
+    const newPhases = procurement.phases.map(p => p.id === phaseWithCompletion.id ? phaseWithCompletion : p);
     
-    // check if both signatures are present
-    const signaturesDone = !!updatedPhase.submittedBy && !!updatedPhase.receivedBy;
-
-    updatedPhase.isCompleted = signaturesDone;
-
     const updatedProcurementData = { ...procurement, phases: newPhases };
     setProcurement(updatedProcurementData);
     
     // Persist changes
     await updateProcurement(procurement.id, { phases: newPhases });
 
-    toast({ title: "Progress Saved", description: `Phase ${updatedPhase.id} has been updated.` });
+    toast({ title: "Progress Saved", description: `Phase ${phaseWithCompletion.id} has been updated.` });
   };
 
   const firstIncompletePhase = procurement.phases.find(p => !p.isCompleted);
@@ -90,22 +87,56 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
           </Card>
           
           <Tabs defaultValue={defaultTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-                {procurement.phases.map(phase => (
-                    <TabsTrigger key={phase.id} value={`phase-${phase.id}`} className="flex items-center gap-2">
-                        {phase.isCompleted ? <CheckCircle2 className="h-4 w-4 text-green-500"/> : <Circle className="h-4 w-4 text-muted-foreground/50"/>}
-                        Phase {phase.id}
-                    </TabsTrigger>
-                ))}
+            <TabsList className="p-0 bg-transparent h-auto overflow-x-auto w-full">
+              <div className="flex items-center border-b w-full">
+                {procurement.phases.map((phase, index) => {
+                  const isUnlocked = index === 0 || procurement.phases[index - 1].isCompleted;
+                  const isActive = `phase-${phase.id}` === defaultTab;
+
+                  return (
+                    <React.Fragment key={phase.id}>
+                      <TabsTrigger
+                        value={`phase-${phase.id}`}
+                        disabled={!isUnlocked}
+                        className={cn(
+                          "flex-auto group flex items-center gap-2 p-4 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary disabled:opacity-50 disabled:cursor-not-allowed justify-center text-center sm:justify-start sm:text-left"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "flex items-center justify-center rounded-full h-8 w-8 text-base border-2 transition-colors",
+                            isActive ? "bg-primary border-primary text-primary-foreground" : "bg-muted border-muted-foreground/20 text-muted-foreground",
+                            phase.isCompleted && !isActive && "bg-green-500 border-green-500 text-white",
+                            !isUnlocked && "bg-muted border-border"
+                          )}
+                        >
+                          {phase.isCompleted ? <Check className="h-5 w-5" /> : <span className="font-bold">{phase.id}</span>}
+                        </div>
+                        <div className="hidden sm:flex flex-col items-start">
+                          <span className="font-semibold text-sm">Phase {phase.id}</span>
+                          <span className="text-xs text-muted-foreground hidden lg:block">{phase.name}</span>
+                        </div>
+                      </TabsTrigger>
+                      {index < procurement.phases.length - 1 && (
+                        <div className="h-px w-full bg-border" />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
             </TabsList>
-            {procurement.phases.map(phase => (
-              <TabsContent key={phase.id} value={`phase-${phase.id}`} className="mt-4">
-                <PhaseCard
-                  phase={phase}
-                  onUpdate={handlePhaseUpdate}
-                />
-              </TabsContent>
-            ))}
+            {procurement.phases.map((phase, index) => {
+              const isUnlocked = index === 0 || procurement.phases[index - 1].isCompleted;
+              return (
+                <TabsContent key={phase.id} value={`phase-${phase.id}`} className="mt-4">
+                  <PhaseCard
+                    phase={phase}
+                    onUpdate={handlePhaseUpdate}
+                    disabled={!isUnlocked}
+                  />
+                </TabsContent>
+              );
+            })}
           </Tabs>
         </div>
       </main>
