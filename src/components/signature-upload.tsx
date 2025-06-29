@@ -6,12 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Calendar as CalendarIcon, Eraser, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -27,9 +21,9 @@ interface SignatureUploadProps {
 
 export function SignatureUpload({ title, signature, onUpdate, disabled = false }: SignatureUploadProps) {
   const [name, setName] = useState(signature?.name || '');
-  const [date, setDate] = useState<Date | undefined>(signature?.date || undefined);
+  const [date, setDate] = useState<Date | undefined>(signature?.date);
   const [remarks, setRemarks] = useState(signature?.remarks || '');
-  const [hasDrawing, setHasDrawing] = useState(false);
+  const [hasDrawing, setHasDrawing] = useState(!!signature?.signatureDataUrl);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
@@ -37,9 +31,18 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
   
   const isSaved = !!(signature && signature.signatureDataUrl);
 
+  // Set date to current date on mount if not already set
+  useEffect(() => {
+    if (!date) {
+      setDate(new Date());
+    }
+  }, []); // Run only once
+
   // Auto-save effect
   useEffect(() => {
-    if (name && date && hasDrawing && canvasRef.current && !isSaved) {
+    // Only attempt to save if it's not already saved.
+    // The user must provide a name and draw something.
+    if (!isSaved && name && date && hasDrawing && canvasRef.current) {
       const dataUrl = canvasRef.current.toDataURL('image/png');
       const newSignature: Signature = { name, date, remarks, signatureDataUrl: dataUrl };
       onUpdate(newSignature);
@@ -98,7 +101,6 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
             ctx.moveTo(lastPositionRef.current.x, lastPositionRef.current.y);
             ctx.lineTo(currentPos.x, currentPos.y);
             ctx.stroke();
-            lastPositionRef.current = currentPos;
             setHasDrawing(true);
         }
     };
@@ -135,7 +137,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
   const handleClear = () => {
       onUpdate(null);
       setName('');
-      setDate(undefined);
+      setDate(new Date()); // Reset to current date on clear
       setRemarks('');
       setHasDrawing(false);
   }
@@ -183,30 +185,11 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
         </div>
 
         <div className="space-y-2">
-            <Label htmlFor={`date-${title}`}>Date</Label>
-            <Popover>
-                <PopoverTrigger asChild>
-                <Button
-                    id={`date-${title}`}
-                    variant={"outline"}
-                    className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                    )}
-                >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
-                    />
-                </PopoverContent>
-            </Popover>
+            <Label>Date</Label>
+            <div className="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : <span>Loading date...</span>}
+            </div>
         </div>
 
         <div className="space-y-2">
