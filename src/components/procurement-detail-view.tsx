@@ -56,8 +56,11 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     setProcurement(updatedProcurementData);
     
     if (phaseWithCompletion.isCompleted) {
-        setActiveTab(getActiveTab(newPhases));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const nextTab = getActiveTab(newPhases);
+        setActiveTab(nextTab);
+        if (nextTab !== activeTab) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
     
     // Persist changes
@@ -123,9 +126,8 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
                         >
                           {phase.isCompleted ? <Check className="h-5 w-5" /> : <span className="font-bold">{phase.id}</span>}
                         </div>
-                        <div className="hidden sm:flex flex-col items-start">
-                          <span className="font-semibold text-sm">Phase {phase.id}</span>
-                          <span className="text-xs text-muted-foreground hidden lg:block">{phase.name}</span>
+                        <div className="hidden sm:block">
+                          <span className="font-semibold text-sm">{phase.name}</span>
                         </div>
                       </TabsTrigger>
                       {index < procurement.phases.length - 1 && (

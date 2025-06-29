@@ -11,10 +11,10 @@ const phase6Checklist = createChecklist(['DV (Disbursement Voucher)', 'ORS', 'Pu
 
 
 export const getNewProcurementPhases = (): ProcurementPhase[] => [
-  { id: 1, name: 'Pre-Procurement', checklist: phase1Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
-  { id: 2, name: 'Pre-Procurement', checklist: phase2Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
-  { id: 3, name: 'Pre-Procurement', checklist: phase3Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
-  { id: 4, name: 'Post-Procurement', checklist: phase4Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
-  { id: 5, name: 'Post-Procurement', checklist: phase5Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
-  { id: 6, name: 'Post-Procurement', checklist: phase6Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
+  { id: 1, name: 'Phase 1: Pre-Procurement', checklist: phase1Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
+  { id: 2, name: 'Phase 2: Pre-Procurement', checklist: phase2Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
+  { id: 3, name: 'Phase 3: Pre-Procurement', checklist: phase3Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
+  { id: 4, name: 'Phase 4: Post-Procurement', checklist: phase4Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
+  { id: 5, name: 'Phase 5: Post-Procurement', checklist: phase5Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
+  { id: 6, name: 'Phase 6: Post-Procurement', checklist: phase6Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
 ];

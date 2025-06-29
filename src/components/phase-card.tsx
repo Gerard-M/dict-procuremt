@@ -42,10 +42,7 @@ export function PhaseCard({ phase, onUpdate, disabled, onViewSummary }: { phase:
   if (disabled) {
     return (
         <Card className="shadow-lg">
-             <CardHeader>
-                <CardTitle className="text-xl font-headline">Phase {phase.id}: {phase.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center text-center py-20 bg-muted/50 rounded-b-lg">
+            <CardContent className="flex flex-col items-center justify-center text-center py-20 bg-muted/50 rounded-lg">
                 <Lock className="w-12 h-12 text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold">Phase Locked</h3>
                 <p className="text-muted-foreground">Please complete the previous phase to unlock.</p>
@@ -59,7 +56,7 @@ export function PhaseCard({ phase, onUpdate, disabled, onViewSummary }: { phase:
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>
-                <CardTitle className="text-xl font-headline">Phase {phase.id}: {phase.name}</CardTitle>
+                <CardTitle className="text-xl font-headline">{phase.name}</CardTitle>
             </div>
             {phase.isCompleted && (
                 <div className="flex items-center gap-2 text-green-600 bg-green-100 p-2 rounded-md">

@@ -96,7 +96,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
                 {procurement.phases.map(phase => (
                     <div key={phase.id} className="border border-gray-200 p-4 rounded-lg shadow-sm">
                         <div className="flex justify-between items-center mb-3">
-                            <h3 className="text-lg font-semibold text-gray-800">Phase {phase.id}: {phase.name}</h3>
+                            <h3 className="text-lg font-semibold text-gray-800">{phase.name}</h3>
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${phase.isCompleted ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                                 {phase.isCompleted ? 'Completed' : 'In Progress'}
                             </span>
