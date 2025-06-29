@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SignatureUpload } from '@/components/signature-upload';
 import { Separator } from './ui/separator';
-import { Check, Loader2, Lock } from 'lucide-react';
+import { Check, Loader2, Lock, ChevronRight } from 'lucide-react';
 
 export function PhaseCard({ phase, onUpdate, disabled }: { phase: ProcurementPhase; onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>, disabled?: boolean }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
@@ -37,6 +37,8 @@ export function PhaseCard({ phase, onUpdate, disabled }: { phase: ProcurementPha
     setIsSaving(false);
   };
   
+  const canContinue = !!currentPhase.submittedBy && !!currentPhase.receivedBy;
+
   if (disabled) {
     return (
         <Card className="shadow-lg">
@@ -111,9 +113,9 @@ export function PhaseCard({ phase, onUpdate, disabled }: { phase: ProcurementPha
         </div>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
-            Save Phase Progress
+        <Button onClick={handleSave} disabled={!canContinue || isSaving}>
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ChevronRight className="mr-2 h-4 w-4" />}
+            Continue to Next Phase
         </Button>
       </CardFooter>
     </Card>
