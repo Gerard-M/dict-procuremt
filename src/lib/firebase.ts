@@ -1,6 +1,18 @@
 import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 
+// NOTE: For this application to work, you must configure your Firebase
+// Realtime Database security rules to allow public read and write access.
+// In the Firebase console, go to Realtime Database > Rules and set them to:
+// {
+//   "rules": {
+//     ".read": "true",
+//     ".write": "true"
+//   }
+// }
+// This is for development purposes only. For production, you should
+// implement proper authentication and secure your rules.
+
 const firebaseConfig = {
   apiKey: "AIzaSyCd0YgbhT8Xa0W7HsOinQr55hX9IL1UZrk",
   authDomain: "ilcdb-e1b29.firebaseapp.com",
