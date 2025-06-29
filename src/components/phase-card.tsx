@@ -14,9 +14,9 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SignatureUpload } from '@/components/signature-upload';
 import { Separator } from './ui/separator';
-import { Check, Loader2, Lock, ChevronRight } from 'lucide-react';
+import { Check, Loader2, Lock, ChevronRight, Eye } from 'lucide-react';
 
-export function PhaseCard({ phase, onUpdate, disabled }: { phase: ProcurementPhase; onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>, disabled?: boolean }) {
+export function PhaseCard({ phase, onUpdate, disabled, onViewSummary }: { phase: ProcurementPhase; onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>, disabled?: boolean, onViewSummary: () => void }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -112,10 +112,14 @@ export function PhaseCard({ phase, onUpdate, disabled }: { phase: ProcurementPha
             </div>
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex justify-between items-center">
         <Button onClick={handleSave} disabled={!canContinue || isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ChevronRight className="mr-2 h-4 w-4" />}
             Continue to Next Phase
+        </Button>
+         <Button variant="outline" onClick={onViewSummary}>
+            <Eye className="mr-2 h-4 w-4" />
+            View Progress
         </Button>
       </CardFooter>
     </Card>

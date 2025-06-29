@@ -17,6 +17,7 @@ import { PhaseCard } from '@/components/phase-card';
 import { updateProcurement } from '@/lib/data';
 import { formatCurrency, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { ProcurementSummaryDialog } from './procurement-summary-dialog';
 
 // Helper to parse the serialized procurement object
 const parseProcurement = (serialized: any): Procurement => {
@@ -36,6 +37,7 @@ const parseProcurement = (serialized: any): Procurement => {
 export function ProcurementDetailView({ initialProcurement }: { initialProcurement: any }) {
   const [procurement, setProcurement] = useState<Procurement>(parseProcurement(initialProcurement));
   const { toast } = useToast();
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   
   const getActiveTab = (phases: ProcurementPhase[]) => {
     const firstIncompletePhase = phases.find(p => !p.isCompleted);
@@ -142,6 +144,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
                     phase={phase}
                     onUpdate={handlePhaseUpdate}
                     disabled={!isUnlocked}
+                    onViewSummary={() => setIsSummaryOpen(true)}
                   />
                 </TabsContent>
               );
@@ -149,6 +152,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
           </Tabs>
         </div>
       </main>
+       <ProcurementSummaryDialog procurement={procurement} open={isSummaryOpen} onOpenChange={setIsSummaryOpen} />
     </div>
   );
 }
