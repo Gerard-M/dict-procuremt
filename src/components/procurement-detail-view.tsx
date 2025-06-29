@@ -41,12 +41,10 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
   const handlePhaseUpdate = async (updatedPhase: any) => {
     const newPhases = procurement.phases.map(p => p.id === updatedPhase.id ? updatedPhase : p);
     
-    // check if all items in checklist are checked
-    const allChecked = updatedPhase.checklist.every((item: any) => item.checked);
     // check if both signatures are present
     const signaturesDone = !!updatedPhase.submittedBy && !!updatedPhase.receivedBy;
 
-    updatedPhase.isCompleted = allChecked && signaturesDone;
+    updatedPhase.isCompleted = signaturesDone;
 
     const updatedProcurementData = { ...procurement, phases: newPhases };
     setProcurement(updatedProcurementData);

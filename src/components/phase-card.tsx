@@ -15,7 +15,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { SignatureUpload } from '@/components/signature-upload';
 import { Separator } from './ui/separator';
 import { Check, Loader2 } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 export function PhaseCard({ phase, onUpdate }: { phase: ProcurementPhase; onUpdate: (updatedPhase: ProcurementPhase) => Promise<void> }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
@@ -38,8 +37,6 @@ export function PhaseCard({ phase, onUpdate }: { phase: ProcurementPhase; onUpda
     setIsSaving(false);
   };
   
-  const allItemsChecked = currentPhase.checklist.every(item => item.checked);
-
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -83,25 +80,16 @@ export function PhaseCard({ phase, onUpdate }: { phase: ProcurementPhase; onUpda
 
         <div>
             <h3 className="text-lg font-semibold mb-4 text-primary">Signatures</h3>
-            {!allItemsChecked && (
-                 <Alert variant="default" className="mb-4 bg-blue-50 border-blue-200">
-                    <AlertDescription>
-                    Please complete all checklist items before adding signatures.
-                    </AlertDescription>
-                </Alert>
-            )}
             <div className="grid md:grid-cols-2 gap-8">
                 <SignatureUpload
                     title="Submitted by"
                     signature={currentPhase.submittedBy}
                     onUpdate={(sig) => handleSignatureUpdate('submittedBy', sig)}
-                    disabled={!allItemsChecked}
                 />
                 <SignatureUpload
                     title="Received by"
                     signature={currentPhase.receivedBy}
                     onUpdate={(sig) => handleSignatureUpdate('receivedBy', sig)}
-                    disabled={!allItemsChecked}
                 />
             </div>
         </div>
