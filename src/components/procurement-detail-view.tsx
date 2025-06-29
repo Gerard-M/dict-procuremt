@@ -127,7 +127,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
                           {phase.isCompleted ? <Check className="h-5 w-5" /> : <span className="font-bold">{phase.id}</span>}
                         </div>
                         <div className="hidden sm:block">
-                          <span className="font-semibold text-sm">{phase.name}</span>
+                          <span className="font-semibold text-sm">{`Phase ${phase.id}`}</span>
                         </div>
                       </TabsTrigger>
                       {index < procurement.phases.length - 1 && (
