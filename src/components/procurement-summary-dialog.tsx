@@ -101,9 +101,8 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
                                 {phase.isCompleted ? 'Completed' : 'In Progress'}
                             </span>
                         </div>
-                        <p className="text-sm text-gray-500 mb-4"><strong>Responsible Unit:</strong> {phase.unit}</p>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm mt-4">
                            <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
                                 <h4 className="font-semibold mb-2 text-gray-600">Submitted By</h4>
                                 {phase.submittedBy ? (

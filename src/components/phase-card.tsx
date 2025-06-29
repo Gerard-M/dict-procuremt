@@ -43,8 +43,7 @@ export function PhaseCard({ phase, onUpdate, disabled, onViewSummary }: { phase:
     return (
         <Card className="shadow-lg">
              <CardHeader>
-                <CardTitle className="text-xl font-headline">{phase.name}</CardTitle>
-                <CardDescription>Responsible Unit: {phase.unit}</CardDescription>
+                <CardTitle className="text-xl font-headline">Phase {phase.id}: {phase.name}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center text-center py-20 bg-muted/50 rounded-b-lg">
                 <Lock className="w-12 h-12 text-muted-foreground mb-4" />
@@ -60,8 +59,7 @@ export function PhaseCard({ phase, onUpdate, disabled, onViewSummary }: { phase:
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>
-                <CardTitle className="text-xl font-headline">{phase.name}</CardTitle>
-                <CardDescription>Responsible Unit: {phase.unit}</CardDescription>
+                <CardTitle className="text-xl font-headline">Phase {phase.id}: {phase.name}</CardTitle>
             </div>
             {phase.isCompleted && (
                 <div className="flex items-center gap-2 text-green-600 bg-green-100 p-2 rounded-md">

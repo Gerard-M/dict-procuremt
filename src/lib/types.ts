@@ -14,7 +14,6 @@ export interface ChecklistItem {
 export interface ProcurementPhase {
   id: number;
   name: string;
-  unit: string;
   checklist: ChecklistItem[];
   submittedBy: Signature | null;
   receivedBy: Signature | null;
