@@ -18,6 +18,7 @@ import { updateProcurement } from '@/lib/data';
 import { formatCurrency, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { ProcurementSummaryDialog } from './procurement-summary-dialog';
+import { getNewProcurementPhases } from '@/lib/constants';
 
 // Helper to parse the serialized procurement object
 const parseProcurement = (serialized: any): Procurement => {
@@ -33,9 +34,30 @@ const parseProcurement = (serialized: any): Procurement => {
   };
 };
 
+// Helper to merge database phase data with latest constant definitions
+const mergeWithLatestPhases = (procurementData: Procurement): Procurement => {
+  if (!procurementData.phases) return procurementData;
+  const latestPhaseDefinitions = getNewProcurementPhases();
+  const mergedPhases = procurementData.phases.map((dbPhase) => {
+    if (!dbPhase) return dbPhase;
+    const latestPhase = latestPhaseDefinitions.find(p => p.id === dbPhase.id);
+    if (latestPhase) {
+      return {
+        ...dbPhase, // keep all progress from db (signatures, checklist state, etc)
+        name: latestPhase.name, // ONLY overwrite the name
+      };
+    }
+    return dbPhase;
+  });
+  return { ...procurementData, phases: mergedPhases };
+};
+
 
 export function ProcurementDetailView({ initialProcurement }: { initialProcurement: any }) {
-  const [procurement, setProcurement] = useState<Procurement>(parseProcurement(initialProcurement));
+  const [procurement, setProcurement] = useState<Procurement>(() => {
+    const parsed = parseProcurement(initialProcurement);
+    return mergeWithLatestPhases(parsed);
+  });
   const { toast } = useToast();
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   
