@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import SignaturePad = require('signature_pad');
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,53 +31,108 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
   const [remarks, setRemarks] = useState(signature?.remarks || '');
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const signaturePadRef = useRef<SignaturePad | null>(null);
-
+  const isDrawingRef = useRef(false);
+  const lastPositionRef = useRef<{ x: number, y: number } | null>(null);
+  const hasDrawingRef = useRef(false);
+  
   const isSaved = !!(signature && signature.signatureDataUrl);
 
   useEffect(() => {
     if (isSaved || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const signaturePad = new SignaturePad(canvas, {
-        backgroundColor: 'rgb(255, 255, 255)',
-        penColor: 'rgb(0, 0, 0)'
-    });
-    signaturePadRef.current = signaturePad;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    function resizeCanvas() {
-      if (canvasRef.current) {
+    const resizeCanvas = () => {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            ctx.scale(ratio, ratio);
+        const context = canvas.getContext('2d');
+        if(context){
+            context.scale(ratio, ratio);
+            context.lineCap = 'round';
+            context.lineWidth = 2;
+            context.strokeStyle = 'black';
         }
-        signaturePad.clear();
-      }
     }
-
+    
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
+    const getEventPosition = (event: MouseEvent | TouchEvent) => {
+        const rect = canvas.getBoundingClientRect();
+        if (event instanceof MouseEvent) {
+            return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        }
+        if (event.touches && event.touches[0]) {
+             return { x: event.touches[0].clientX - rect.left, y: event.touches[0].clientY - rect.top };
+        }
+        return null;
+    }
+
+    const startDrawing = (event: MouseEvent | TouchEvent) => {
+        event.preventDefault();
+        isDrawingRef.current = true;
+        const pos = getEventPosition(event);
+        lastPositionRef.current = pos;
+    };
+    
+    const draw = (event: MouseEvent | TouchEvent) => {
+        if (!isDrawingRef.current) return;
+        event.preventDefault();
+
+        const currentPos = getEventPosition(event);
+        if (currentPos && lastPositionRef.current) {
+            ctx.beginPath();
+            ctx.moveTo(lastPositionRef.current.x, lastPositionRef.current.y);
+            ctx.lineTo(currentPos.x, currentPos.y);
+            ctx.stroke();
+            lastPositionRef.current = currentPos;
+            hasDrawingRef.current = true;
+        }
+    };
+
+    const stopDrawing = () => {
+        isDrawingRef.current = false;
+        lastPositionRef.current = null;
+    };
+    
+    // Mouse events
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+    
+    // Touch events
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+
     return () => {
         window.removeEventListener("resize", resizeCanvas);
+        canvas.removeEventListener('mousedown', startDrawing);
+        canvas.removeEventListener('mousemove', draw);
+        canvas.removeEventListener('mouseup', stopDrawing);
+        canvas.removeEventListener('mouseleave', stopDrawing);
+        
+        canvas.removeEventListener('touchstart', startDrawing);
+        canvas.removeEventListener('touchmove', draw);
+        canvas.removeEventListener('touchend', stopDrawing);
     };
   }, [isSaved]);
-
 
   const handleSave = () => {
     if(!name || !date) {
       alert("Please provide name and date.");
       return;
     }
-    if (signaturePadRef.current?.isEmpty()) {
+    if (!hasDrawingRef.current) {
         alert("Please provide a signature.");
         return;
     }
     
-    const dataUrl = signaturePadRef.current!.toDataURL('image/png');
+    const dataUrl = canvasRef.current!.toDataURL('image/png');
 
     const newSignature: Signature = { name, date, remarks, signatureDataUrl: dataUrl };
     onUpdate(newSignature);
@@ -92,9 +146,14 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
   }
   
   const handleClearPad = () => {
-      if (signaturePadRef.current) {
-          signaturePadRef.current.clear();
-      }
+    const canvas = canvasRef.current;
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasDrawingRef.current = false;
+        }
+    }
   }
 
   if(isSaved) {
@@ -157,7 +216,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
 
         <div className="space-y-2">
             <Label>Signature</Label>
-            <div className="relative w-full aspect-video bg-white rounded-md border">
+            <div className="relative w-full aspect-video bg-white rounded-md border touch-none">
               <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full rounded-md" />
             </div>
             <Button type="button" variant="outline" size="sm" onClick={handleClearPad}>
