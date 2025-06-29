@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Briefcase, ChevronLeft, Check, Circle } from 'lucide-react';
-import type { Procurement } from '@/lib/types';
+import type { Procurement, ProcurementPhase } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,6 +36,13 @@ const parseProcurement = (serialized: any): Procurement => {
 export function ProcurementDetailView({ initialProcurement }: { initialProcurement: any }) {
   const [procurement, setProcurement] = useState<Procurement>(parseProcurement(initialProcurement));
   const { toast } = useToast();
+  
+  const getActiveTab = (phases: ProcurementPhase[]) => {
+    const firstIncompletePhase = phases.find(p => !p.isCompleted);
+    return `phase-${firstIncompletePhase ? firstIncompletePhase.id : phases.length}`;
+  };
+
+  const [activeTab, setActiveTab] = useState(() => getActiveTab(procurement.phases));
 
   const handlePhaseUpdate = async (updatedPhase: any) => {
     const isCompleted = !!updatedPhase.submittedBy && !!updatedPhase.receivedBy;
@@ -46,14 +53,15 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     const updatedProcurementData = { ...procurement, phases: newPhases };
     setProcurement(updatedProcurementData);
     
+    if (phaseWithCompletion.isCompleted) {
+        setActiveTab(getActiveTab(newPhases));
+    }
+    
     // Persist changes
     await updateProcurement(procurement.id, { phases: newPhases });
 
     toast({ title: "Progress Saved", description: `Phase ${phaseWithCompletion.id} has been updated.` });
   };
-
-  const firstIncompletePhase = procurement.phases.find(p => !p.isCompleted);
-  const defaultTab = `phase-${firstIncompletePhase ? firstIncompletePhase.id : procurement.phases.length}`;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -86,12 +94,12 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
             </CardHeader>
           </Card>
           
-          <Tabs defaultValue={defaultTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="p-0 bg-transparent h-auto overflow-x-auto w-full">
               <div className="flex items-center border-b w-full">
                 {procurement.phases.map((phase, index) => {
                   const isUnlocked = index === 0 || procurement.phases[index - 1].isCompleted;
-                  const isActive = `phase-${phase.id}` === defaultTab;
+                  const isActive = `phase-${phase.id}` === activeTab;
 
                   return (
                     <React.Fragment key={phase.id}>
