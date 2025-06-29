@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon, Eraser, Save, X } from 'lucide-react';
+import { Calendar as CalendarIcon, Eraser, X } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Signature } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -29,13 +29,23 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
   const [name, setName] = useState(signature?.name || '');
   const [date, setDate] = useState<Date | undefined>(signature?.date || undefined);
   const [remarks, setRemarks] = useState(signature?.remarks || '');
+  const [hasDrawing, setHasDrawing] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
   const lastPositionRef = useRef<{ x: number, y: number } | null>(null);
-  const hasDrawingRef = useRef(false);
   
   const isSaved = !!(signature && signature.signatureDataUrl);
+
+  // Auto-save effect
+  useEffect(() => {
+    if (name && date && hasDrawing && canvasRef.current && !isSaved) {
+      const dataUrl = canvasRef.current.toDataURL('image/png');
+      const newSignature: Signature = { name, date, remarks, signatureDataUrl: dataUrl };
+      onUpdate(newSignature);
+    }
+  }, [name, date, hasDrawing, remarks, onUpdate, isSaved]);
+
 
   useEffect(() => {
     if (isSaved || !canvasRef.current) return;
@@ -89,7 +99,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
             ctx.lineTo(currentPos.x, currentPos.y);
             ctx.stroke();
             lastPositionRef.current = currentPos;
-            hasDrawingRef.current = true;
+            setHasDrawing(true);
         }
     };
 
@@ -122,27 +132,12 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
     };
   }, [isSaved]);
 
-  const handleSave = () => {
-    if(!name || !date) {
-      alert("Please provide name and date.");
-      return;
-    }
-    if (!hasDrawingRef.current) {
-        alert("Please provide a signature.");
-        return;
-    }
-    
-    const dataUrl = canvasRef.current!.toDataURL('image/png');
-
-    const newSignature: Signature = { name, date, remarks, signatureDataUrl: dataUrl };
-    onUpdate(newSignature);
-  };
-  
   const handleClear = () => {
       onUpdate(null);
       setName('');
       setDate(undefined);
       setRemarks('');
+      setHasDrawing(false);
   }
   
   const handleClearPad = () => {
@@ -151,7 +146,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
         const ctx = canvas.getContext('2d');
         if (ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            hasDrawingRef.current = false;
+            setHasDrawing(false);
         }
     }
   }
@@ -231,10 +226,6 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
             <Textarea id={`remarks-${title}`} value={remarks} onChange={(e) => setRemarks(e.target.value)} />
         </div>
         
-        <Button onClick={handleSave} className="w-full" size="sm">
-            <Save className="mr-2 h-4 w-4" />
-            Save Signature
-        </Button>
       </CardContent>
     </Card>
   );
