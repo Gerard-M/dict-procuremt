@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProcurementTable } from "@/components/procurement-table";
 import { CreateProcurementDialog } from "@/components/create-procurement-dialog";
-import { getProcurements } from "@/lib/data";
+import { getProcurements, deleteProcurement } from "@/lib/data";
 import type { Procurement } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 function Header() {
   return (
@@ -25,6 +27,8 @@ export function Dashboard() {
   const [procurements, setProcurements] = useState<Procurement[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [procurementToEdit, setProcurementToEdit] = useState<Procurement | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function loadProcurements() {
@@ -38,6 +42,25 @@ export function Dashboard() {
 
   const handleProcurementCreated = (newProcurement: Procurement) => {
     setProcurements(prev => [newProcurement, ...prev]);
+  };
+  
+  const handleProcurementUpdated = (updatedProcurement: Procurement) => {
+    setProcurements(prev => prev.map(p => p.id === updatedProcurement.id ? updatedProcurement : p));
+    setProcurementToEdit(null);
+  };
+
+  const handleProcurementDelete = async (id: string) => {
+    try {
+      await deleteProcurement(id);
+      setProcurements(prev => prev.filter(p => p.id !== id));
+      toast({ title: "Success", description: "Procurement has been deleted." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete procurement.", variant: "destructive" });
+    }
+  };
+
+  const openEditDialog = (procurement: Procurement) => {
+    setProcurementToEdit(procurement);
   };
 
   const filteredProcurements = useMemo(() => {
@@ -68,7 +91,21 @@ export function Dashboard() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <CreateProcurementDialog onProcurementCreated={handleProcurementCreated} />
+              <CreateProcurementDialog
+                onProcurementCreated={handleProcurementCreated}
+                onProcurementUpdated={handleProcurementUpdated}
+                procurementToEdit={procurementToEdit}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setProcurementToEdit(null);
+                    }
+                }}
+              >
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create New
+                </Button>
+              </CreateProcurementDialog>
             </div>
           </div>
 
@@ -78,10 +115,10 @@ export function Dashboard() {
               <TabsTrigger value="archived">Archived Procurements</TabsTrigger>
             </TabsList>
             <TabsContent value="active">
-              {loading ? <TableSkeleton /> : <ProcurementTable procurements={activeProcurements} />}
+              {loading ? <TableSkeleton /> : <ProcurementTable procurements={activeProcurements} onEdit={openEditDialog} onDelete={handleProcurementDelete} />}
             </TabsContent>
             <TabsContent value="archived">
-              {loading ? <TableSkeleton /> : <ProcurementTable procurements={archivedProcurements} />}
+              {loading ? <TableSkeleton /> : <ProcurementTable procurements={archivedProcurements} onEdit={openEditDialog} onDelete={handleProcurementDelete} />}
             </TabsContent>
           </Tabs>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -30,12 +30,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { addProcurement, getExistingPrNumbers } from '@/lib/data';
+import { addProcurement, getExistingPrNumbers, updateProcurement } from '@/lib/data';
 import { getNewProcurementPhases } from '@/lib/constants';
 import type { Procurement, ProjectType } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 import { correctPrNumber } from '@/ai/flows/correct-pr-number';
-import { Lightbulb, Loader2, PlusCircle } from 'lucide-react';
+import { Lightbulb, Loader2 } from 'lucide-react';
 
 const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
 
@@ -55,23 +55,49 @@ const procurementSchema = z.object({
   path: ["otherProjectType"],
 });
 
-export function CreateProcurementDialog({ onProcurementCreated }: { onProcurementCreated: (procurement: Procurement) => void }) {
+type FormData = z.infer<typeof procurementSchema>;
+
+interface CreateProcurementDialogProps {
+  onProcurementCreated: (procurement: Procurement) => void;
+  onProcurementUpdated: (procurement: Procurement) => void;
+  procurementToEdit?: Procurement | null;
+  children: React.ReactNode;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function CreateProcurementDialog({ onProcurementCreated, onProcurementUpdated, procurementToEdit, children, onOpenChange }: CreateProcurementDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [correctionSuggestion, setCorrectionSuggestion] = useState<string | null>(null);
   const [isCheckingPr, setIsCheckingPr] = useState(false);
   const { toast } = useToast();
+  
+  const isEditMode = !!procurementToEdit;
 
-  const form = useForm<z.infer<typeof procurementSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(procurementSchema),
-    defaultValues: {
-      title: "",
-      amount: 0,
-      prNumber: "",
-      projectType: "ILCDB-DWIA",
-      otherProjectType: "",
-    },
   });
+
+  useEffect(() => {
+    if (procurementToEdit) {
+      form.reset({
+        title: procurementToEdit.title,
+        amount: procurementToEdit.amount,
+        prNumber: procurementToEdit.prNumber,
+        projectType: procurementToEdit.projectType,
+        otherProjectType: procurementToEdit.otherProjectType || '',
+      });
+      setOpen(true);
+    } else {
+      form.reset({
+        title: "",
+        amount: 0,
+        prNumber: "",
+        projectType: "ILCDB-DWIA",
+        otherProjectType: "",
+      });
+    }
+  }, [procurementToEdit, form]);
 
   const selectedProjectType = form.watch('projectType');
 
@@ -97,46 +123,58 @@ export function CreateProcurementDialog({ onProcurementCreated }: { onProcuremen
     }
   };
 
-  async function onSubmit(values: z.infer<typeof procurementSchema>) {
+  async function onSubmit(values: FormData) {
     setIsSubmitting(true);
     try {
-        const existingPrNumbers = await getExistingPrNumbers();
+        const existingPrNumbers = (await getExistingPrNumbers()).filter(num => num !== procurementToEdit?.prNumber);
         if (existingPrNumbers.includes(values.prNumber)) {
             form.setError("prNumber", { type: "manual", message: "This PR Number already exists." });
             setIsSubmitting(false);
             return;
         }
 
-      const newProcurementData: Omit<Procurement, 'id' | 'createdAt' | 'updatedAt'> = {
-        ...values,
-        status: 'active',
-        phases: getNewProcurementPhases(),
-      };
-      const newProcurement = await addProcurement(newProcurementData);
-      onProcurementCreated(newProcurement);
-      toast({ title: "Success!", description: "New procurement record has been created." });
+      if (isEditMode && procurementToEdit) {
+        const updatedProcurement = await updateProcurement(procurementToEdit.id, values);
+        if(updatedProcurement) onProcurementUpdated(updatedProcurement);
+        toast({ title: "Success!", description: "Procurement has been updated." });
+      } else {
+        const newProcurementData: Omit<Procurement, 'id' | 'createdAt' | 'updatedAt'> = {
+          ...values,
+          status: 'active',
+          phases: getNewProcurementPhases(),
+        };
+        const newProcurement = await addProcurement(newProcurementData);
+        onProcurementCreated(newProcurement);
+        toast({ title: "Success!", description: "New procurement record has been created." });
+      }
+      
       setOpen(false);
       form.reset();
     } catch (error) {
-      toast({ title: "Error", description: "Failed to create procurement.", variant: 'destructive' });
+      console.error(error);
+      toast({ title: "Error", description: `Failed to ${isEditMode ? 'update' : 'create'} procurement.`, variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }
   }
+  
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    onOpenChange?.(isOpen);
+    if (!isOpen) {
+        form.reset();
+        setCorrectionSuggestion(null);
+    }
+  }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Create New
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create New Procurement</DialogTitle>
+          <DialogTitle>{isEditMode ? 'Edit' : 'Create New'} Procurement</DialogTitle>
           <DialogDescription>
-            Fill in the details below to start a new procurement process.
+            {isEditMode ? 'Update the details for this procurement record.' : 'Fill in the details below to start a new procurement process.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -192,10 +230,10 @@ export function CreateProcurementDialog({ onProcurementCreated }: { onProcuremen
               )} />
             )}
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>Cancel</Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Procurement
+                {isEditMode ? 'Save Changes' : 'Create Procurement'}
               </Button>
             </DialogFooter>
           </form>

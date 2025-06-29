@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { ref, get, set, push, update } from 'firebase/database';
+import { ref, get, set, push, update, remove } from 'firebase/database';
 import type { Procurement } from './types';
 
 // Helper to convert date objects to ISO strings for Firebase
@@ -48,7 +48,7 @@ export const getProcurements = async (): Promise<Procurement[]> => {
     const procurementsArray = Object.keys(data).map(key => ({
       id: key,
       ...data[key],
-    }));
+    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return deserializeDates(procurementsArray);
   }
   return [];
@@ -76,16 +76,21 @@ export const addProcurement = async (procurement: Omit<Procurement, 'id' | 'crea
 
   await set(newProcurementRef, serializeDates(newProcurement));
   
-  return {
+  const result = {
       id: newProcurementRef.key!,
       ...newProcurement
   };
+  return deserializeDates(result);
 };
 
-export const updateProcurement = async (id: string, updates: Partial<Procurement>): Promise<Procurement | undefined> => {
+export const updateProcurement = async (id: string, updates: Partial<Omit<Procurement, 'id' | 'createdAt'>>): Promise<Procurement | undefined> => {
     const dataToUpdate = { ...updates, updatedAt: new Date() };
     await update(ref(db, `procurements/${id}`), serializeDates(dataToUpdate));
     return getProcurementById(id);
+};
+
+export const deleteProcurement = async (id: string): Promise<void> => {
+    await remove(ref(db, `procurements/${id}`));
 };
 
 export const getExistingPrNumbers = async (): Promise<string[]> => {

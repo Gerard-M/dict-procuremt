@@ -13,22 +13,37 @@ import {
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, Edit, Loader2, Trash2 } from 'lucide-react';
 import type { Procurement } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type SortKey = keyof Procurement | 'progress';
 
-export function ProcurementTable({ procurements }: { procurements: Procurement[] }) {
+interface ProcurementTableProps {
+  procurements: Procurement[];
+  onEdit: (procurement: Procurement) => void;
+  onDelete: (id: string) => Promise<void>;
+}
+
+export function ProcurementTable({ procurements, onEdit, onDelete }: ProcurementTableProps) {
   const [sortKey, setSortKey] = React.useState<SortKey>('createdAt');
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
+  const [isDeleting, setIsDeleting] = React.useState<string | null>(null);
 
   const getProgress = (procurement: Procurement) => {
     const completedPhases = procurement.phases.filter(p => p.isCompleted).length;
@@ -65,6 +80,12 @@ export function ProcurementTable({ procurements }: { procurements: Procurement[]
   const renderSortArrow = (key: SortKey) => {
     if (sortKey !== key) return <ArrowUpDown className="h-4 w-4 text-muted-foreground/50" />;
     return sortDirection === 'asc' ? '▲' : '▼';
+  };
+  
+  const handleDeleteConfirm = async (id: string) => {
+    setIsDeleting(id);
+    await onDelete(id);
+    // Component will re-render, no need to setIsDeleting(null)
   };
 
   if (procurements.length === 0) {
@@ -104,6 +125,7 @@ export function ProcurementTable({ procurements }: { procurements: Procurement[]
                     Phase Progress {renderSortArrow('progress')}
                   </Button>
                 </TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -133,6 +155,40 @@ export function ProcurementTable({ procurements }: { procurements: Procurement[]
                           {`Phase ${completedPhases} of ${totalPhases}`} ({Math.round(progress)}%)
                         </span>
                       </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => onEdit(procurement)}>
+                                <Edit className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                            </Button>
+                             <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" disabled={isDeleting === procurement.id}>
+                                  {isDeleting === procurement.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="h-4 w-4" />
+                                  )}
+                                  <span className="sr-only">Delete</span>
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the procurement record.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteConfirm(procurement.id)} className="bg-destructive hover:bg-destructive/90">
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
                     </TableCell>
                   </TableRow>
                 );
