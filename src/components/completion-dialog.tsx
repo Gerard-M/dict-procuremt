@@ -22,22 +22,14 @@ interface CompletionDialogProps {
 export function CompletionDialog({ open, onOpenChange, procurementTitle }: CompletionDialogProps) {
   const router = useRouter();
 
-  const handleBackToDashboard = () => {
-    // Use a timeout to allow the dialog to close gracefully before navigating
-    setTimeout(() => {
-        router.push('/');
-    }, 150);
+  const handleReturnToDashboard = () => {
+    // Navigating to the new page will automatically unmount this component
+    // and its parent, so we don't need to manually close the dialog first.
+    router.push('/');
   };
-  
-  const handleOpenChange = (isOpen: boolean) => {
-      onOpenChange(isOpen);
-      if(!isOpen) {
-        handleBackToDashboard();
-      }
-  }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 mb-4">
@@ -49,7 +41,7 @@ export function CompletionDialog({ open, onOpenChange, procurementTitle }: Compl
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4">
-          <Button onClick={() => onOpenChange(false)} className="w-full">
+          <Button onClick={handleReturnToDashboard} className="w-full">
             Return to Dashboard
           </Button>
         </DialogFooter>

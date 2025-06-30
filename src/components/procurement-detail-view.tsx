@@ -74,7 +74,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
 
   const [activeTab, setActiveTab] = useState(() => getActiveTab(procurement.phases));
 
-  const handlePhaseUpdate = async (updatedPhase: any, options = { navigateOnComplete: true }) => {
+  const handlePhaseUpdate = async (updatedPhase: ProcurementPhase) => {
     const isCompleted = !!updatedPhase.submittedBy && !!updatedPhase.receivedBy;
     const phaseWithCompletion = { ...updatedPhase, isCompleted };
 
@@ -95,17 +95,30 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     
     toast({ title: "Progress Saved", description: `Phase ${phaseWithCompletion.name} has been updated.` });
 
-    if (options.navigateOnComplete) {
-      if (isLastPhase && phaseWithCompletion.isCompleted) {
-          setIsCompletionDialogOpen(true);
-      } else if (phaseWithCompletion.isCompleted) {
-          const nextTab = getActiveTab(newPhases);
-          setActiveTab(nextTab);
-          if (nextTab !== activeTab) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-      }
+    if (isLastPhase && phaseWithCompletion.isCompleted) {
+        setIsCompletionDialogOpen(true);
+    } else if (phaseWithCompletion.isCompleted) {
+        const nextTab = getActiveTab(newPhases);
+        setActiveTab(nextTab);
+        if (nextTab !== activeTab) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
+  };
+
+  const handleViewSummary = (updatedPhase: ProcurementPhase) => {
+    // Merge the latest phase data from the card into the main procurement state
+    const newPhases = procurement.phases.map(p => p.id === updatedPhase.id ? updatedPhase : p);
+    const updatedProcurementData = { ...procurement, phases: newPhases };
+    
+    // Update the state immediately so the dialog gets the fresh data
+    setProcurement(updatedProcurementData);
+    
+    // Open the dialog
+    setIsSummaryOpen(true);
+    
+    // Save the latest data to the database in the background
+    updateProcurement(procurement.id, { phases: newPhases });
   };
 
   return (
@@ -185,7 +198,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
                     phase={phase}
                     onUpdate={handlePhaseUpdate}
                     disabled={!isUnlocked}
-                    onViewSummary={() => setIsSummaryOpen(true)}
+                    onViewSummary={handleViewSummary}
                   />
                 </TabsContent>
               );

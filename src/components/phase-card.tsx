@@ -22,9 +22,9 @@ export function PhaseCard({
   onViewSummary,
 }: {
   phase: ProcurementPhase;
-  onUpdate: (updatedPhase: ProcurementPhase, options?: { navigateOnComplete: boolean }) => Promise<void>;
+  onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>;
   disabled?: boolean;
-  onViewSummary: () => void;
+  onViewSummary: (updatedPhase: ProcurementPhase) => void;
 }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,15 +46,12 @@ export function PhaseCard({
 
   const handleSave = async () => {
     setIsSaving(true);
-    await onUpdate(currentPhase, { navigateOnComplete: true });
+    await onUpdate(currentPhase);
     setIsSaving(false);
   };
 
-  const handleViewSummaryClick = async () => {
-    // First, save any pending changes without navigating away
-    await onUpdate(currentPhase, { navigateOnComplete: false });
-    // Then, open the summary dialog with the updated data
-    onViewSummary();
+  const handleViewSummaryClick = () => {
+    onViewSummary(currentPhase);
   };
 
   const canContinue = !!currentPhase.submittedBy && !!currentPhase.receivedBy;
