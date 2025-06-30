@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2, CheckSquare, Square } from 'lucide-react';
 import type { Procurement } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -102,47 +102,64 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
                             </span>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm mt-4">
-                           <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
-                                <h4 className="font-semibold mb-2 text-gray-600">Submitted By</h4>
-                                {phase.submittedBy ? (
-                                    <div className="space-y-2">
-                                        {phase.submittedBy.signatureDataUrl && (
-                                            <div>
-                                                <p className="text-xs font-medium text-gray-500">Signature</p>
-                                                <div className="mt-1 border bg-white rounded-md p-1">
-                                                    <img src={phase.submittedBy.signatureDataUrl} alt="Signature" className="h-20 w-full object-contain" />
-                                                </div>
-                                            </div>
-                                        )}
-                                        <div>
-                                            <p><strong>Name:</strong> {phase.submittedBy.name}</p>
-                                            <p><strong>Date:</strong> {phase.submittedBy.date ? format(new Date(phase.submittedBy.date), 'PPP') : 'N/A'}</p>
-                                            <p><strong>Remarks:</strong> {phase.submittedBy.remarks || 'None'}</p>
+                        {phase.checklist && phase.checklist.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                                <h4 className="font-semibold mb-2 text-gray-600">Checklist</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                                    {phase.checklist.map(item => (
+                                        <div key={item.id} className="flex items-start gap-2">
+                                            {item.checked ? <CheckSquare className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" /> : <Square className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />}
+                                            <span className={item.checked ? 'text-gray-800' : 'text-gray-500'}>{item.label}</span>
                                         </div>
-                                    </div>
-                                ) : <p className="text-gray-400">Not yet submitted.</p>}
-                           </div>
-                           <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
-                                <h4 className="font-semibold mb-2 text-gray-600">Received By</h4>
-                                {phase.receivedBy ? (
-                                    <div className="space-y-2">
-                                        {phase.receivedBy.signatureDataUrl && (
-                                            <div>
-                                                <p className="text-xs font-medium text-gray-500">Signature</p>
-                                                <div className="mt-1 border bg-white rounded-md p-1">
-                                                    <img src={phase.receivedBy.signatureDataUrl} alt="Signature" className="h-20 w-full object-contain" />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                            <h4 className="font-semibold mb-2 text-gray-600">Signatures</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                               <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
+                                    <h5 className="font-semibold mb-2 text-gray-600">Submitted By</h5>
+                                    {phase.submittedBy ? (
+                                        <div className="space-y-2">
+                                            {phase.submittedBy.signatureDataUrl && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500">Signature</p>
+                                                    <div className="mt-1 border bg-white rounded-md p-1">
+                                                        <img src={phase.submittedBy.signatureDataUrl} alt="Signature" className="h-20 w-full object-contain" />
+                                                    </div>
                                                 </div>
+                                            )}
+                                            <div>
+                                                <p><strong>Name:</strong> {phase.submittedBy.name}</p>
+                                                <p><strong>Date:</strong> {phase.submittedBy.date ? format(new Date(phase.submittedBy.date), 'PPP') : 'N/A'}</p>
+                                                <p><strong>Remarks:</strong> {phase.submittedBy.remarks || 'None'}</p>
                                             </div>
-                                        )}
-                                        <div>
-                                            <p><strong>Name:</strong> {phase.receivedBy.name}</p>
-                                            <p><strong>Date:</strong> {phase.receivedBy.date ? format(new Date(phase.receivedBy.date), 'PPP') : 'N/A'}</p>
-                                            <p><strong>Remarks:</strong> {phase.receivedBy.remarks || 'None'}</p>
                                         </div>
-                                    </div>
-                                ) : <p className="text-gray-400">Not yet received.</p>}
-                           </div>
+                                    ) : <p className="text-gray-400">Not yet submitted.</p>}
+                               </div>
+                               <div className="bg-gray-50 p-3 rounded-md border border-gray-100">
+                                    <h5 className="font-semibold mb-2 text-gray-600">Received By</h5>
+                                    {phase.receivedBy ? (
+                                        <div className="space-y-2">
+                                            {phase.receivedBy.signatureDataUrl && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500">Signature</p>
+                                                    <div className="mt-1 border bg-white rounded-md p-1">
+                                                        <img src={phase.receivedBy.signatureDataUrl} alt="Signature" className="h-20 w-full object-contain" />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div>
+                                                <p><strong>Name:</strong> {phase.receivedBy.name}</p>
+                                                <p><strong>Date:</strong> {phase.receivedBy.date ? format(new Date(phase.receivedBy.date), 'PPP') : 'N/A'}</p>
+                                                <p><strong>Remarks:</strong> {phase.receivedBy.remarks || 'None'}</p>
+                                            </div>
+                                        </div>
+                                    ) : <p className="text-gray-400">Not yet received.</p>}
+                               </div>
+                            </div>
                         </div>
                     </div>
                 ))}
