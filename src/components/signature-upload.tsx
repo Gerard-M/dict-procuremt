@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,37 +19,43 @@ interface SignatureUploadProps {
 }
 
 export function SignatureUpload({ title, signature, onUpdate, disabled = false }: SignatureUploadProps) {
-  const [name, setName] = useState('');
-  const [date, setDate] = useState<Date | undefined>();
-  const [remarks, setRemarks] = useState('');
-  const [hasDrawing, setHasDrawing] = useState(false);
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
   const lastPositionRef = useRef<{ x: number, y: number } | null>(null);
 
-  // Update internal state when the signature prop changes from the parent
-  useEffect(() => {
-    if (signature) {
-      setName(signature.name || '');
-      setDate(signature.date || new Date());
-      setRemarks(signature.remarks || '');
-      setHasDrawing(!!signature.signatureDataUrl);
-    } else {
-      // Reset to default state
-      setName('');
-      setDate(new Date());
-      setRemarks('');
-      setHasDrawing(false);
-    }
-  }, [signature]);
+  const getSignatureObject = (): Signature => {
+    return signature || {
+      name: '',
+      date: new Date(),
+      remarks: '',
+      signatureDataUrl: ''
+    };
+  };
 
-  const handleAutoSave = () => {
-    if (name && date && canvasRef.current) {
-      // Get data URL only if there's a drawing, otherwise it's an empty string.
-      const dataUrl = hasDrawing ? canvasRef.current.toDataURL('image/png') : '';
-      const newSignature: Signature = { name, date, remarks, signatureDataUrl: dataUrl };
-      onUpdate(newSignature);
+  const handleFieldChange = (field: 'name' | 'remarks', value: string) => {
+    const newSignature: Signature = {
+        name: signature?.name || '',
+        date: signature?.date || new Date(),
+        remarks: signature?.remarks || '',
+        signatureDataUrl: signature?.signatureDataUrl || '',
+    };
+    newSignature[field] = value;
+    onUpdate(newSignature);
+  };
+  
+  const stopDrawing = () => {
+    if (!isDrawingRef.current) return;
+    isDrawingRef.current = false;
+    lastPositionRef.current = null;
+    
+    const canvas = canvasRef.current;
+    if (canvas) {
+        const dataUrl = canvas.toDataURL('image/png');
+        const newSignature = {
+            ...getSignatureObject(),
+            signatureDataUrl: dataUrl,
+        };
+        onUpdate(newSignature);
     }
   };
 
@@ -71,6 +77,9 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
         context.lineCap = 'round';
         context.lineWidth = 2;
         context.strokeStyle = 'black';
+        
+        // Always clear the canvas first
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
         // If there is an existing signature, draw it on the canvas
         if (signature?.signatureDataUrl) {
@@ -83,8 +92,8 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
       }
     }
 
-    window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     const getEventPosition = (event: MouseEvent | TouchEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -115,15 +124,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
         ctx.lineTo(currentPos.x, currentPos.y);
         ctx.stroke();
         lastPositionRef.current = currentPos;
-        if (!hasDrawing) setHasDrawing(true);
       }
-    };
-
-    const stopDrawing = () => {
-      if (!isDrawingRef.current) return;
-      isDrawingRef.current = false;
-      lastPositionRef.current = null;
-      handleAutoSave(); // Save when drawing stops
     };
 
     canvas.addEventListener('mousedown', startDrawing);
@@ -146,7 +147,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
       canvas.removeEventListener('touchmove', draw);
       canvas.removeEventListener('touchend', stopDrawing);
     };
-  }, [signature?.signatureDataUrl]); // Re-initialize if the base signature changes
+  }, [signature?.signatureDataUrl]);
 
   const handleClear = () => {
     onUpdate(null);
@@ -158,11 +159,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        setHasDrawing(false);
-        // Update parent to remove only the drawing
-        if (signature) {
-          onUpdate({ ...signature, signatureDataUrl: '' });
-        }
+        onUpdate({ ...getSignatureObject(), signatureDataUrl: '' });
       }
     }
   }
@@ -180,14 +177,14 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor={`name-${title}`}>Name</Label>
-          <Input id={`name-${title}`} value={name} onChange={(e) => setName(e.target.value)} onBlur={handleAutoSave} />
+          <Input id={`name-${title}`} value={signature?.name || ''} onChange={(e) => handleFieldChange('name', e.target.value)} />
         </div>
 
         <div className="space-y-2">
           <Label>Date</Label>
           <div className="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Loading date...</span>}
+            {signature?.date ? format(new Date(signature.date), "PPP") : (signature?.name ? 'Processing...' : 'Awaiting input...')}
           </div>
         </div>
 
@@ -204,7 +201,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
 
         <div className="space-y-2">
           <Label htmlFor={`remarks-${title}`}>Remarks (Optional)</Label>
-          <Textarea id={`remarks-${title}`} value={remarks} onChange={(e) => setRemarks(e.target.value)} onBlur={handleAutoSave} />
+          <Textarea id={`remarks-${title}`} value={signature?.remarks || ''} onChange={(e) => handleFieldChange('remarks', e.target.value)} />
         </div>
 
       </CardContent>
