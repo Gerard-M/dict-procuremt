@@ -43,22 +43,6 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
     onUpdate(newSignature);
   };
   
-  const stopDrawing = () => {
-    if (!isDrawingRef.current) return;
-    isDrawingRef.current = false;
-    lastPositionRef.current = null;
-    
-    const canvas = canvasRef.current;
-    if (canvas) {
-        const dataUrl = canvas.toDataURL('image/png');
-        const newSignature = {
-            ...getSignatureObject(),
-            signatureDataUrl: dataUrl,
-        };
-        onUpdate(newSignature);
-    }
-  };
-
   // Set up the canvas for drawing
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -66,6 +50,32 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    
+    const stopDrawing = () => {
+      if (!isDrawingRef.current) return;
+      isDrawingRef.current = false;
+      lastPositionRef.current = null;
+      
+      const canvas = canvasRef.current;
+      if (canvas) {
+          // This is a targeted fix for a stale closure bug.
+          // The `stopDrawing` function is defined inside useEffect, and if the dependencies
+          // are not perfect, it can hold onto a stale `signature` prop.
+          // By reading directly from the DOM here, we ensure we always get the latest values
+          // for name and remarks at the moment the user finishes drawing.
+          const nameInput = document.getElementById(`name-${title}`) as HTMLInputElement | null;
+          const remarksInput = document.getElementById(`remarks-${title}`) as HTMLTextAreaElement | null;
+
+          const dataUrl = canvas.toDataURL('image/png');
+          const newSignature: Signature = {
+            name: nameInput?.value || '',
+            date: new Date(),
+            remarks: remarksInput?.value || '',
+            signatureDataUrl: dataUrl,
+          };
+          onUpdate(newSignature);
+      }
+    };
 
     const resizeCanvas = () => {
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
@@ -86,7 +96,10 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
           const img = new window.Image();
           img.src = signature.signatureDataUrl;
           img.onload = () => {
-            context.drawImage(img, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
+            // Check if component is still mounted before drawing
+            if(canvasRef.current) {
+                context.drawImage(img, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
+            }
           }
         }
       }
@@ -147,7 +160,7 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
       canvas.removeEventListener('touchmove', draw);
       canvas.removeEventListener('touchend', stopDrawing);
     };
-  }, [signature?.signatureDataUrl]);
+  }, [signature?.signatureDataUrl, title, onUpdate]);
 
   const handleClear = () => {
     onUpdate(null);
