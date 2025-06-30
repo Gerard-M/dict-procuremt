@@ -37,18 +37,22 @@ const parseProcurement = (serialized: any): Procurement => {
 
 // Helper to merge database phase data with latest constant definitions
 const mergeWithLatestPhases = (procurementData: Procurement): Procurement => {
-  if (!procurementData.phases) return procurementData;
+  if (!procurementData.phases || procurementData.phases.length === 0) {
+    return { ...procurementData, phases: getNewProcurementPhases() };
+  }
   const latestPhaseDefinitions = getNewProcurementPhases();
-  const mergedPhases = procurementData.phases.map((dbPhase) => {
-    if (!dbPhase) return dbPhase;
-    const latestPhase = latestPhaseDefinitions.find(p => p.id === dbPhase.id);
-    if (latestPhase) {
+  const mergedPhases = latestPhaseDefinitions.map((latestPhase) => {
+    const dbPhase = procurementData.phases.find(p => p.id === latestPhase.id);
+    if (dbPhase) {
+      // Keep all progress from db (signatures, checklist state, etc)
+      // and only overwrite the name to ensure it's up-to-date.
       return {
-        ...dbPhase, // keep all progress from db (signatures, checklist state, etc)
-        name: latestPhase.name, // ONLY overwrite the name
+        ...dbPhase,
+        name: latestPhase.name,
       };
     }
-    return dbPhase;
+    // This case should ideally not be hit if DB data exists and is aligned.
+    return latestPhase;
   });
   return { ...procurementData, phases: mergedPhases };
 };
@@ -65,19 +69,19 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
   
   const getActiveTab = (phases: ProcurementPhase[]) => {
     const firstIncompletePhase = phases.find(p => !p.isCompleted);
-    return `phase-${firstIncompletePhase ? firstIncompletePhase.id : phases.length}`;
+    return `phase-${firstIncompletePhase ? firstIncompletePhase.id : phases[phases.length - 1].id}`;
   };
 
   const [activeTab, setActiveTab] = useState(() => getActiveTab(procurement.phases));
 
-  const handlePhaseUpdate = async (updatedPhase: any) => {
+  const handlePhaseUpdate = async (updatedPhase: any, options = { navigateOnComplete: true }) => {
     const isCompleted = !!updatedPhase.submittedBy && !!updatedPhase.receivedBy;
     const phaseWithCompletion = { ...updatedPhase, isCompleted };
 
     const newPhases = procurement.phases.map(p => p.id === phaseWithCompletion.id ? phaseWithCompletion : p);
     
     let finalStatus = procurement.status;
-    const isLastPhase = phaseWithCompletion.id === procurement.phases.length;
+    const isLastPhase = phaseWithCompletion.id === procurement.phases[procurement.phases.length - 1].id;
 
     if (isLastPhase && phaseWithCompletion.isCompleted) {
         finalStatus = 'archived';
@@ -90,15 +94,17 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     await updateProcurement(procurement.id, { phases: newPhases, status: finalStatus });
     
     toast({ title: "Progress Saved", description: `Phase ${phaseWithCompletion.name} has been updated.` });
-    
-    if (isLastPhase && phaseWithCompletion.isCompleted) {
-        setIsCompletionDialogOpen(true);
-    } else if (phaseWithCompletion.isCompleted) {
-        const nextTab = getActiveTab(newPhases);
-        setActiveTab(nextTab);
-        if (nextTab !== activeTab) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+
+    if (options.navigateOnComplete) {
+      if (isLastPhase && phaseWithCompletion.isCompleted) {
+          setIsCompletionDialogOpen(true);
+      } else if (phaseWithCompletion.isCompleted) {
+          const nextTab = getActiveTab(newPhases);
+          setActiveTab(nextTab);
+          if (nextTab !== activeTab) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+      }
     }
   };
 
