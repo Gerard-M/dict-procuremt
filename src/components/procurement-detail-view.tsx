@@ -19,6 +19,8 @@ import { formatCurrency, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { ProcurementSummaryDialog } from './procurement-summary-dialog';
 import { getNewProcurementPhases } from '@/lib/constants';
+import { CompletionDialog } from './completion-dialog';
+import { useRouter } from 'next/navigation';
 
 // Helper to parse the serialized procurement object
 const parseProcurement = (serialized: any): Procurement => {
@@ -60,6 +62,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
   });
   const { toast } = useToast();
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isCompletionDialogOpen, setIsCompletionDialogOpen] = useState(false);
   
   const getActiveTab = (phases: ProcurementPhase[]) => {
     const firstIncompletePhase = phases.find(p => !p.isCompleted);
@@ -74,21 +77,30 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
 
     const newPhases = procurement.phases.map(p => p.id === phaseWithCompletion.id ? phaseWithCompletion : p);
     
-    const updatedProcurementData = { ...procurement, phases: newPhases };
+    let finalStatus = procurement.status;
+    const isLastPhase = phaseWithCompletion.id === procurement.phases.length;
+
+    if (isLastPhase && phaseWithCompletion.isCompleted) {
+        finalStatus = 'archived';
+    }
+
+    const updatedProcurementData = { ...procurement, phases: newPhases, status: finalStatus };
     setProcurement(updatedProcurementData);
     
-    if (phaseWithCompletion.isCompleted) {
+    // Persist changes
+    await updateProcurement(procurement.id, { phases: newPhases, status: finalStatus });
+    
+    toast({ title: "Progress Saved", description: `Phase ${phaseWithCompletion.name} has been updated.` });
+    
+    if (isLastPhase && phaseWithCompletion.isCompleted) {
+        setIsCompletionDialogOpen(true);
+    } else if (phaseWithCompletion.isCompleted) {
         const nextTab = getActiveTab(newPhases);
         setActiveTab(nextTab);
         if (nextTab !== activeTab) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
-    
-    // Persist changes
-    await updateProcurement(procurement.id, { phases: newPhases });
-
-    toast({ title: "Progress Saved", description: `Phase ${phaseWithCompletion.id} has been updated.` });
   };
 
   return (
@@ -177,6 +189,11 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
         </div>
       </main>
        <ProcurementSummaryDialog procurement={procurement} open={isSummaryOpen} onOpenChange={setIsSummaryOpen} />
+       <CompletionDialog
+          open={isCompletionDialogOpen}
+          onOpenChange={setIsCompletionDialogOpen}
+          procurementTitle={procurement.title}
+        />
     </div>
   );
 }
