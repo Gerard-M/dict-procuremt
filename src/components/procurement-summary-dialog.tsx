@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef } from 'react';
@@ -12,10 +13,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, Loader2, CheckSquare } from 'lucide-react';
+import { Download, Loader2, CheckSquare, Briefcase, Calendar, FileText } from 'lucide-react';
 import type { Procurement, ProcurementPhase } from '@/lib/types';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Badge } from './ui/badge';
 
 interface ProcurementSummaryDialogProps {
   procurement: Procurement;
@@ -27,62 +29,62 @@ const PhaseSummaryCard = ({ phase }: { phase: ProcurementPhase }) => {
   const checkedItems = phase.checklist.filter(item => item.checked);
 
   return (
-    <div className="border border-gray-300 p-4 rounded-lg flex flex-col h-full text-xs" style={{ breakInside: 'avoid' }}>
-      <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-200">
-        <h3 className="text-base font-bold text-gray-800">{phase.name}</h3>
-        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${phase.isCompleted ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+    <div className="bg-card text-card-foreground rounded-xl border shadow-sm flex flex-col h-full" style={{ breakInside: 'avoid' }}>
+      <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
+        <h3 className="tracking-tight text-base font-bold text-primary">{phase.name}</h3>
+        <Badge variant={phase.isCompleted ? 'default' : 'outline'} className={cn(phase.isCompleted && 'bg-green-600 text-white')}>
           {phase.isCompleted ? 'Completed' : 'In Progress'}
-        </span>
+        </Badge>
       </div>
       
-      <div className="mb-4">
-        <h4 className="font-bold mb-2 text-gray-700">Completed Checklist Items</h4>
-        {checkedItems.length > 0 ? (
-          <div className="space-y-1.5 text-gray-600 max-h-48 overflow-y-auto pr-2">
-            {checkedItems.map(item => (
-              <div key={item.id} className="flex items-start gap-2">
-                <CheckSquare className="w-3.5 h-3.5 text-green-700 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-900">{item.label}</span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-400 italic">No items have been completed for this phase.</p>
-        )}
-      </div>
-      
-      <div className="mt-auto pt-4 border-t border-gray-200">
-        <h4 className="font-bold mb-2 text-gray-700">Signatures</h4>
-        <div className="grid grid-cols-1 gap-4">
-          <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
-            <h5 className="font-bold mb-2 text-gray-600">Submitted By</h5>
+      <div className="p-6 pt-0 space-y-6">
+        <div>
+          <h4 className="font-semibold mb-2 text-foreground/80">Completed Items</h4>
+          {checkedItems.length > 0 ? (
+            <div className="space-y-2 text-sm max-h-48 overflow-y-auto pr-2">
+              {checkedItems.map(item => (
+                <div key={item.id} className="flex items-start gap-2.5">
+                  <CheckSquare className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground italic">No items have been completed.</p>
+          )}
+        </div>
+
+        <div className="bg-muted/50 p-4 rounded-lg space-y-4">
+          <div>
+            <h5 className="font-semibold mb-3 text-sm text-foreground">Submitted By</h5>
             {phase.submittedBy ? (
-              <div className="space-y-2">
+              <div className="text-xs space-y-2 text-muted-foreground">
                 {phase.submittedBy.signatureDataUrl && (
-                  <div className="mt-1 border bg-white rounded-md p-1 h-24 flex items-center justify-center">
+                  <div className="mb-2 border bg-white rounded-md p-1 h-20 flex items-center justify-center">
                     <img src={phase.submittedBy.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
                   </div>
                 )}
                 <p><strong>Name:</strong> {phase.submittedBy.name}</p>
-                <p><strong>Date:</strong> {phase.submittedBy.date ? format(new Date(phase.submittedBy.date), 'PPpp') : 'N/A'}</p>
-                <p><strong>Remarks:</strong> {phase.submittedBy.remarks || 'None'}</p>
+                <p><strong>Date:</strong> {phase.submittedBy.date ? format(new Date(phase.submittedBy.date), 'PPp') : 'N/A'}</p>
+                {phase.submittedBy.remarks && <p><strong>Remarks:</strong> {phase.submittedBy.remarks}</p>}
               </div>
-            ) : <p className="text-gray-400 italic">Not yet submitted.</p>}
+            ) : <p className="text-xs text-muted-foreground italic">Not yet submitted.</p>}
           </div>
-          <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
-            <h5 className="font-bold mb-2 text-gray-600">Received By</h5>
+
+          <div>
+            <h5 className="font-semibold mb-3 text-sm text-foreground">Received By</h5>
             {phase.receivedBy ? (
-              <div className="space-y-2">
+               <div className="text-xs space-y-2 text-muted-foreground">
                 {phase.receivedBy.signatureDataUrl && (
-                  <div className="mt-1 border bg-white rounded-md p-1 h-24 flex items-center justify-center">
+                  <div className="mb-2 border bg-white rounded-md p-1 h-20 flex items-center justify-center">
                     <img src={phase.receivedBy.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
                   </div>
                 )}
                 <p><strong>Name:</strong> {phase.receivedBy.name}</p>
-                <p><strong>Date:</strong> {phase.receivedBy.date ? format(new Date(phase.receivedBy.date), 'PPpp') : 'N/A'}</p>
-                <p><strong>Remarks:</strong> {phase.receivedBy.remarks || 'None'}</p>
+                <p><strong>Date:</strong> {phase.receivedBy.date ? format(new Date(phase.receivedBy.date), 'PPp') : 'N/A'}</p>
+                {phase.receivedBy.remarks && <p><strong>Remarks:</strong> {phase.receivedBy.remarks}</p>}
               </div>
-            ) : <p className="text-gray-400 italic">Not yet received.</p>}
+            ) : <p className="text-xs text-muted-foreground italic">Not yet received.</p>}
           </div>
         </div>
       </div>
@@ -148,20 +150,39 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
   
   const PageHeader = () => (
      <>
-        <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-800">Procurement Process Report</h1>
-            <p className="text-sm text-gray-500">ILCDB Procurement Management System</p>
-            <p className="text-xs text-gray-400 mt-1">Generated on: {format(new Date(), 'PPP p')}</p>
+        <div className="space-y-1 text-center mb-8">
+            <Briefcase className="mx-auto h-10 w-10 text-primary" />
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Procurement Process Report</h1>
+            <p className="text-muted-foreground text-sm">ILCDB Procurement Management System</p>
+            <p className="text-xs text-muted-foreground/80 pt-1">Generated on: {format(new Date(), 'PPP p')}</p>
         </div>
-        <div className="mb-8 border-b-2 border-t-2 border-gray-300 py-4">
-            <h2 className="text-lg font-bold text-gray-700 mb-3">Procurement Details</h2>
-            <div className="grid grid-cols-2 gap-x-12 gap-y-2 text-sm">
-                <div><strong className="text-gray-600 font-semibold">Title:</strong> {procurement.title}</div>
-                <div><strong className="text-gray-600 font-semibold">PR Number:</strong> {procurement.prNumber}</div>
-                <div><strong className="text-gray-600 font-semibold">Amount:</strong> {formatCurrency(procurement.amount)}</div>
-                <div><strong className="text-gray-600 font-semibold">Project Type:</strong> {procurement.projectType === 'OTHERS' ? procurement.otherProjectType : procurement.projectType}</div>
-                <div><strong className="text-gray-600 font-semibold">Status:</strong> <span className="capitalize font-medium">{procurement.status}</span></div>
-                <div><strong className="text-gray-600 font-semibold">Created:</strong> {format(procurement.createdAt, 'PPP')}</div>
+        <div className="rounded-xl border bg-card text-card-foreground shadow-sm mb-8 p-6">
+            <h2 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2"><FileText className="h-5 w-5" />Procurement Details</h2>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                <div className="space-y-1">
+                    <p className="font-medium text-muted-foreground">Title</p>
+                    <p className="font-semibold text-foreground">{procurement.title}</p>
+                </div>
+                <div className="space-y-1">
+                    <p className="font-medium text-muted-foreground">PR Number</p>
+                    <p className="font-semibold text-foreground">{procurement.prNumber}</p>
+                </div>
+                <div className="space-y-1">
+                    <p className="font-medium text-muted-foreground">Amount</p>
+                    <p className="font-semibold text-foreground">{formatCurrency(procurement.amount)}</p>
+                </div>
+                 <div className="space-y-1">
+                    <p className="font-medium text-muted-foreground">Project Type</p>
+                    <p className="font-semibold text-foreground">{procurement.projectType === 'OTHERS' ? procurement.otherProjectType : procurement.projectType}</p>
+                </div>
+                 <div className="space-y-1">
+                    <p className="font-medium text-muted-foreground">Status</p>
+                    <p className="font-semibold text-foreground capitalize">{procurement.status}</p>
+                </div>
+                 <div className="space-y-1">
+                    <p className="font-medium text-muted-foreground">Created</p>
+                    <p className="font-semibold text-foreground">{format(procurement.createdAt, 'PPP')}</p>
+                </div>
             </div>
         </div>
      </>
@@ -177,14 +198,14 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
           </DialogDescription>
         </DialogHeader>
         
-        <div className="max-h-[80vh] overflow-y-auto p-1 border rounded-md bg-gray-100">
+        <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted/30">
           <div ref={summaryRef} className="bg-white text-black font-sans">
              
             {/* Page 1 */}
             {phasePairs[0] && (
               <div className="pdf-page p-8">
                 <PageHeader />
-                <h2 className="text-lg font-bold mb-4 text-gray-700">Phase Progress (Phases 1 & 2)</h2>
+                <h2 className="text-base font-semibold mb-4 text-muted-foreground text-center">Phase Progress (1 & 2)</h2>
                 <div className="grid grid-cols-2 gap-6">
                     {phasePairs[0][0] && <PhaseSummaryCard phase={phasePairs[0][0]} />}
                     {phasePairs[0][1] ? <PhaseSummaryCard phase={phasePairs[0][1]} /> : <div />}
@@ -196,7 +217,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
             {phasePairs[1] && (
               <div className="pdf-page p-8">
                  <PageHeader />
-                <h2 className="text-lg font-bold mb-4 text-gray-700">Phase Progress (Phases 3 & 4)</h2>
+                <h2 className="text-base font-semibold mb-4 text-muted-foreground text-center">Phase Progress (3 & 4)</h2>
                 <div className="grid grid-cols-2 gap-6">
                     {phasePairs[1][0] && <PhaseSummaryCard phase={phasePairs[1][0]} />}
                     {phasePairs[1][1] ? <PhaseSummaryCard phase={phasePairs[1][1]} /> : <div />}
@@ -208,7 +229,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
             {phasePairs[2] && (
               <div className="pdf-page p-8">
                  <PageHeader />
-                 <h2 className="text-lg font-bold mb-4 text-gray-700">Phase Progress (Phases 5 & 6)</h2>
+                 <h2 className="text-base font-semibold mb-4 text-muted-foreground text-center">Phase Progress (5 & 6)</h2>
                  <div className="grid grid-cols-2 gap-6">
                     {phasePairs[2][0] && <PhaseSummaryCard phase={phasePairs[2][0]} />}
                     {phasePairs[2][1] ? <PhaseSummaryCard phase={phasePairs[2][1]} /> : <div />}
@@ -229,3 +250,4 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
     </Dialog>
   );
 }
+
