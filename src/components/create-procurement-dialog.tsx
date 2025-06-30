@@ -42,7 +42,9 @@ const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJ
 const procurementSchema = z.object({
   title: z.string().min(1, "Title is required"),
   amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
-  prNumber: z.string().min(1, "PR Number is required"),
+  prNumber: z.string()
+    .min(1, "PR Number is required")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "PR Number must be in YYYY-NN-NN format." }),
   projectType: z.enum(projectTypes),
   otherProjectType: z.string().optional(),
 }).refine(data => {
@@ -189,7 +191,30 @@ export function CreateProcurementDialog({ onProcurementCreated, onProcurementUpd
               <FormItem>
                 <FormLabel>PR Number</FormLabel>
                 <div className="relative">
-                  <FormControl><Input placeholder="YYYY-NN-NN" {...field} onBlur={handlePrNumberBlur} /></FormControl>
+                  <FormControl>
+                    <Input 
+                      placeholder="YYYY-NN-NN"
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const digits = value.replace(/\D/g, '').slice(0, 8);
+                        
+                        let formatted = digits;
+                        if (digits.length > 4) {
+                            formatted = `${digits.slice(0, 4)}-${digits.slice(4)}`;
+                        }
+                        if (digits.length > 6) {
+                            formatted = `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+                        }
+                        
+                        field.onChange(formatted);
+                      }}
+                      onBlur={(e) => {
+                          field.onBlur(); // From react-hook-form
+                          handlePrNumberBlur(e); // Custom AI suggestion
+                      }}
+                    />
+                  </FormControl>
                   {isCheckingPr && <Loader2 className="animate-spin absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />}
                 </div>
                  {correctionSuggestion && (
