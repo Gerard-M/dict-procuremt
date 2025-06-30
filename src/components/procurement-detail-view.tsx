@@ -18,9 +18,6 @@ import { updateProcurement } from '@/lib/data';
 import { formatCurrency, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { ProcurementSummaryDialog } from './procurement-summary-dialog';
-import { getNewProcurementPhases } from '@/lib/constants';
-import { CompletionDialog } from './completion-dialog';
-import { useRouter } from 'next/navigation';
 
 // Helper to parse the serialized procurement object
 const parseProcurement = (serialized: any): Procurement => {
