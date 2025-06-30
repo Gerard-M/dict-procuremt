@@ -13,11 +13,10 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, Loader2, CheckSquare, Briefcase, Calendar, FileText } from 'lucide-react';
-import type { Procurement, ProcurementPhase } from '@/lib/types';
-import { formatCurrency, cn } from '@/lib/utils';
+import { Download, Loader2, Square, CheckSquare } from 'lucide-react';
+import type { Procurement, ProcurementPhase, Signature, ChecklistItem } from '@/lib/types';
+import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Badge } from './ui/badge';
 
 interface ProcurementSummaryDialogProps {
   procurement: Procurement;
@@ -25,72 +24,136 @@ interface ProcurementSummaryDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const PhaseSummaryCard = ({ phase }: { phase: ProcurementPhase }) => {
-  const checkedItems = phase.checklist.filter(item => item.checked);
-
-  return (
-    <div className="bg-card text-card-foreground rounded-xl border shadow-sm flex flex-col h-full" style={{ breakInside: 'avoid' }}>
-      <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-        <h3 className="tracking-tight text-base font-bold text-primary">{phase.name}</h3>
-        <Badge variant={phase.isCompleted ? 'default' : 'outline'} className={cn(phase.isCompleted && 'bg-green-600 text-white')}>
-          {phase.isCompleted ? 'Completed' : 'In Progress'}
-        </Badge>
-      </div>
-      
-      <div className="p-6 pt-0 space-y-6">
-        <div>
-          <h4 className="font-semibold mb-2 text-foreground/80">Completed Items</h4>
-          {checkedItems.length > 0 ? (
-            <div className="space-y-2 text-sm max-h-48 overflow-y-auto pr-2">
-              {checkedItems.map(item => (
-                <div key={item.id} className="flex items-start gap-2.5">
-                  <CheckSquare className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">{item.label}</span>
+const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement }>(({ procurement }, ref) => {
+    
+    const renderSignature = (signature: Signature | null) => {
+        if (!signature || !signature.name) return <div className="p-1 h-full"></div>;
+        return (
+            <div className="p-1 text-left text-[8px] flex flex-col justify-between h-full">
+                <div>
+                    <p>Name: <span className="font-semibold">{signature.name}</span></p>
                 </div>
-              ))}
+                <div className="flex-grow">
+                    <p>Signature:</p>
+                    {signature.signatureDataUrl && (
+                        <div className="h-10 flex items-center justify-center my-1">
+                             <img src={signature.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
+                        </div>
+                    )}
+                </div>
+                <div>
+                    <p>Date: <span className="font-semibold">{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span></p>
+                    <p>Remarks: <span className="font-semibold">{signature.remarks}</span></p>
+                </div>
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground italic">No items have been completed.</p>
-          )}
-        </div>
+        );
+    };
+    
+    const renderChecklist = (checklist: ChecklistItem[]) => {
+        return (
+            <ul className="space-y-1 text-[9px] text-left">
+                {checklist.map(item => (
+                    <li key={item.id} className="flex items-start gap-1.5">
+                        {item.checked ? <CheckSquare className="w-3 h-3 flex-shrink-0 mt-px" /> : <Square className="w-3 h-3 flex-shrink-0 mt-px" />}
+                        <span>{item.label}</span>
+                    </li>
+                ))}
+            </ul>
+        );
+    }
+    
+    const renderPhaseRow = (phase: ProcurementPhase) => {
+        return (
+            <tr key={phase.id}>
+                <td className="border border-black p-1 align-top w-[50%]">{renderChecklist(phase.checklist)}</td>
+                <td className="border border-black p-0 align-top w-[25%]">{renderSignature(phase.submittedBy)}</td>
+                <td className="border border-black p-0 align-top w-[25%]">{renderSignature(phase.receivedBy)}</td>
+            </tr>
+        )
+    };
 
-        <div className="bg-muted/50 p-4 rounded-lg space-y-4">
-          <div>
-            <h5 className="font-semibold mb-3 text-sm text-foreground">Submitted By</h5>
-            {phase.submittedBy ? (
-              <div className="text-xs space-y-2 text-muted-foreground">
-                {phase.submittedBy.signatureDataUrl && (
-                  <div className="mb-2 border bg-white rounded-md p-1 h-20 flex items-center justify-center">
-                    <img src={phase.submittedBy.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
-                  </div>
-                )}
-                <p><strong>Name:</strong> {phase.submittedBy.name}</p>
-                <p><strong>Date:</strong> {phase.submittedBy.date ? format(new Date(phase.submittedBy.date), 'PPp') : 'N/A'}</p>
-                {phase.submittedBy.remarks && <p><strong>Remarks:</strong> {phase.submittedBy.remarks}</p>}
-              </div>
-            ) : <p className="text-xs text-muted-foreground italic">Not yet submitted.</p>}
-          </div>
+    const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
 
-          <div>
-            <h5 className="font-semibold mb-3 text-sm text-foreground">Received By</h5>
-            {phase.receivedBy ? (
-               <div className="text-xs space-y-2 text-muted-foreground">
-                {phase.receivedBy.signatureDataUrl && (
-                  <div className="mb-2 border bg-white rounded-md p-1 h-20 flex items-center justify-center">
-                    <img src={phase.receivedBy.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
-                  </div>
-                )}
-                <p><strong>Name:</strong> {phase.receivedBy.name}</p>
-                <p><strong>Date:</strong> {phase.receivedBy.date ? format(new Date(phase.receivedBy.date), 'PPp') : 'N/A'}</p>
-                {phase.receivedBy.remarks && <p><strong>Remarks:</strong> {phase.receivedBy.remarks}</p>}
-              </div>
-            ) : <p className="text-xs text-muted-foreground italic">Not yet received.</p>}
-          </div>
+    return (
+        <div ref={ref} className="bg-white text-black p-8 font-sans">
+            <div className="w-[800px] mx-auto">
+                 {/* Header */}
+                <header className="flex justify-between items-center mb-4">
+                    <div className="border-2 border-blue-800 rounded-full h-20 w-20 flex items-center justify-center">
+                        <p className="text-blue-800 font-bold text-lg">ILCDB</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="font-bold text-lg">DIGITAL TRANSFORMATION CENTERS</p>
+                        <div className="bg-red-600 text-white font-bold text-xl p-1">TECH4ED</div>
+                    </div>
+                     <div className="border-2 border-yellow-500 rounded-full h-20 w-20 flex items-center justify-center">
+                        <p className="text-yellow-500 font-bold text-lg">SPARK</p>
+                    </div>
+                </header>
+
+                {/* Info Table */}
+                <table className="w-full border-collapse border border-black text-xs">
+                    <tbody>
+                        <tr>
+                            <td className="border border-black p-1 font-bold w-[30%]">PROJECT</td>
+                            <td className="border border-black p-1" colSpan={2}>
+                                <div className="flex items-center gap-4">
+                                    {projectTypes.map(pt => (
+                                        <div key={pt} className="flex items-center gap-1">
+                                            {procurement.projectType === pt ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                                            <label>{pt}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className="border border-black p-1 font-bold">ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td className="border border-black p-1 font-semibold" colSpan={2}>{procurement.title}</td>
+                        </tr>
+                        <tr>
+                            <td className="border border-black p-1 font-bold">AMOUNT</td>
+                            <td className="border border-black p-1 font-semibold">{formatCurrency(procurement.amount)}</td>
+                            <td className="border border-black p-1 font-bold">PR NUMBER: <span className="font-semibold">{procurement.prNumber}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                {/* Main Content Table */}
+                <table className="w-full border-collapse border-t-0 border border-black text-xs mt-[-1px]">
+                     <thead>
+                        <tr className="font-bold bg-gray-200">
+                            <td className="border border-black p-1 text-center w-[50%]">PARTICULARS</td>
+                            <td className="border border-black p-1 text-center w-[25%]">SUBMITTED BY</td>
+                            <td className="border border-black p-1 text-center w-[25%]">RECEIVED BY</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowSpan={3} className="border border-black p-1 font-bold align-middle text-center text-sm">PRE-PROCUREMENT<br/>REQUIREMENTS</td>
+                            {renderPhaseRow(procurement.phases[0]).props.children.slice(1)}
+                        </tr>
+                        {renderPhaseRow(procurement.phases[1])}
+                        {renderPhaseRow(procurement.phases[2])}
+
+                        <tr>
+                            <td rowSpan={3} className="border border-black p-1 font-bold align-middle text-center text-sm">POST-PROCUREMENT<br/>REQUIREMENTS</td>
+                            {renderPhaseRow(procurement.phases[3]).props.children.slice(1)}
+                        </tr>
+                        {renderPhaseRow(procurement.phases[4])}
+                        {renderPhaseRow(procurement.phases[5])}
+                    </tbody>
+                </table>
+                
+                <footer className="mt-8 text-xs">
+                    <p>Procurement Number: 2025-___</p>
+                </footer>
+            </div>
         </div>
-      </div>
-    </div>
-  );
-};
+    );
+});
+
+PDFDocument.displayName = 'PDFDocument';
 
 
 export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: ProcurementSummaryDialogProps) {
@@ -103,94 +166,37 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
 
     setIsDownloading(true);
 
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageElements = Array.from(printArea.querySelectorAll<HTMLDivElement>('.pdf-page'));
+    try {
+        const canvas = await html2canvas(printArea.querySelector('.w-\\[800px\\]') || printArea, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+        });
 
-    for (let i = 0; i < pageElements.length; i++) {
-        const pageEl = pageElements[i];
-        try {
-            const canvas = await html2canvas(pageEl, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                windowWidth: 1400,
-            });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+            orientation: 'p',
+            unit: 'px',
+            format: [canvas.width, canvas.height]
+        });
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
-            if (i > 0) {
-                pdf.addPage();
-            }
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const imgProps = pdf.getImageProperties(imgData);
-            const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, Math.min(imgHeight, pdfHeight));
-
-        } catch (error) {
-            console.error(`Error generating page ${i + 1} of PDF:`, error);
-            setIsDownloading(false);
-            return;
-        }
+    } catch (error) {
+        console.error(`Error generating PDF:`, error);
+    } finally {
+        setIsDownloading(false);
     }
-    
-    pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
-    setIsDownloading(false);
   };
 
-  const phasePairs = React.useMemo(() => 
-    procurement.phases.reduce<[ProcurementPhase, ProcurementPhase | undefined][]>((acc, _, index, array) => {
-      if (index % 2 === 0) {
-        acc.push([array[index], array[index + 1]]);
-      }
-      return acc;
-    }, []),
-  [procurement.phases]);
-  
-  const PageHeader = () => (
-     <>
-        <div className="space-y-1 text-center mb-8">
-            <Briefcase className="mx-auto h-10 w-10 text-primary" />
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Procurement Process Report</h1>
-            <p className="text-muted-foreground text-sm">ILCDB Procurement Management System</p>
-            <p className="text-xs text-muted-foreground/80 pt-1">Generated on: {format(new Date(), 'PPP p')}</p>
-        </div>
-        <div className="rounded-xl border bg-card text-card-foreground shadow-sm mb-8 p-6">
-            <h2 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2"><FileText className="h-5 w-5" />Procurement Details</h2>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
-                <div className="space-y-1">
-                    <p className="font-medium text-muted-foreground">Title</p>
-                    <p className="font-semibold text-foreground">{procurement.title}</p>
-                </div>
-                <div className="space-y-1">
-                    <p className="font-medium text-muted-foreground">PR Number</p>
-                    <p className="font-semibold text-foreground">{procurement.prNumber}</p>
-                </div>
-                <div className="space-y-1">
-                    <p className="font-medium text-muted-foreground">Amount</p>
-                    <p className="font-semibold text-foreground">{formatCurrency(procurement.amount)}</p>
-                </div>
-                 <div className="space-y-1">
-                    <p className="font-medium text-muted-foreground">Project Type</p>
-                    <p className="font-semibold text-foreground">{procurement.projectType === 'OTHERS' ? procurement.otherProjectType : procurement.projectType}</p>
-                </div>
-                 <div className="space-y-1">
-                    <p className="font-medium text-muted-foreground">Status</p>
-                    <p className="font-semibold text-foreground capitalize">{procurement.status}</p>
-                </div>
-                 <div className="space-y-1">
-                    <p className="font-medium text-muted-foreground">Created</p>
-                    <p className="font-semibold text-foreground">{format(procurement.createdAt, 'PPP')}</p>
-                </div>
-            </div>
-        </div>
-     </>
-  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-6xl">
+      <DialogContent className="sm:max-w-7xl">
         <DialogHeader>
           <DialogTitle>Procurement Process Summary</DialogTitle>
           <DialogDescription>
@@ -198,46 +204,10 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
           </DialogDescription>
         </DialogHeader>
         
-        <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted/30">
-          <div ref={summaryRef} className="bg-white text-black font-sans">
-             
-            {/* Page 1 */}
-            {phasePairs[0] && (
-              <div className="pdf-page p-8">
-                <PageHeader />
-                <h2 className="text-base font-semibold mb-4 text-muted-foreground text-center">Phase Progress (1 & 2)</h2>
-                <div className="grid grid-cols-2 gap-6">
-                    {phasePairs[0][0] && <PhaseSummaryCard phase={phasePairs[0][0]} />}
-                    {phasePairs[0][1] ? <PhaseSummaryCard phase={phasePairs[0][1]} /> : <div />}
-                </div>
-              </div>
-            )}
-
-            {/* Page 2 */}
-            {phasePairs[1] && (
-              <div className="pdf-page p-8">
-                 <PageHeader />
-                <h2 className="text-base font-semibold mb-4 text-muted-foreground text-center">Phase Progress (3 & 4)</h2>
-                <div className="grid grid-cols-2 gap-6">
-                    {phasePairs[1][0] && <PhaseSummaryCard phase={phasePairs[1][0]} />}
-                    {phasePairs[1][1] ? <PhaseSummaryCard phase={phasePairs[1][1]} /> : <div />}
-                </div>
-              </div>
-            )}
-            
-            {/* Page 3 */}
-            {phasePairs[2] && (
-              <div className="pdf-page p-8">
-                 <PageHeader />
-                 <h2 className="text-base font-semibold mb-4 text-muted-foreground text-center">Phase Progress (5 & 6)</h2>
-                 <div className="grid grid-cols-2 gap-6">
-                    {phasePairs[2][0] && <PhaseSummaryCard phase={phasePairs[2][0]} />}
-                    {phasePairs[2][1] ? <PhaseSummaryCard phase={phasePairs[2][1]} /> : <div />}
-                 </div>
-              </div>
-            )}
-
-          </div>
+        <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted">
+            <div className="p-4 bg-gray-200">
+                <PDFDocument ref={summaryRef} procurement={procurement} />
+            </div>
         </div>
         
         <DialogFooter>
