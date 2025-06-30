@@ -26,15 +26,18 @@ interface ProcurementSummaryDialogProps {
 
 const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement }>(({ procurement }, ref) => {
     
+    // Renders the signature block. Returns an empty div if no signature to maintain cell structure.
     const renderSignature = (signature: Signature | null) => {
-        if (!signature || !signature.name) return <div className="p-1 h-full"></div>;
+        if (!signature || !signature.name) {
+            return <div className="p-1 h-full box-border"></div>;
+        }
         return (
-            <div className="p-1 text-left text-[8px] flex flex-col justify-between h-full">
+            <div className="p-1 text-left text-[9px] flex flex-col justify-between h-full box-border">
                 <div>
                     <p>Name: <span className="font-semibold">{signature.name}</span></p>
                 </div>
-                <div className="flex-grow">
-                    <p>Signature:</p>
+                <div className="flex-grow my-1">
+                    <p className="mb-1">Signature:</p>
                     {signature.signatureDataUrl && (
                         <div className="h-10 flex items-center justify-center my-1">
                              <img src={signature.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
@@ -43,18 +46,19 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 </div>
                 <div>
                     <p>Date: <span className="font-semibold">{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span></p>
-                    <p>Remarks: <span className="font-semibold">{signature.remarks}</span></p>
+                    <p>Remarks: <span className="font-semibold break-words">{signature.remarks}</span></p>
                 </div>
             </div>
         );
     };
     
+    // Renders the checklist for a given phase.
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <ul className="space-y-1 text-[9px] text-left">
+            <ul className="space-y-1 text-[10px] text-left">
                 {checklist.map(item => (
                     <li key={item.id} className="flex items-start gap-1.5">
-                        {item.checked ? <CheckSquare className="w-3 h-3 flex-shrink-0 mt-px" /> : <Square className="w-3 h-3 flex-shrink-0 mt-px" />}
+                        {item.checked ? <CheckSquare className="w-3 h-3 text-primary flex-shrink-0 mt-px" /> : <Square className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-px" />}
                         <span>{item.label}</span>
                     </li>
                 ))}
@@ -62,10 +66,11 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         );
     }
     
+    // Renders a full table row for a given phase.
     const renderPhaseRow = (phase: ProcurementPhase) => {
         return (
             <tr key={phase.id}>
-                <td className="border border-black p-1 align-top w-[50%]">{renderChecklist(phase.checklist)}</td>
+                <td className="border border-black p-2 align-top w-[50%]">{renderChecklist(phase.checklist)}</td>
                 <td className="border border-black p-0 align-top w-[25%]">{renderSignature(phase.submittedBy)}</td>
                 <td className="border border-black p-0 align-top w-[25%]">{renderSignature(phase.receivedBy)}</td>
             </tr>
@@ -78,29 +83,29 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         <div ref={ref} className="bg-white text-black p-8 font-sans">
             <div className="w-[800px] mx-auto">
                  {/* Header */}
-                <header className="flex justify-between items-center mb-4">
-                    <div className="border-2 border-blue-800 rounded-full h-20 w-20 flex items-center justify-center">
+                <header className="flex justify-between items-center mb-6">
+                    <div className="border-2 border-blue-800 rounded-full h-20 w-20 flex items-center justify-center flex-shrink-0">
                         <p className="text-blue-800 font-bold text-lg">ILCDB</p>
                     </div>
-                    <div className="text-center">
-                        <p className="font-bold text-lg">DIGITAL TRANSFORMATION CENTERS</p>
-                        <div className="bg-red-600 text-white font-bold text-xl p-1">TECH4ED</div>
+                    <div className="text-center mx-4">
+                        <p className="font-bold text-lg leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
+                        <div className="bg-red-600 text-white font-bold text-xl p-1 mt-1 inline-block">TECH4ED</div>
                     </div>
-                     <div className="border-2 border-yellow-500 rounded-full h-20 w-20 flex items-center justify-center">
+                     <div className="border-2 border-yellow-500 rounded-full h-20 w-20 flex items-center justify-center flex-shrink-0">
                         <p className="text-yellow-500 font-bold text-lg">SPARK</p>
                     </div>
                 </header>
 
                 {/* Info Table */}
-                <table className="w-full border-collapse border border-black text-xs">
+                <table className="w-full border-collapse border border-black text-sm">
                     <tbody>
                         <tr>
-                            <td className="border border-black p-1 font-bold w-[30%]">PROJECT</td>
-                            <td className="border border-black p-1" colSpan={2}>
-                                <div className="flex items-center gap-4">
+                            <td className="border border-black p-2 font-bold w-[30%]">PROJECT</td>
+                            <td className="border border-black p-2" colSpan={2}>
+                                <div className="flex items-center gap-x-4 flex-wrap">
                                     {projectTypes.map(pt => (
-                                        <div key={pt} className="flex items-center gap-1">
-                                            {procurement.projectType === pt ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                                        <div key={pt} className="flex items-center gap-1.5">
+                                            {procurement.projectType === pt ? <CheckSquare className="w-4 h-4 text-primary" /> : <Square className="w-4 h-4 text-muted-foreground" />}
                                             <label>{pt}</label>
                                         </div>
                                     ))}
@@ -108,13 +113,13 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                             </td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-1 font-bold">ACTIVITY / PROCUREMENT (SVP)</td>
-                            <td className="border border-black p-1 font-semibold" colSpan={2}>{procurement.title}</td>
+                            <td className="border border-black p-2 font-bold">ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td className="border border-black p-2 font-semibold" colSpan={2}>{procurement.title}</td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-1 font-bold">AMOUNT</td>
-                            <td className="border border-black p-1 font-semibold">{formatCurrency(procurement.amount)}</td>
-                            <td className="border border-black p-1 font-bold">PR NUMBER: <span className="font-semibold">{procurement.prNumber}</span></td>
+                            <td className="border border-black p-2 font-bold">AMOUNT</td>
+                            <td className="border border-black p-2 font-semibold">{formatCurrency(procurement.amount)}</td>
+                            <td className="border border-black p-2 font-bold">PR NUMBER: <span className="font-semibold">{procurement.prNumber}</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -122,22 +127,22 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 {/* Main Content Table */}
                 <table className="w-full border-collapse border-t-0 border border-black text-xs mt-[-1px]">
                      <thead>
-                        <tr className="font-bold bg-gray-200">
-                            <td className="border border-black p-1 text-center w-[50%]">PARTICULARS</td>
-                            <td className="border border-black p-1 text-center w-[25%]">SUBMITTED BY</td>
-                            <td className="border border-black p-1 text-center w-[25%]">RECEIVED BY</td>
+                        <tr className="font-bold bg-gray-200 text-sm">
+                            <td className="border border-black p-2 text-center w-[50%]">PARTICULARS</td>
+                            <td className="border border-black p-2 text-center w-[25%]">SUBMITTED BY</td>
+                            <td className="border border-black p-2 text-center w-[25%]">RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td rowSpan={3} className="border border-black p-1 font-bold align-middle text-center text-sm">PRE-PROCUREMENT<br/>REQUIREMENTS</td>
+                            <td rowSpan={3} className="border border-black p-2 font-bold align-middle text-center text-base">PRE-PROCUREMENT<br/>REQUIREMENTS</td>
                             {renderPhaseRow(procurement.phases[0]).props.children.slice(1)}
                         </tr>
                         {renderPhaseRow(procurement.phases[1])}
                         {renderPhaseRow(procurement.phases[2])}
 
                         <tr>
-                            <td rowSpan={3} className="border border-black p-1 font-bold align-middle text-center text-sm">POST-PROCUREMENT<br/>REQUIREMENTS</td>
+                            <td rowSpan={3} className="border border-black p-2 font-bold align-middle text-center text-base">POST-PROCUREMENT<br/>REQUIREMENTS</td>
                             {renderPhaseRow(procurement.phases[3]).props.children.slice(1)}
                         </tr>
                         {renderPhaseRow(procurement.phases[4])}
@@ -145,7 +150,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <footer className="mt-8 text-xs">
+                <footer className="mt-8 text-sm">
                     <p>Procurement Number: 2025-___</p>
                 </footer>
             </div>
@@ -220,4 +225,3 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
     </Dialog>
   );
 }
-
