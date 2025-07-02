@@ -32,7 +32,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-type SortKey = keyof Honoraria | 'progress';
+type SortKey = keyof Omit<Honoraria, 'speakerName'> | 'progress';
 
 interface HonorariaTableProps {
   honoraria: Honoraria[];
@@ -120,11 +120,6 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
             <TableHeader>
               <TableRow>
                 <TableHead>
-                  <Button variant="ghost" onClick={() => handleSort('speakerName')}>
-                    Speaker Name {renderSortArrow('speakerName')}
-                  </Button>
-                </TableHead>
-                <TableHead>
                   <Button variant="ghost" onClick={() => handleSort('activityTitle')}>
                     Activity Title {renderSortArrow('activityTitle')}
                   </Button>
@@ -158,11 +153,8 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
                   <TableRow key={record.id}>
                     <TableCell className="font-medium">
                         <Link href={`/honoraria/${record.id}`} className="hover:underline text-primary">
-                            {record.speakerName}
+                            {record.activityTitle}
                         </Link>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-medium">{record.activityTitle}</span>
                     </TableCell>
                     <TableCell>
                       { record.projectType &&

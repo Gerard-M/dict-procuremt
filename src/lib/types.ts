@@ -37,7 +37,6 @@ export interface Procurement {
 
 export interface Honoraria {
   id: string;
-  speakerName: string;
   activityTitle: string;
   amount: number;
   projectType: ProjectType;

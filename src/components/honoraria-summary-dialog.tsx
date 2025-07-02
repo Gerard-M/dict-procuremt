@@ -81,16 +81,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
 
                 <table className="w-full border-collapse border border-black text-sm mb-6">
                     <tbody>
-                        <tr>
-                            <td className="border border-black p-2 font-bold bg-gray-100" style={{width: '25%'}}>SPEAKER NAME</td>
-                            <td className="border border-black p-2 font-semibold">{honoraria.speakerName}</td>
-                        </tr>
                          <tr>
                             <td className="border border-black p-2 font-bold bg-gray-100">ACTIVITY / PROGRAM</td>
                             <td className="border border-black p-2 font-semibold">{honoraria.activityTitle}</td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-2 font-bold bg-gray-100">AMOUNT</td>
+                            <td className="border border-black p-2 font-bold bg-gray-100" style={{width: '25%'}}>AMOUNT</td>
                             <td className="border border-black p-2 font-semibold">{formatCurrency(honoraria.amount)}</td>
                         </tr>
                     </tbody>
@@ -148,7 +144,7 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         const pdfHeight = pdf.internal.pageSize.getHeight();
         
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-        pdf.save(`honoraria-summary-${honoraria.speakerName.replace(/\s/g, '_')}.pdf`);
+        pdf.save(`honoraria-summary-${honoraria.activityTitle.replace(/\s/g, '_')}.pdf`);
 
     } catch (error) {
         console.error(`Error generating PDF:`, error);
@@ -164,7 +160,7 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         <DialogHeader>
           <DialogTitle>Honoraria Process Summary</DialogTitle>
           <DialogDescription>
-            A complete overview of the process for {honoraria.speakerName}.
+            A complete overview of the process for "{honoraria.activityTitle}".
           </DialogDescription>
         </DialogHeader>
         

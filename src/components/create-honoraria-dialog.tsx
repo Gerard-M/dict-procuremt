@@ -39,7 +39,6 @@ import { Loader2 } from 'lucide-react';
 const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
 
 const honorariaSchema = z.object({
-  speakerName: z.string().min(1, "Speaker name is required"),
   activityTitle: z.string().min(1, "Activity title is required"),
   amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
   projectType: z.enum(projectTypes),
@@ -74,7 +73,6 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
   const form = useForm<FormData>({
     resolver: zodResolver(honorariaSchema),
     defaultValues: {
-      speakerName: "",
       activityTitle: "",
       amount: 0,
       projectType: "ILCDB-DWIA",
@@ -87,7 +85,6 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
   useEffect(() => {
     if (honorariaToEdit) {
       form.reset({
-        speakerName: honorariaToEdit.speakerName,
         activityTitle: honorariaToEdit.activityTitle,
         amount: honorariaToEdit.amount,
         projectType: honorariaToEdit.projectType,
@@ -96,7 +93,6 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
       setOpen(true);
     } else {
       form.reset({
-        speakerName: "",
         activityTitle: "",
         amount: 0,
         projectType: "ILCDB-DWIA",
@@ -153,9 +149,6 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField name="speakerName" control={form.control} render={({ field }) => (
-              <FormItem><FormLabel>Speaker Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
             <FormField name="activityTitle" control={form.control} render={({ field }) => (
               <FormItem><FormLabel>Activity/Program Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )} />

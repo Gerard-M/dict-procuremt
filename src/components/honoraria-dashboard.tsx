@@ -66,7 +66,6 @@ export function HonorariaDashboard() {
   const filteredHonoraria = useMemo(() => {
     if (!searchTerm) return honoraria;
     return honoraria.filter(h =>
-      h.speakerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       h.activityTitle.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [honoraria, searchTerm]);
@@ -85,7 +84,7 @@ export function HonorariaDashboard() {
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
-                  placeholder="Search by speaker or activity..."
+                  placeholder="Search by activity..."
                   className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
