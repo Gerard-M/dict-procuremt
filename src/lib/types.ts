@@ -40,6 +40,8 @@ export interface Honoraria {
   speakerName: string;
   activityTitle: string;
   amount: number;
+  projectType: ProjectType;
+  otherProjectType?: string;
   status: 'active' | 'archived';
   phase: ProcurementPhase;
   createdAt: Date;

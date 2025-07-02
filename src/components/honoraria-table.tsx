@@ -18,8 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Loader2, Trash2 } from 'lucide-react';
-import type { Honoraria } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+import type { Honoraria, ProjectType } from "@/lib/types";
+import { formatCurrency, cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +39,22 @@ interface HonorariaTableProps {
   onEdit: (honoraria: Honoraria) => void;
   onDelete: (id: string) => Promise<void>;
 }
+
+const getProjectTypeStyles = (projectType?: ProjectType): string => {
+  switch (projectType) {
+    case 'ILCDB-DWIA':
+      return 'bg-primary/10 text-primary border-primary/20';
+    case 'SPARK':
+      return 'bg-accent/10 text-[hsl(var(--accent))] border-accent/20';
+    case 'TECH4ED-DTC':
+      return 'bg-chart-2/20 text-[hsl(var(--chart-2))] border-chart-2/30';
+    case 'PROJECT CLICK':
+      return 'bg-chart-4/20 text-[hsl(var(--chart-4))] border-chart-4/30';
+    case 'OTHERS':
+    default:
+      return 'bg-muted text-muted-foreground border-border';
+  }
+};
 
 export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTableProps) {
   const [sortKey, setSortKey] = React.useState<SortKey>('createdAt');
@@ -114,6 +130,11 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
                   </Button>
                 </TableHead>
                 <TableHead>
+                  <Button variant="ghost" onClick={() => handleSort('projectType')}>
+                    Project Type {renderSortArrow('projectType')}
+                  </Button>
+                </TableHead>
+                <TableHead>
                   <Button variant="ghost" onClick={() => handleSort('amount')}>
                     Amount {renderSortArrow('amount')}
                   </Button>
@@ -129,6 +150,9 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
             <TableBody>
               {sortedHonoraria.map((record) => {
                 const progress = getProgress(record);
+                const projectDisplayName = record.projectType === 'OTHERS'
+                  ? (record.otherProjectType || 'Others')
+                  : record.projectType;
 
                 return (
                   <TableRow key={record.id}>
@@ -139,6 +163,13 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
                     </TableCell>
                     <TableCell>
                       <span className="font-medium">{record.activityTitle}</span>
+                    </TableCell>
+                    <TableCell>
+                      { record.projectType &&
+                        <Badge variant="outline" className={cn("w-fit", getProjectTypeStyles(record.projectType))}>
+                            {projectDisplayName}
+                        </Badge>
+                      }
                     </TableCell>
                     <TableCell>{formatCurrency(record.amount)}</TableCell>
                     <TableCell>

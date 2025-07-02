@@ -23,16 +23,35 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { addHonoraria, updateHonoraria } from '@/lib/data';
 import { getNewHonorariaPhase } from '@/lib/constants';
-import type { Honoraria } from '@/lib/types';
+import type { Honoraria, ProjectType } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from 'lucide-react';
+
+const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
 
 const honorariaSchema = z.object({
   speakerName: z.string().min(1, "Speaker name is required"),
   activityTitle: z.string().min(1, "Activity title is required"),
   amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
+  projectType: z.enum(projectTypes),
+  otherProjectType: z.string().optional(),
+}).refine(data => {
+  if (data.projectType === 'OTHERS') {
+    return !!data.otherProjectType && data.otherProjectType.length > 0;
+  }
+  return true;
+}, {
+  message: "Please specify the project type",
+  path: ["otherProjectType"],
 });
 
 type FormData = z.infer<typeof honorariaSchema>;
@@ -54,7 +73,16 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
 
   const form = useForm<FormData>({
     resolver: zodResolver(honorariaSchema),
+    defaultValues: {
+      speakerName: "",
+      activityTitle: "",
+      amount: 0,
+      projectType: "ILCDB-DWIA",
+      otherProjectType: ""
+    }
   });
+  
+  const selectedProjectType = form.watch('projectType');
 
   useEffect(() => {
     if (honorariaToEdit) {
@@ -62,6 +90,8 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
         speakerName: honorariaToEdit.speakerName,
         activityTitle: honorariaToEdit.activityTitle,
         amount: honorariaToEdit.amount,
+        projectType: honorariaToEdit.projectType,
+        otherProjectType: honorariaToEdit.otherProjectType || '',
       });
       setOpen(true);
     } else {
@@ -69,6 +99,8 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
         speakerName: "",
         activityTitle: "",
         amount: 0,
+        projectType: "ILCDB-DWIA",
+        otherProjectType: ""
       });
     }
   }, [honorariaToEdit, form]);
@@ -130,6 +162,23 @@ export function CreateHonorariaDialog({ onHonorariaCreated, onHonorariaUpdated, 
             <FormField name="amount" control={form.control} render={({ field }) => (
               <FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
+            <FormField name="projectType" control={form.control} render={({ field }) => (
+              <FormItem>
+                <FormLabel>Project Type</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    {projectTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+            {selectedProjectType === 'OTHERS' && (
+              <FormField name="otherProjectType" control={form.control} render={({ field }) => (
+                <FormItem><FormLabel>Specify Other Project Type</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+            )}
             
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>Cancel</Button>

@@ -94,6 +94,7 @@ export function HonorariaDetailView({ initialHonoraria }: { initialHonoraria: an
               <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
                 <span>Speaker: <span className="font-semibold text-foreground">{honoraria.speakerName}</span></span>
                 <span>Amount: <span className="font-semibold text-foreground">{formatCurrency(honoraria.amount)}</span></span>
+                {honoraria.projectType && <Badge variant="outline">{honoraria.projectType === 'OTHERS' ? honoraria.otherProjectType : honoraria.projectType}</Badge>}
                 <Badge variant={honoraria.status === 'active' ? 'default' : 'secondary'} className="capitalize bg-accent text-accent-foreground">{honoraria.status}</Badge>
               </CardDescription>
             </CardHeader>
