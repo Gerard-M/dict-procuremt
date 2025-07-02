@@ -1,6 +1,6 @@
 import { db } from './firebase';
 import { ref, get, set, push, update, remove } from 'firebase/database';
-import type { Procurement, Honoraria } from './types';
+import type { Procurement, Honoraria, TravelVoucher } from './types';
 
 // Helper to convert date objects to ISO strings for Firebase
 const serializeDates = (data: any): any => {
@@ -150,4 +150,59 @@ export const updateHonoraria = async (id: string, updates: Partial<Omit<Honorari
 
 export const deleteHonoraria = async (id: string): Promise<void> => {
     await remove(ref(db, `honoraria/${id}`));
+};
+
+
+// Travel Voucher Functions
+export const getTravelVouchers = async (): Promise<TravelVoucher[]> => {
+  const dbRef = ref(db, 'travelVouchers');
+  const snapshot = await get(dbRef);
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    const travelVouchersArray = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key],
+    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return deserializeDates(travelVouchersArray);
+  }
+  return [];
+};
+
+export const getTravelVoucherById = async (id: string): Promise<TravelVoucher | undefined> => {
+  const dbRef = ref(db, `travelVouchers/${id}`);
+  const snapshot = await get(dbRef);
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    return deserializeDates({ id, ...data });
+  }
+  return undefined;
+};
+
+export const addTravelVoucher = async (travelVoucher: Omit<TravelVoucher, 'id' | 'createdAt' | 'updatedAt'>): Promise<TravelVoucher> => {
+  const dbRef = ref(db, 'travelVouchers');
+  const newTravelVoucherRef = push(dbRef);
+  
+  const newTravelVoucher: Omit<TravelVoucher, 'id'> = {
+    ...travelVoucher,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  await set(newTravelVoucherRef, serializeDates(newTravelVoucher));
+  
+  const result = {
+      id: newTravelVoucherRef.key!,
+      ...newTravelVoucher
+  };
+  return deserializeDates(result);
+};
+
+export const updateTravelVoucher = async (id: string, updates: Partial<Omit<TravelVoucher, 'id' | 'createdAt'>>): Promise<TravelVoucher | undefined> => {
+    const dataToUpdate = { ...updates, updatedAt: new Date() };
+    await update(ref(db, `travelVouchers/${id}`), serializeDates(dataToUpdate));
+    return getTravelVoucherById(id);
+};
+
+export const deleteTravelVoucher = async (id: string): Promise<void> => {
+    await remove(ref(db, `travelVouchers/${id}`));
 };

@@ -47,16 +47,18 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/50 border-dashed">
+          <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="items-center text-center">
-              <div className="p-4 bg-muted rounded-full mb-4">
-                <Plane className="h-10 w-10 text-muted-foreground" />
+              <div className="p-4 bg-primary/10 rounded-full mb-4">
+                <Plane className="h-10 w-10 text-primary" />
               </div>
               <CardTitle>Travel Vouchers</CardTitle>
               <CardDescription>Handle travel expense claims and reimbursements.</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button disabled className="w-full">Coming Soon</Button>
+               <Button asChild className="w-full">
+                <Link href="/travel-voucher">Open Module</Link>
+              </Button>
             </CardContent>
           </Card>
         </div>

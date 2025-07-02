@@ -46,3 +46,15 @@ export interface Honoraria {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface TravelVoucher {
+  id: string;
+  activityTitle: string;
+  amount: number;
+  projectType: ProjectType;
+  otherProjectType?: string;
+  status: 'active' | 'archived';
+  phase: ProcurementPhase;
+  createdAt: Date;
+  updatedAt: Date;
+}

@@ -29,3 +29,15 @@ export const getNewHonorariaPhase = (): ProcurementPhase => ({
   receivedBy: null,
   isCompleted: false,
 });
+
+
+const travelVoucherChecklist = createChecklist(['ORS', 'DV', 'Travel Order', 'Certificate of Appearance', 'Official Travel Report', 'Itinerary of Travel', 'Certificate of Travel Completion']);
+
+export const getNewTravelVoucherPhase = (): ProcurementPhase => ({
+    id: 1,
+    name: 'Travel Voucher Processing',
+    checklist: travelVoucherChecklist,
+    submittedBy: null,
+    receivedBy: null,
+    isCompleted: false,
+});
