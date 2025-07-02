@@ -210,7 +210,9 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
        <CompletionDialog
           open={isCompletionDialogOpen}
           onOpenChange={setIsCompletionDialogOpen}
-          procurementTitle={procurement.title}
+          itemTitle={procurement.title}
+          returnPath="/procurement"
+          itemType="procurement process"
         />
     </div>
   );

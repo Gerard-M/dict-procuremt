@@ -111,14 +111,10 @@ export function HonorariaDetailView({ initialHonoraria }: { initialHonoraria: an
        <HonorariaSummaryDialog honoraria={honoraria} open={isSummaryOpen} onOpenChange={setIsSummaryOpen} />
        <CompletionDialog
           open={isCompletionDialogOpen}
-          onOpenChange={(open) => {
-              setIsCompletionDialogOpen(open);
-              if (!open) {
-                // Since this dialog is the end of the flow, redirect when it closes
-                window.location.href = '/honoraria';
-              }
-          }}
-          procurementTitle={honoraria.activityTitle}
+          onOpenChange={setIsCompletionDialogOpen}
+          itemTitle={honoraria.activityTitle}
+          returnPath="/honoraria"
+          itemType="honoraria process"
         />
     </div>
   );

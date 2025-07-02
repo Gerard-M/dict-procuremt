@@ -16,16 +16,16 @@ import { PartyPopper } from 'lucide-react';
 interface CompletionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  procurementTitle: string;
+  itemTitle: string;
+  returnPath: string;
+  itemType?: string;
 }
 
-export function CompletionDialog({ open, onOpenChange, procurementTitle }: CompletionDialogProps) {
+export function CompletionDialog({ open, onOpenChange, itemTitle, returnPath, itemType = "process" }: CompletionDialogProps) {
   const router = useRouter();
 
   const handleReturnToDashboard = () => {
-    // Navigating to the new page will automatically unmount this component
-    // and its parent, so we don't need to manually close the dialog first.
-    router.push('/procurement');
+    router.push(returnPath);
   };
 
   return (
@@ -37,7 +37,7 @@ export function CompletionDialog({ open, onOpenChange, procurementTitle }: Compl
           </div>
           <DialogTitle className="text-center text-2xl font-bold">Congratulations!</DialogTitle>
           <DialogDescription className="text-center px-4">
-            You have successfully completed the procurement process for "{procurementTitle}". This record has now been archived.
+            You have successfully completed the {itemType} for "{itemTitle}". This record has now been archived.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4">
