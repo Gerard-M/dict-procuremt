@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react";
-import { Award, PlusCircle, Search } from "lucide-react";
+import Link from "next/link";
+import { Award, PlusCircle, Search, LayoutGrid } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HonorariaTable } from "@/components/honoraria-table";
@@ -15,9 +16,17 @@ import { useToast } from "@/hooks/use-toast";
 function Header() {
   return (
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-      <div className="container mx-auto flex items-center gap-4 p-4">
-        <Award className="h-8 w-8" />
-        <h1 className="text-2xl font-bold font-headline">ILCDB Honoraria System</h1>
+      <div className="container mx-auto flex items-center justify-between gap-4 p-4">
+        <div className="flex items-center gap-4">
+            <Award className="h-8 w-8" />
+            <h1 className="text-2xl font-bold font-headline">ILCDB Honoraria System</h1>
+        </div>
+        <Button asChild variant="secondary">
+            <Link href="/">
+                <LayoutGrid className="mr-2 h-4 w-4" />
+                Main Menu
+            </Link>
+        </Button>
       </div>
     </header>
   );
