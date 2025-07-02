@@ -25,7 +25,7 @@ export function CompletionDialog({ open, onOpenChange, procurementTitle }: Compl
   const handleReturnToDashboard = () => {
     // Navigating to the new page will automatically unmount this component
     // and its parent, so we don't need to manually close the dialog first.
-    router.push('/');
+    router.push('/procurement');
   };
 
   return (

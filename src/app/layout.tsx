@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'ILCDB Procurement System',
-  description: 'ILCDB Procurement Management System',
+  title: 'ILCDB Management System',
+  description: 'ILCDB Financial Management System',
 };
 
 export default function RootLayout({

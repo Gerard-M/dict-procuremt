@@ -130,7 +130,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
             <h1 className="text-2xl font-bold font-headline">ILCDB Procurement System</h1>
           </div>
           <Button asChild variant="secondary">
-            <Link href="/">
+            <Link href="/procurement">
               <ChevronLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Link>

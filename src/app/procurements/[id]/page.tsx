@@ -14,7 +14,7 @@ export default async function ProcurementDetailPage({ params }: { params: { id: 
         <h1 className="text-2xl font-bold">Procurement Not Found</h1>
         <p className="text-muted-foreground">The procurement record you are looking for does not exist.</p>
         <Button asChild className="mt-4">
-          <Link href="/">
+          <Link href="/procurement">
             <Home className="mr-2 h-4 w-4" />
             Back to Dashboard
           </Link>
