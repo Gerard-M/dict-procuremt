@@ -18,3 +18,14 @@ export const getNewProcurementPhases = (): ProcurementPhase[] => [
   { id: 5, name: 'Phase 5: Post-Procurement', checklist: phase5Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
   { id: 6, name: 'Phase 6: Post-Procurement', checklist: phase6Checklist, submittedBy: null, receivedBy: null, isCompleted: false },
 ];
+
+const honorariaChecklist = createChecklist(['ORS', 'DV', 'Service Contract', 'Certificate of Honoraria Classification', 'Terminal Report', 'Attendance', 'Resume / CV', 'Government ID', 'Payslip / Certificate of Gross Income', 'TIN and Bank Account details', 'Certificate of Services Rendered']);
+
+export const getNewHonorariaPhase = (): ProcurementPhase => ({
+  id: 1,
+  name: 'Honoraria Processing',
+  checklist: honorariaChecklist,
+  submittedBy: null,
+  receivedBy: null,
+  isCompleted: false,
+});

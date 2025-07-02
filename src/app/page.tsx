@@ -32,16 +32,18 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/50 border-dashed">
+          <Card className="hover:shadow-lg transition-shadow duration-300">
              <CardHeader className="items-center text-center">
-              <div className="p-4 bg-muted rounded-full mb-4">
-                <Award className="h-10 w-10 text-muted-foreground" />
+              <div className="p-4 bg-primary/10 rounded-full mb-4">
+                <Award className="h-10 w-10 text-primary" />
               </div>
               <CardTitle>Honoraria</CardTitle>
               <CardDescription>Process payments for professional fees.</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button disabled className="w-full">Coming Soon</Button>
+              <Button asChild className="w-full">
+                <Link href="/honoraria">Open Module</Link>
+              </Button>
             </CardContent>
           </Card>
 

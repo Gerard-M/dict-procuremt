@@ -1,6 +1,6 @@
 import { db } from './firebase';
 import { ref, get, set, push, update, remove } from 'firebase/database';
-import type { Procurement } from './types';
+import type { Procurement, Honoraria } from './types';
 
 // Helper to convert date objects to ISO strings for Firebase
 const serializeDates = (data: any): any => {
@@ -97,3 +97,57 @@ export const getExistingPrNumbers = async (): Promise<string[]> => {
     const procurements = await getProcurements();
     return procurements.map(p => p.prNumber);
 }
+
+// Honoraria Functions
+export const getHonoraria = async (): Promise<Honoraria[]> => {
+  const dbRef = ref(db, 'honoraria');
+  const snapshot = await get(dbRef);
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    const honorariaArray = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key],
+    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return deserializeDates(honorariaArray);
+  }
+  return [];
+};
+
+export const getHonorariaById = async (id: string): Promise<Honoraria | undefined> => {
+  const dbRef = ref(db, `honoraria/${id}`);
+  const snapshot = await get(dbRef);
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    return deserializeDates({ id, ...data });
+  }
+  return undefined;
+};
+
+export const addHonoraria = async (honoraria: Omit<Honoraria, 'id' | 'createdAt' | 'updatedAt'>): Promise<Honoraria> => {
+  const dbRef = ref(db, 'honoraria');
+  const newHonorariaRef = push(dbRef);
+  
+  const newHonoraria: Omit<Honoraria, 'id'> = {
+    ...honoraria,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  await set(newHonorariaRef, serializeDates(newHonoraria));
+  
+  const result = {
+      id: newHonorariaRef.key!,
+      ...newHonoraria
+  };
+  return deserializeDates(result);
+};
+
+export const updateHonoraria = async (id: string, updates: Partial<Omit<Honoraria, 'id' | 'createdAt'>>): Promise<Honoraria | undefined> => {
+    const dataToUpdate = { ...updates, updatedAt: new Date() };
+    await update(ref(db, `honoraria/${id}`), serializeDates(dataToUpdate));
+    return getHonorariaById(id);
+};
+
+export const deleteHonoraria = async (id: string): Promise<void> => {
+    await remove(ref(db, `honoraria/${id}`));
+};

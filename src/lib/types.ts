@@ -34,3 +34,14 @@ export interface Procurement {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Honoraria {
+  id: string;
+  speakerName: string;
+  activityTitle: string;
+  amount: number;
+  status: 'active' | 'archived';
+  phase: ProcurementPhase;
+  createdAt: Date;
+  updatedAt: Date;
+}
