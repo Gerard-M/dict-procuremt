@@ -1,13 +1,13 @@
 import type { ProcurementPhase } from './types';
 
-const createChecklist = (items: string[]) => items.map(item => ({ id: item.toLowerCase().replace(/[\s/()]/g, '-'), label: item, checked: false }));
+const createChecklist = (items: string[]) => items.map(item => ({ id: item.toLowerCase().replace(/[\s/(),*]/g, '-'), label: item, checked: false }));
 
-const phase1Checklist = createChecklist(['APP/PPMP', 'SARO', 'Budget Breakdown', 'Distribution List', 'POI/Activity Design', 'Market Research', 'Purchase Request', 'Quotations']);
-const phase2Checklist = createChecklist(['Purchase Order', 'Abstract / PhilGEPS Posting', 'Purchase Request', 'Quotations', 'APP/PPMP', 'SARO', 'Budget Breakdown', 'Distribution List', 'POI/Activity Design', 'Market Research']);
-const phase3Checklist = createChecklist(['ORS', 'Purchase Order', 'Abstract / PhilGEPS Posting', 'Purchase Request', 'Quotations', 'APP/PPMP', 'SARO', 'Budget Breakdown', 'Distribution List', 'POI/Activity Design', 'Market Research']);
-const phase4Checklist = createChecklist(['Attendance', 'Certificate of Completion / Satisfaction', 'Photos', 'SOA / Billing Statement', 'Delivery Receipt', 'Distribution List']);
-const phase5Checklist = createChecklist(['ORS', 'Purchase Order', 'Abstract', 'PhilGEPS Posting', 'IAR', 'ICS / PAR', 'Request for Inspection', 'Attendance', 'Certificate of Completion / Satisfaction', 'Photos', 'SOA / Billing Statement', 'Delivery Receipt', 'Distribution List', 'Purchase Request', 'Quotations', 'APP/PPMP', 'SARO', 'Budget Breakdown', 'POI / Activity Design', 'Market Research']);
-const phase6Checklist = createChecklist(['DV', 'ORS', 'Purchase Order', 'Abstract', 'PhilGEPS Posting', 'IAR', 'ICS / PAR', 'Request for Inspection', 'Attendance', 'Certificate of Completion / Satisfaction', 'Photos', 'SOA / Billing Statement', 'Delivery Receipt', 'Distribution List', 'Purchase Request', 'Quotations', 'APP/PPMP', 'SARO', 'Budget Breakdown', 'POI / Activity Design', 'Market Research']);
+const phase1Checklist = createChecklist(['APP/PPMP', 'SARO', 'BUDGET BREAKDOWN', 'Distribution List', 'POI/Activity', 'Market Research', 'Purchase Request', 'Quotations']);
+const phase2Checklist = createChecklist(['Purchase Order', 'Abstract/Philgeps Posting*', 'Purchase Request, Quotations, APP/PPMP, SARO, Budget Breakdown, Distribution List, POI/Activity Design, Market Research']);
+const phase3Checklist = createChecklist(['ORS', 'Purchase Order Abstract/Philgeps Posting', 'Purchase Request, Quotations, APP/PPMP, SARO, Budget Breakdown, Distribution List, POI/Activity Design, Market Research']);
+const phase4Checklist = createChecklist(['Attendance', 'Certificate of Completion/Satisfaction for Supplier', 'Photos', 'SOA/Billing Statement', 'Delivery Receipt', 'Distribution List (Receiving Copy)']);
+const phase5Checklist = createChecklist(['ORS, Purchase Order, Abstract, Philgeps posting*, IAR, ICS/PAR, Request for Inspection (COA)', 'Attendance, Certificate of Completion/Satisfaction for Supplier, Photos, SOA/Billing Statement, Delivery Receipt, Distribution List (Receiving Copy)', 'Purchase Request, Quotations, APP/PPMP, SARO, Budget Breakdown, Distribution List, POI/Activity Design, Market Research']);
+const phase6Checklist = createChecklist(['DV', 'ORS, Purchase Order, Abstract, Philgeps posting*, IAR, ICS/PAR, Request for Inspection (COA)', 'Attendance, Certificate of Completion/Satisfaction for Supplier, Photos, SOA/Billing Statement, Delivery Receipt, Distribution List (Receiving Copy)', 'Purchase Request, Quotations, APP/PPMP, SARO, Budget Breakdown, Distribution List, POI/Activity Design, Market Research']);
 
 
 export const getNewProcurementPhases = (): ProcurementPhase[] => [
