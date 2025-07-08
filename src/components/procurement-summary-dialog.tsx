@@ -26,26 +26,26 @@ interface ProcurementSummaryDialogProps {
 
 const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement }>(({ procurement }, ref) => {
     
-    // Renders the signature block. Returns an empty div if no signature to maintain cell structure.
+    // Renders the signature block.
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
             return <div className="p-1 h-full box-border"></div>;
         }
         return (
-            <div className="p-1 text-left text-[9px] flex flex-col justify-between h-full box-border">
+            <div className="p-1 text-left text-[8px] flex flex-col justify-between h-full box-border">
                 <div>
                     <p>Name: <span className="font-semibold">{signature.name}</span></p>
                 </div>
-                <div className="flex-grow my-1">
-                    <p className="mb-1 text-[8px]">Signature:</p>
+                <div className="flex-grow my-0.5">
+                    <p className="mb-0.5 text-[7px]">Signature:</p>
                     {signature.signatureDataUrl && (
-                        <div className="h-10 flex items-center justify-center my-1">
+                        <div className="h-8 flex items-center justify-center my-0.5">
                              <img src={signature.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
                         </div>
                     )}
                 </div>
                 <div>
-                    <p>Date: <span className="font-semibold">{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span></p>
+                    <p>Date: <span className="font-semibold">{signature.date ? format(new Date(signature.date), 'MM/dd/yy') : ''}</span></p>
                     <p className="font-semibold break-words"><span className="font-normal">Remarks:</span> {signature.remarks}</p>
                 </div>
             </div>
@@ -55,11 +55,11 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     // Renders the checklist for a given phase.
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <ul className="space-y-1 text-[10px] text-left">
+            <ul className="space-y-0.5 text-[9px] text-left">
                 {checklist.map(item => (
-                    <li key={item.id} className="flex items-start gap-1.5">
-                        {item.checked ? <CheckSquare className="w-3 h-3 text-primary flex-shrink-0 mt-px" /> : <Square className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-px" />}
-                        <span>{item.label}</span>
+                    <li key={item.id} className="flex items-start gap-1">
+                        {item.checked ? <CheckSquare className="w-2.5 h-2.5 text-primary flex-shrink-0 mt-px" /> : <Square className="w-2.5 h-2.5 text-muted-foreground flex-shrink-0 mt-px" />}
+                        <span className="break-words">{item.label}</span>
                     </li>
                 ))}
             </ul>
@@ -69,65 +69,64 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} className="bg-white text-black p-8 font-sans">
+        <div ref={ref} className="bg-white text-black p-4 font-sans">
             <div className="w-[800px] mx-auto">
                  {/* Header */}
-                <header className="flex justify-between items-center mb-2">
-                    <div className="border-2 border-blue-800 rounded-full h-12 w-12 flex items-center justify-center flex-shrink-0">
-                        <p className="text-blue-800 font-bold text-xs">ILCDB</p>
+                <header className="flex justify-between items-center mb-1">
+                    <div className="border-2 border-blue-800 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0">
+                        <p className="text-blue-800 font-bold text-[10px]">ILCDB</p>
                     </div>
-                    <div className="text-center mx-2">
-                        <p className="font-bold text-sm leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
-                        <div className="bg-red-600 text-white font-bold text-sm p-0.5 mt-1 inline-block">TECH4ED</div>
+                    <div className="text-center mx-1">
+                        <p className="font-bold text-[11px] leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
+                        <div className="bg-red-600 text-white font-bold text-[10px] px-0.5 mt-0.5 inline-block">TECH4ED</div>
                     </div>
-                     <div className="border-2 border-yellow-500 rounded-full h-12 w-12 flex items-center justify-center flex-shrink-0">
-                        <p className="text-yellow-500 font-bold text-xs">SPARK</p>
+                     <div className="border-2 border-yellow-500 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0">
+                        <p className="text-yellow-500 font-bold text-[10px]">SPARK</p>
                     </div>
                 </header>
 
                 {/* Info Table */}
-                <table className="w-full border-collapse border border-black text-xs mb-2">
+                <table className="w-full border-collapse border border-black text-[10px] mb-1.5">
                     <tbody>
                         <tr>
-                            <td className="border border-black p-1 font-bold" style={{width: '25%'}}>PROJECT</td>
-                            <td className="border border-black p-1" colSpan={3}>
+                            <td className="border border-black p-0.5 font-bold" style={{width: '25%'}}>PROJECT</td>
+                            <td className="border border-black p-0.5" colSpan={3}>
                                 <div className="flex items-center gap-x-2 flex-wrap">
                                     {projectTypes.map(pt => (
-                                        <div key={pt} className="flex items-center gap-1">
-                                            {procurement.projectType === pt ? <CheckSquare className="w-3 h-3 text-primary" /> : <Square className="w-3 h-3 text-muted-foreground" />}
-                                            <label className="text-xs font-semibold">{pt}</label>
+                                        <div key={pt} className="flex items-center gap-0.5">
+                                            {procurement.projectType === pt ? <CheckSquare className="w-2.5 h-2.5 text-primary" /> : <Square className="w-2.5 h-2.5 text-muted-foreground" />}
+                                            <label className="text-[9px] font-semibold">{pt}</label>
                                         </div>
                                     ))}
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-1 font-bold">ACTIVITY / PROCUREMENT (SVP)</td>
-                            <td className="border border-black p-1 font-semibold" colSpan={3}>{procurement.title}</td>
+                            <td className="border border-black p-0.5 font-bold">ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td className="border border-black p-0.5 font-semibold break-words" colSpan={3}>{procurement.title}</td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-1 font-bold">AMOUNT</td>
-                            <td className="border border-black p-1 font-semibold" style={{width: '35%'}}>{formatCurrency(procurement.amount)}</td>
-                            <td className="border border-black p-1 font-bold" style={{width: '15%'}}>PR NUMBER:</td>
-                            <td className="border border-black p-1 font-semibold" style={{width: '25%'}}>{procurement.prNumber}</td>
+                            <td className="border border-black p-0.5 font-bold">AMOUNT</td>
+                            <td className="border border-black p-0.5 font-semibold" style={{width: '35%'}}>{formatCurrency(procurement.amount)}</td>
+                            <td className="border border-black p-0.5 font-bold" style={{width: '15%'}}>PR NUMBER:</td>
+                            <td className="border border-black p-0.5 font-semibold" style={{width: '25%'}}>{procurement.prNumber}</td>
                         </tr>
                     </tbody>
                 </table>
 
                 {/* Main Content Table */}
-                <table className="w-full border-collapse border border-black text-sm">
+                <table className="w-full border-collapse border border-black text-[10px]">
                      <thead>
-                        <tr className="font-bold bg-gray-200 text-xs">
-                            <td className="border border-black p-1 text-center" style={{width: '10%'}}>PHASE</td>
-                            <td className="border border-black p-1 text-center" style={{width: '55%'}}>PARTICULARS</td>
-                            <td className="border border-black p-1 text-center" style={{width: '17.5%'}}>SUBMITTED BY</td>
-                            <td className="border border-black p-1 text-center" style={{width: '17.5%'}}>RECEIVED BY</td>
+                        <tr className="font-bold bg-gray-200 text-[9px]">
+                            <td className="border border-black p-1 text-center" style={{width: '8%'}}>PHASE</td>
+                            <td className="border border-black p-1 text-center" style={{width: '54%'}}>PARTICULARS</td>
+                            <td className="border border-black p-1 text-center" style={{width: '19%'}}>SUBMITTED BY</td>
+                            <td className="border border-black p-1 text-center" style={{width: '19%'}}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
-                        {/* Pre-procurement */}
                         <tr>
-                            <td colSpan={4} className="border border-black p-1 font-bold text-center text-sm bg-gray-100">
+                            <td colSpan={4} className="border border-black p-0.5 font-bold text-center text-[11px] bg-gray-100">
                                 PRE-PROCUREMENT REQUIREMENTS
                             </td>
                         </tr>
@@ -139,9 +138,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                                 <td className="border border-black p-0 align-top">{renderSignature(phase.receivedBy)}</td>
                             </tr>
                         ))}
-                        {/* Post-procurement */}
                         <tr>
-                            <td colSpan={4} className="border border-black p-1 font-bold text-center text-sm bg-gray-100">
+                            <td colSpan={4} className="border border-black p-0.5 font-bold text-center text-[11px] bg-gray-100">
                                 POST-PROCUREMENT REQUIREMENTS
                             </td>
                         </tr>
@@ -156,14 +154,13 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <footer className="mt-4 text-[10px]">
+                <footer className="mt-2 text-[9px]">
                     <p>Procurement Number: 2025-___</p>
                 </footer>
             </div>
         </div>
     );
 });
-
 PDFDocument.displayName = 'PDFDocument';
 
 
