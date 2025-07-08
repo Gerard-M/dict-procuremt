@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export default function Home() {
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen w-full bg-background p-4 md:p-8"
+      className="flex flex-col items-center justify-center min-h-screen w-full bg-background p-4 md:p-8 subtle-dot-pattern"
     >
       <header className="text-center mb-12 md:mb-16">
         <div className="inline-flex items-center gap-4 mb-4 text-primary">
