@@ -85,22 +85,4 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-  
-  .modern-bg {
-    background-color: hsl(var(--background));
-    background-image: 
-      radial-gradient(at 27% 37%, hsla(232, 65%, 60%, 0.1) 0px, transparent 50%),
-      radial-gradient(at 97% 21%, hsla(180, 100%, 35%, 0.1) 0px, transparent 50%),
-      radial-gradient(at 52% 99%, hsla(160, 60%, 45%, 0.1) 0px, transparent 50%),
-      radial-gradient(at 10% 29%, hsla(280, 65%, 60%, 0.1) 0px, transparent 50%),
-      radial-gradient(at 97% 96%, hsla(0, 63%, 31%, 0.1) 0px, transparent 50%);
-  }
-
-  .radial-glow {
-    background: radial-gradient(
-      circle at var(--mouse-x) var(--mouse-y),
-      hsla(var(--primary), 0.8),
-      transparent 15vw
-    );
-  }
 }
