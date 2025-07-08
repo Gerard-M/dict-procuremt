@@ -9,6 +9,7 @@ export interface ChecklistItem {
   id: string;
   label: string;
   checked: boolean;
+  isLocked?: boolean;
 }
 
 export interface ProcurementPhase {

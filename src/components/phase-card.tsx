@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type { ProcurementPhase, ChecklistItem, Signature } from '@/lib/types';
 import {
   Card,
@@ -20,26 +20,14 @@ export function PhaseCard({
   onUpdate,
   disabled,
   onViewSummary,
-  carriedOverChecklist,
 }: {
   phase: ProcurementPhase;
   onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>;
   disabled?: boolean;
   onViewSummary: (updatedPhase: ProcurementPhase) => void;
-  carriedOverChecklist?: ChecklistItem[];
 }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
   const [isSaving, setIsSaving] = useState(false);
-
-  const carriedOverLabels = useMemo(() => {
-    if (!carriedOverChecklist) {
-      return new Set<string>();
-    }
-    return new Set(
-      carriedOverChecklist.map((item) => item.label)
-    );
-  }, [carriedOverChecklist]);
-
 
   useEffect(() => {
     setCurrentPhase(phase);
@@ -100,8 +88,7 @@ export function PhaseCard({
           <h3 className="text-lg font-semibold mb-4 text-primary">Checklist</h3>
           <div className="space-y-3">
             {currentPhase.checklist.map((item: ChecklistItem) => {
-              const isCarriedOver = carriedOverLabels.has(item.label);
-              const isLocked = isCarriedOver && item.checked;
+              const isLocked = !!item.isLocked;
               
               return (
                 <div key={item.id} className="flex items-center space-x-3">
