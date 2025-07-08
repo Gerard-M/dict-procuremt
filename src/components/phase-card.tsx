@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { ProcurementPhase, ChecklistItem, Signature } from '@/lib/types';
 import {
   Card,
@@ -20,14 +20,26 @@ export function PhaseCard({
   onUpdate,
   disabled,
   onViewSummary,
+  previousPhaseChecklist,
 }: {
   phase: ProcurementPhase;
   onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>;
   disabled?: boolean;
   onViewSummary: (updatedPhase: ProcurementPhase) => void;
+  previousPhaseChecklist?: ChecklistItem[];
 }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
   const [isSaving, setIsSaving] = useState(false);
+
+  const previouslyCheckedLabels = useMemo(() => {
+    if (!previousPhaseChecklist) {
+      return new Set<string>();
+    }
+    return new Set(
+      previousPhaseChecklist.filter((item) => item.checked).map((item) => item.label)
+    );
+  }, [previousPhaseChecklist]);
+
 
   useEffect(() => {
     setCurrentPhase(phase);
@@ -87,22 +99,28 @@ export function PhaseCard({
         <div>
           <h3 className="text-lg font-semibold mb-4 text-primary">Checklist</h3>
           <div className="space-y-3">
-            {currentPhase.checklist.map((item: ChecklistItem) => (
-              <div key={item.id} className="flex items-center space-x-3">
-                <Checkbox
-                  id={`${phase.id}-${item.id}`}
-                  checked={item.checked}
-                  onCheckedChange={(checked) => handleChecklistChange(item.id, !!checked)}
-                  aria-label={item.label}
-                />
-                <label
-                  htmlFor={`${phase.id}-${item.id}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  {item.label}
-                </label>
-              </div>
-            ))}
+            {currentPhase.checklist.map((item: ChecklistItem) => {
+              const isCarriedOver = previouslyCheckedLabels.has(item.label);
+              const isLocked = isCarriedOver && item.checked;
+              
+              return (
+                <div key={item.id} className="flex items-center space-x-3">
+                  <Checkbox
+                    id={`${phase.id}-${item.id}`}
+                    checked={item.checked}
+                    onCheckedChange={(checked) => handleChecklistChange(item.id, !!checked)}
+                    aria-label={item.label}
+                    disabled={isLocked}
+                  />
+                  <label
+                    htmlFor={`${phase.id}-${item.id}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {item.label}
+                  </label>
+                </div>
+              );
+            })}
           </div>
         </div>
 

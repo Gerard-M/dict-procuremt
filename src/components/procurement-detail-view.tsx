@@ -219,6 +219,8 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
             </TabsList>
             {procurement.phases.map((phase, index) => {
               const isUnlocked = index === 0 || procurement.phases[index - 1].isCompleted;
+              const previousPhase = index > 0 ? procurement.phases[index - 1] : null;
+
               return (
                 <TabsContent key={phase.id} value={`phase-${phase.id}`} className="mt-4">
                   <PhaseCard
@@ -226,6 +228,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
                     onUpdate={handlePhaseUpdate}
                     disabled={!isUnlocked}
                     onViewSummary={handleViewSummary}
+                    previousPhaseChecklist={previousPhase?.checklist}
                   />
                 </TabsContent>
               );
