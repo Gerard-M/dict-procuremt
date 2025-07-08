@@ -98,23 +98,25 @@ export function PhaseCard({
       </CardHeader>
       <CardContent className="space-y-8">
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-primary">Checklist</h3>
-           {showCheckAll && (
-            <div className="flex items-center space-x-3 border-b pb-3 mb-3">
-              <Checkbox
-                id={`${phase.id}-check-all`}
-                checked={checkAllState}
-                onCheckedChange={(checked) => handleCheckAll(!!checked)}
-                aria-label="Select all items"
-              />
-              <label
-                htmlFor={`${phase.id}-check-all`}
-                className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Select All
-              </label>
-            </div>
-          )}
+           <div className="flex justify-between items-center border-b pb-3 mb-3">
+            <h3 className="text-lg font-semibold text-primary">Checklist</h3>
+            {showCheckAll && (
+              <div className="flex items-center space-x-2">
+                <label
+                  htmlFor={`${phase.id}-check-all`}
+                  className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Select All
+                </label>
+                <Checkbox
+                  id={`${phase.id}-check-all`}
+                  checked={checkAllState}
+                  onCheckedChange={(checked) => handleCheckAll(!!checked)}
+                  aria-label="Select all items"
+                />
+              </div>
+            )}
+          </div>
           <div className="space-y-3">
             {currentPhase.checklist.map((item: ChecklistItem) => {
               const isLocked = !!item.isLocked;
