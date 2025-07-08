@@ -67,12 +67,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     }
 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
-
-    const phaseGroups = [
-        { title: "PRE-PROCUREMENT<br/>REQUIREMENTS", phases: procurement.phases.slice(0, 3) },
-        { title: "POST-PROCUREMENT<br/>REQUIREMENTS", phases: procurement.phases.slice(3, 6) }
-    ];
-
+    
     return (
         <div ref={ref} className="bg-white text-black p-8 font-sans">
             <div className="w-[800px] mx-auto">
@@ -123,29 +118,40 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <table className="w-full border-collapse border border-black text-sm">
                      <thead>
                         <tr className="font-bold bg-gray-200 text-xs">
-                            <td className="border border-black p-1 text-center" style={{width: '20%'}}></td>
-                            <td className="border border-black p-1 text-center" style={{width: '45%'}}>PARTICULARS</td>
+                            <td className="border border-black p-1 text-center" style={{width: '10%'}}>PHASE</td>
+                            <td className="border border-black p-1 text-center" style={{width: '55%'}}>PARTICULARS</td>
                             <td className="border border-black p-1 text-center" style={{width: '17.5%'}}>SUBMITTED BY</td>
                             <td className="border border-black p-1 text-center" style={{width: '17.5%'}}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
-                        {phaseGroups.map((group, groupIndex) => (
-                            <React.Fragment key={groupIndex}>
-                                <tr>
-                                    <td rowSpan={3} className="border border-black p-1 font-bold align-middle text-center text-sm" dangerouslySetInnerHTML={{ __html: group.title }}></td>
-                                    <td className="border border-black p-1 align-top">{renderChecklist(group.phases[0].checklist)}</td>
-                                    <td className="border border-black p-0 align-top">{renderSignature(group.phases[0].submittedBy)}</td>
-                                    <td className="border border-black p-0 align-top">{renderSignature(group.phases[0].receivedBy)}</td>
-                                </tr>
-                                {group.phases.slice(1).map(phase => (
-                                    <tr key={phase.id}>
-                                        <td className="border border-black p-1 align-top">{renderChecklist(phase.checklist)}</td>
-                                        <td className="border border-black p-0 align-top">{renderSignature(phase.submittedBy)}</td>
-                                        <td className="border border-black p-0 align-top">{renderSignature(phase.receivedBy)}</td>
-                                    </tr>
-                                ))}
-                            </React.Fragment>
+                        {/* Pre-procurement */}
+                        <tr>
+                            <td colSpan={4} className="border border-black p-1 font-bold text-center text-sm bg-gray-100">
+                                PRE-PROCUREMENT REQUIREMENTS
+                            </td>
+                        </tr>
+                        {procurement.phases.slice(0, 3).map(phase => (
+                            <tr key={phase.id}>
+                                <td className="border border-black p-1 font-bold text-center align-middle">{phase.id}</td>
+                                <td className="border border-black p-1 align-top">{renderChecklist(phase.checklist)}</td>
+                                <td className="border border-black p-0 align-top">{renderSignature(phase.submittedBy)}</td>
+                                <td className="border border-black p-0 align-top">{renderSignature(phase.receivedBy)}</td>
+                            </tr>
+                        ))}
+                        {/* Post-procurement */}
+                        <tr>
+                            <td colSpan={4} className="border border-black p-1 font-bold text-center text-sm bg-gray-100">
+                                POST-PROCUREMENT REQUIREMENTS
+                            </td>
+                        </tr>
+                        {procurement.phases.slice(3, 6).map(phase => (
+                            <tr key={phase.id}>
+                                <td className="border border-black p-1 font-bold text-center align-middle">{phase.id}</td>
+                                <td className="border border-black p-1 align-top">{renderChecklist(phase.checklist)}</td>
+                                <td className="border border-black p-0 align-top">{renderSignature(phase.submittedBy)}</td>
+                                <td className="border border-black p-0 align-top">{renderSignature(phase.receivedBy)}</td>
+                            </tr>
                         ))}
                     </tbody>
                 </table>
