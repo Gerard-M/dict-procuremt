@@ -128,22 +128,31 @@ export function TravelVoucherSummaryDialog({ travelVoucher, open, onOpenChange }
 
     try {
         const canvas = await html2canvas(printArea.querySelector('.w-\\[800px\\]') || printArea, {
-            scale: 3,
+            scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
         });
 
         const imgData = canvas.toDataURL('image/png');
+        
+        // A4 page size in mm: 210 x 297
         const pdf = new jsPDF({
-            orientation: 'p',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
         });
+
+        const page_width = pdf.internal.pageSize.getWidth();
+        const margin = 15; // 15mm margin
+        const content_width = page_width - (margin * 2);
+
+        const img_width = canvas.width;
+        const img_height = canvas.height;
+        const aspect_ratio = img_height / img_width;
+
+        const content_height = content_width * aspect_ratio;
         
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', margin, margin, content_width, content_height, undefined, 'FAST');
         pdf.save(`travel-voucher-summary-${travelVoucher.activityTitle.replace(/\s/g, '_')}.pdf`);
 
     } catch (error) {
