@@ -49,13 +49,13 @@ body {
     --card-foreground: 0 0% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 232 65% 30%;
+    --primary: 232 65% 60%;
+    --primary-foreground: 0 0% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 0 0% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 180 100% 25.1%;
+    --accent: 180 100% 35.1%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -84,5 +84,23 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  .modern-bg {
+    background-color: hsl(var(--background));
+    background-image: 
+      radial-gradient(at 27% 37%, hsla(232, 65%, 60%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, hsla(180, 100%, 35%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, hsla(160, 60%, 45%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, hsla(280, 65%, 60%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 97% 96%, hsla(0, 63%, 31%, 0.1) 0px, transparent 50%);
+  }
+
+  .radial-glow {
+    background: radial-gradient(
+      circle at var(--mouse-x) var(--mouse-y),
+      hsla(0, 0%, 100%, 0.04),
+      transparent 20vw
+    );
   }
 }
