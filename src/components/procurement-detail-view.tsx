@@ -78,8 +78,35 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     const isCompleted = !!updatedPhase.submittedBy && !!updatedPhase.receivedBy;
     const phaseWithCompletion = { ...updatedPhase, isCompleted };
 
-    const newPhases = procurement.phases.map(p => p.id === phaseWithCompletion.id ? phaseWithCompletion : p);
+    let newPhases = procurement.phases.map(p => p.id === phaseWithCompletion.id ? phaseWithCompletion : p);
     
+    const updatedPhaseIndex = newPhases.findIndex(p => p.id === phaseWithCompletion.id);
+
+    // If the phase is completed and it's not the last one, carry over checked items
+    if (isCompleted && updatedPhaseIndex < newPhases.length - 1) {
+      const currentPhaseChecklist = phaseWithCompletion.checklist;
+      const nextPhase = newPhases[updatedPhaseIndex + 1];
+
+      // Create a set of checked item labels from the current phase for efficient lookup
+      const checkedItemsLabels = new Set(
+        currentPhaseChecklist.filter(item => item.checked).map(item => item.label)
+      );
+
+      // Update the checklist of the next phase
+      const updatedNextPhaseChecklist = nextPhase.checklist.map(item => {
+        if (checkedItemsLabels.has(item.label)) {
+          return { ...item, checked: true };
+        }
+        return item;
+      });
+
+      // Update the next phase in our newPhases array
+      newPhases[updatedPhaseIndex + 1] = {
+        ...nextPhase,
+        checklist: updatedNextPhaseChecklist,
+      };
+    }
+
     let finalStatus = procurement.status;
     const isLastPhase = phaseWithCompletion.id === procurement.phases[procurement.phases.length - 1].id;
 
