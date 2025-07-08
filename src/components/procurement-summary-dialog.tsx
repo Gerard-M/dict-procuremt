@@ -29,24 +29,24 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     // Renders the signature block. Returns an empty div if no signature to maintain cell structure.
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
-            return <div className="p-2 h-full box-border"></div>;
+            return <div className="p-1 h-full box-border"></div>;
         }
         return (
-            <div className="p-2 text-left text-[9px] flex flex-col justify-between h-full box-border">
+            <div className="p-1 text-left text-[9px] flex flex-col justify-between h-full box-border">
                 <div>
                     <p>Name: <span className="font-semibold">{signature.name}</span></p>
                 </div>
                 <div className="flex-grow my-1">
-                    <p className="mb-1">Signature:</p>
+                    <p className="mb-1 text-[8px]">Signature:</p>
                     {signature.signatureDataUrl && (
-                        <div className="h-12 flex items-center justify-center my-1">
+                        <div className="h-10 flex items-center justify-center my-1">
                              <img src={signature.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
                         </div>
                     )}
                 </div>
                 <div>
                     <p>Date: <span className="font-semibold">{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span></p>
-                    <p>Remarks: <span className="font-semibold break-words">{signature.remarks}</span></p>
+                    <p className="font-semibold break-words"><span className="font-normal">Remarks:</span> {signature.remarks}</p>
                 </div>
             </div>
         );
@@ -55,7 +55,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     // Renders the checklist for a given phase.
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <ul className="space-y-1.5 text-[10px] text-left">
+            <ul className="space-y-1 text-[10px] text-left">
                 {checklist.map(item => (
                     <li key={item.id} className="flex items-start gap-1.5">
                         {item.checked ? <CheckSquare className="w-3 h-3 text-primary flex-shrink-0 mt-px" /> : <Square className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-px" />}
@@ -77,44 +77,44 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         <div ref={ref} className="bg-white text-black p-8 font-sans">
             <div className="w-[800px] mx-auto">
                  {/* Header */}
-                <header className="flex justify-between items-center mb-4">
-                    <div className="border-2 border-blue-800 rounded-full h-14 w-14 flex items-center justify-center flex-shrink-0">
-                        <p className="text-blue-800 font-bold text-sm">ILCDB</p>
+                <header className="flex justify-between items-center mb-2">
+                    <div className="border-2 border-blue-800 rounded-full h-12 w-12 flex items-center justify-center flex-shrink-0">
+                        <p className="text-blue-800 font-bold text-xs">ILCDB</p>
                     </div>
-                    <div className="text-center mx-4">
-                        <p className="font-bold text-base leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
-                        <div className="bg-red-600 text-white font-bold text-base p-0.5 mt-1 inline-block">TECH4ED</div>
+                    <div className="text-center mx-2">
+                        <p className="font-bold text-sm leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
+                        <div className="bg-red-600 text-white font-bold text-sm p-0.5 mt-1 inline-block">TECH4ED</div>
                     </div>
-                     <div className="border-2 border-yellow-500 rounded-full h-14 w-14 flex items-center justify-center flex-shrink-0">
-                        <p className="text-yellow-500 font-bold text-sm">SPARK</p>
+                     <div className="border-2 border-yellow-500 rounded-full h-12 w-12 flex items-center justify-center flex-shrink-0">
+                        <p className="text-yellow-500 font-bold text-xs">SPARK</p>
                     </div>
                 </header>
 
                 {/* Info Table */}
-                <table className="w-full border-collapse border border-black text-sm mb-4">
+                <table className="w-full border-collapse border border-black text-xs mb-2">
                     <tbody>
                         <tr>
-                            <td className="border border-black p-2 font-bold" style={{width: '25%'}}>PROJECT</td>
-                            <td className="border border-black p-2" colSpan={3}>
-                                <div className="flex items-center gap-x-4 flex-wrap">
+                            <td className="border border-black p-1 font-bold" style={{width: '25%'}}>PROJECT</td>
+                            <td className="border border-black p-1" colSpan={3}>
+                                <div className="flex items-center gap-x-2 flex-wrap">
                                     {projectTypes.map(pt => (
-                                        <div key={pt} className="flex items-center gap-1.5">
-                                            {procurement.projectType === pt ? <CheckSquare className="w-4 h-4 text-primary" /> : <Square className="w-4 h-4 text-muted-foreground" />}
-                                            <label>{pt}</label>
+                                        <div key={pt} className="flex items-center gap-1">
+                                            {procurement.projectType === pt ? <CheckSquare className="w-3 h-3 text-primary" /> : <Square className="w-3 h-3 text-muted-foreground" />}
+                                            <label className="text-xs font-semibold">{pt}</label>
                                         </div>
                                     ))}
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-2 font-bold">ACTIVITY / PROCUREMENT (SVP)</td>
-                            <td className="border border-black p-2 font-semibold" colSpan={3}>{procurement.title}</td>
+                            <td className="border border-black p-1 font-bold">ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td className="border border-black p-1 font-semibold" colSpan={3}>{procurement.title}</td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-2 font-bold">AMOUNT</td>
-                            <td className="border border-black p-2 font-semibold" style={{width: '35%'}}>{formatCurrency(procurement.amount)}</td>
-                            <td className="border border-black p-2 font-bold" style={{width: '15%'}}>PR NUMBER:</td>
-                            <td className="border border-black p-2 font-semibold" style={{width: '25%'}}>{procurement.prNumber}</td>
+                            <td className="border border-black p-1 font-bold">AMOUNT</td>
+                            <td className="border border-black p-1 font-semibold" style={{width: '35%'}}>{formatCurrency(procurement.amount)}</td>
+                            <td className="border border-black p-1 font-bold" style={{width: '15%'}}>PR NUMBER:</td>
+                            <td className="border border-black p-1 font-semibold" style={{width: '25%'}}>{procurement.prNumber}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -122,25 +122,25 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 {/* Main Content Table */}
                 <table className="w-full border-collapse border border-black text-sm">
                      <thead>
-                        <tr className="font-bold bg-gray-200">
-                            <td className="border border-black p-2 text-center" style={{width: '20%'}}></td>
-                            <td className="border border-black p-2 text-center" style={{width: '45%'}}>PARTICULARS</td>
-                            <td className="border border-black p-2 text-center" style={{width: '17.5%'}}>SUBMITTED BY</td>
-                            <td className="border border-black p-2 text-center" style={{width: '17.5%'}}>RECEIVED BY</td>
+                        <tr className="font-bold bg-gray-200 text-xs">
+                            <td className="border border-black p-1 text-center" style={{width: '20%'}}></td>
+                            <td className="border border-black p-1 text-center" style={{width: '45%'}}>PARTICULARS</td>
+                            <td className="border border-black p-1 text-center" style={{width: '17.5%'}}>SUBMITTED BY</td>
+                            <td className="border border-black p-1 text-center" style={{width: '17.5%'}}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
                         {phaseGroups.map((group, groupIndex) => (
                             <React.Fragment key={groupIndex}>
                                 <tr>
-                                    <td rowSpan={3} className="border border-black p-2 font-bold align-middle text-center text-base" dangerouslySetInnerHTML={{ __html: group.title }}></td>
-                                    <td className="border border-black p-2 align-top">{renderChecklist(group.phases[0].checklist)}</td>
+                                    <td rowSpan={3} className="border border-black p-1 font-bold align-middle text-center text-sm" dangerouslySetInnerHTML={{ __html: group.title }}></td>
+                                    <td className="border border-black p-1 align-top">{renderChecklist(group.phases[0].checklist)}</td>
                                     <td className="border border-black p-0 align-top">{renderSignature(group.phases[0].submittedBy)}</td>
                                     <td className="border border-black p-0 align-top">{renderSignature(group.phases[0].receivedBy)}</td>
                                 </tr>
                                 {group.phases.slice(1).map(phase => (
                                     <tr key={phase.id}>
-                                        <td className="border border-black p-2 align-top">{renderChecklist(phase.checklist)}</td>
+                                        <td className="border border-black p-1 align-top">{renderChecklist(phase.checklist)}</td>
                                         <td className="border border-black p-0 align-top">{renderSignature(phase.submittedBy)}</td>
                                         <td className="border border-black p-0 align-top">{renderSignature(phase.receivedBy)}</td>
                                     </tr>
@@ -150,7 +150,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <footer className="mt-6 text-sm">
+                <footer className="mt-4 text-[10px]">
                     <p>Procurement Number: 2025-___</p>
                 </footer>
             </div>
@@ -180,7 +180,6 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
 
         const imgData = canvas.toDataURL('image/png');
         
-        // A4 page size in mm: 210 x 297
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -188,16 +187,29 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         });
 
         const page_width = pdf.internal.pageSize.getWidth();
-        const margin = 15; // 15mm margin
-        const content_width = page_width - (margin * 2);
+        const page_height = pdf.internal.pageSize.getHeight();
+        
+        const marginX = 15;
+        const marginY = 5; // Reduced top margin
 
+        let content_width = page_width - (marginX * 2);
+        
         const img_width = canvas.width;
         const img_height = canvas.height;
         const aspect_ratio = img_height / img_width;
 
-        const content_height = content_width * aspect_ratio;
+        let content_height = content_width * aspect_ratio;
 
-        pdf.addImage(imgData, 'PNG', margin, margin, content_width, content_height, undefined, 'FAST');
+        // Check if content is taller than the page allows and scale if necessary
+        if (content_height > page_height - (marginY * 2)) {
+            content_height = page_height - (marginY * 2);
+            content_width = content_height / aspect_ratio;
+        }
+
+        // Center the content horizontally
+        const finalX = (page_width - content_width) / 2;
+
+        pdf.addImage(imgData, 'PNG', finalX, marginY, content_width, content_height, undefined, 'FAST');
         pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
     } catch (error) {
