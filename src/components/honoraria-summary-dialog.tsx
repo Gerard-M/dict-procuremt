@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef } from 'react';
@@ -12,8 +13,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, Loader2, Square, CheckSquare } from 'lucide-react';
-import type { Honoraria, ProcurementPhase, Signature, ChecklistItem } from '@/lib/types';
+import { Download, Loader2 } from 'lucide-react';
+import type { Honoraria, Signature, ChecklistItem } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -27,24 +28,31 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
     
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
-            return <div className="p-2 h-full box-border"></div>;
+            return <div style={{ padding: '4px', height: '100%', boxSizing: 'border-box' }}></div>;
         }
         return (
-            <div className="p-2 text-left text-[9px] flex flex-col justify-between h-full box-border">
+            <div style={{ padding: '2px 4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
                 <div>
-                    <p>Name: <span className="font-semibold">{signature.name}</span></p>
+                    <span>Name: </span>
+                    <span style={{ fontWeight: '600' }}>{signature.name}</span>
                 </div>
-                <div className="flex-grow my-1">
-                    <p className="mb-1">Signature:</p>
+                <div style={{ flexGrow: 1, margin: '2px 0' }}>
+                    <p style={{ margin: '0 0 1px 0' }}>Signature:</p>
                     {signature.signatureDataUrl && (
-                        <div className="h-12 flex items-center justify-center my-1">
-                             <img src={signature.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
+                        <div style={{ height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px 0' }}>
+                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                         </div>
                     )}
                 </div>
                 <div>
-                    <p>Date: <span className="font-semibold">{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span></p>
-                    <p>Remarks: <span className="font-semibold break-words">{signature.remarks}</span></p>
+                    <p style={{ margin: 0 }}>
+                        <span>Date: </span>
+                        <span style={{ fontWeight: '600' }}>{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span>
+                    </p>
+                    <p style={{ margin: 0, wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                        <span>Remarks: </span>
+                        <span style={{ fontWeight: '600' }}>{signature.remarks}</span>
+                    </p>
                 </div>
             </div>
         );
@@ -54,14 +62,14 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
         const checkedItems = checklist.filter(item => item.checked);
 
         if (checkedItems.length === 0) {
-            return <p className="text-sm text-left text-muted-foreground p-2">No items checked.</p>;
+            return <p style={{ fontSize: '12px', textAlign: 'left', color: '#666', padding: '8px' }}>No items checked.</p>;
         }
 
         return (
-            <ul className="space-y-1.5 text-sm text-left">
+            <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', textAlign: 'left' }}>
                 {checkedItems.map(item => (
-                    <li key={item.id} className="flex items-start gap-1.5">
-                        <CheckSquare className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-px" />
+                    <li key={item.id} style={{ padding: '2px 0', display: 'flex', alignItems: 'start', gap: '4px' }}>
+                        <span style={{flexShrink: 0}}>☑</span>
                         <span>{item.label}</span>
                     </li>
                 ))}
@@ -72,40 +80,40 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
     const { phase } = honoraria;
 
     return (
-        <div ref={ref} className="bg-white text-black p-8 font-sans">
-            <div className="w-[800px] mx-auto">
-                 <header className="text-center mb-8">
-                    <h1 className="text-xl font-bold text-primary">Honoraria Payment Summary</h1>
-                    <p className="text-sm text-muted-foreground mt-1">Generated on {format(new Date(), 'PPP')}</p>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '32px', fontFamily: 'sans-serif' }}>
+            <div style={{ width: '800px', margin: '0 auto' }}>
+                 <header style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1A237E', margin: 0 }}>Honoraria Payment Summary</h1>
+                    <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', margin: 0 }}>Generated on {format(new Date(), 'PPP')}</p>
                  </header>
 
-                <table className="w-full border-collapse border border-black text-sm mb-6">
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px' }}>
                     <tbody>
                          <tr>
-                            <td className="border border-black p-2 font-bold bg-gray-100" style={{width: '30%'}}>ACTIVITY / PROGRAM</td>
-                            <td className="border border-black p-2 font-semibold">{honoraria.activityTitle}</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%' }}>ACTIVITY / PROGRAM</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600' }}>{honoraria.activityTitle}</td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-2 font-bold bg-gray-100">AMOUNT</td>
-                            <td className="border border-black p-2 font-semibold">{formatCurrency(honoraria.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5' }}>AMOUNT</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600' }}>{formatCurrency(honoraria.amount)}</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <h2 className="text-lg font-bold text-primary mb-4">Processing Details</h2>
-                <table className="w-full border-collapse border border-black text-sm">
+                <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px' }}>Processing Details</h2>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px' }}>
                      <thead>
-                        <tr className="font-bold bg-gray-200">
-                            <td className="border border-black p-2 text-center" style={{width: '50%'}}>CHECKLIST (Completed Items)</td>
-                            <td className="border border-black p-2 text-center" style={{width: '25%'}}>SUBMITTED BY</td>
-                            <td className="border border-black p-2 text-center" style={{width: '25%'}}>RECEIVED BY</td>
+                        <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
+                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', width: '50%' }}>CHECKLIST (Completed Items)</td>
+                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', width: '25%' }}>SUBMITTED BY</td>
+                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', width: '25%' }}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="border border-black p-2 align-top">{renderChecklist(phase.checklist)}</td>
-                            <td className="border border-black p-0 align-top">{renderSignature(phase.submittedBy)}</td>
-                            <td className="border border-black p-0 align-top">{renderSignature(phase.receivedBy)}</td>
+                            <td style={{ border: '1px solid black', padding: '8px', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy)}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy)}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -127,7 +135,7 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
     setIsDownloading(true);
 
     try {
-        const canvas = await html2canvas(printArea.querySelector('.w-\\[800px\\]') || printArea, {
+        const canvas = await html2canvas(printArea.querySelector('div[style*="width: 800px"]') || printArea, {
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
@@ -135,7 +143,6 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
 
         const imgData = canvas.toDataURL('image/png');
         
-        // A4 page size in mm: 210 x 297
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -143,16 +150,26 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         });
 
         const page_width = pdf.internal.pageSize.getWidth();
-        const margin = 15; // 15mm margin
-        const content_width = page_width - (margin * 2);
+        const page_height = pdf.internal.pageSize.getHeight();
+        
+        const margin = 10;
+        let content_width = page_width - (margin * 2);
 
         const img_width = canvas.width;
         const img_height = canvas.height;
         const aspect_ratio = img_height / img_width;
 
-        const content_height = content_width * aspect_ratio;
+        let content_height = content_width * aspect_ratio;
 
-        pdf.addImage(imgData, 'PNG', margin, margin, content_width, content_height, undefined, 'FAST');
+        if (content_height > page_height - (margin * 2)) {
+            content_height = page_height - (margin * 2);
+            content_width = content_height / aspect_ratio;
+        }
+
+        const finalX = (page_width - content_width) / 2;
+        const finalY = (page_height - content_height) / 2;
+
+        pdf.addImage(imgData, 'PNG', finalX, finalY, content_width, content_height, undefined, 'FAST');
         pdf.save(`honoraria-summary-${honoraria.activityTitle.replace(/\s/g, '_')}.pdf`);
 
     } catch (error) {
@@ -174,7 +191,7 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         </DialogHeader>
         
         <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted">
-            <div className="p-4 bg-gray-200">
+            <div className="bg-gray-200">
                 <PDFDocument ref={summaryRef} honoraria={honoraria} />
             </div>
         </div>
