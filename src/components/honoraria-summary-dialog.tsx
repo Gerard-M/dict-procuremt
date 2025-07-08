@@ -28,28 +28,28 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
     
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
-            return <div style={{ padding: '4px', height: '100%', boxSizing: 'border-box' }}></div>;
+            return <div style={{ height: '100%', boxSizing: 'border-box' }}></div>;
         }
         return (
-            <div style={{ padding: '2px 4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
-                <div>
+            <div style={{ padding: '4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
+                <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
                 </div>
-                <div style={{ flexGrow: 1, margin: '2px 0' }}>
-                    <p style={{ margin: '0 0 1px 0' }}>Signature:</p>
+                <div style={{ flexGrow: 1, margin: '4px 0', display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ marginBottom: '2px' }}>Signature:</span>
                     {signature.signatureDataUrl && (
-                        <div style={{ height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2px 0' }}>
-                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                        <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '35px', maxWidth: '100%', objectFit: 'contain' }} />
                         </div>
                     )}
                 </div>
                 <div>
-                    <p style={{ margin: 0 }}>
+                    <p style={{ margin: '0' }}>
                         <span>Date: </span>
                         <span style={{ fontWeight: '600' }}>{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span>
                     </p>
-                    <p style={{ margin: 0, wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                    <p style={{ margin: '0', wordWrap: 'break-word' }}>
                         <span>Remarks: </span>
                         <span style={{ fontWeight: '600' }}>{signature.remarks}</span>
                     </p>
@@ -62,18 +62,18 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
         const checkedItems = checklist.filter(item => item.checked);
 
         if (checkedItems.length === 0) {
-            return <p style={{ fontSize: '12px', textAlign: 'left', color: '#666', padding: '8px' }}>No items checked.</p>;
+            return <p style={{ fontSize: '10px', textAlign: 'left', color: '#666', padding: '8px' }}>No items checked.</p>;
         }
 
         return (
-            <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', textAlign: 'left' }}>
+             <div style={{ fontSize: '10px', textAlign: 'left', padding: '4px' }}>
                 {checkedItems.map(item => (
-                    <li key={item.id} style={{ padding: '2px 0', display: 'flex', alignItems: 'start', gap: '4px' }}>
+                    <div key={item.id} style={{ padding: '2px 0', display: 'flex', alignItems: 'start', gap: '4px' }}>
                         <span style={{flexShrink: 0}}>☑</span>
                         <span>{item.label}</span>
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         );
     }
 
@@ -101,7 +101,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
                 </table>
 
                 <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px' }}>Processing Details</h2>
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
                             <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', width: '50%' }}>CHECKLIST (Completed Items)</td>
@@ -111,7 +111,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
                     </thead>
                     <tbody>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy)}</td>
                         </tr>

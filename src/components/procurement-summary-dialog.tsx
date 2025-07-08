@@ -28,28 +28,28 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
-            return <div style={{ padding: '4px', height: '100%', boxSizing: 'border-box' }}></div>;
+            return <div style={{ height: '100%', boxSizing: 'border-box' }}></div>;
         }
         return (
-            <div style={{ padding: '2px 4px', fontSize: '8px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
-                <div>
+            <div style={{ padding: '4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
+                <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
                 </div>
-                <div style={{ flexGrow: 1, margin: '2px 0' }}>
-                    <p style={{ margin: '0 0 1px 0' }}>Signature:</p>
+                <div style={{ flexGrow: 1, margin: '4px 0', display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ marginBottom: '2px' }}>Signature:</span>
                     {signature.signatureDataUrl && (
-                        <div style={{ height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '1px 0' }}>
-                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                        <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '35px', maxWidth: '100%', objectFit: 'contain' }} />
                         </div>
                     )}
                 </div>
                 <div>
-                    <p style={{ margin: 0 }}>
+                    <p style={{ margin: '0' }}>
                         <span>Date: </span>
-                        <span style={{ fontWeight: '600' }}>{signature.date ? format(new Date(signature.date), 'MM/dd/yy') : ''}</span>
+                        <span style={{ fontWeight: '600' }}>{signature.date ? format(new Date(signature.date), 'MM/dd/yyyy') : ''}</span>
                     </p>
-                    <p style={{ margin: 0, wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                    <p style={{ margin: '0', wordWrap: 'break-word' }}>
                         <span>Remarks: </span>
                         <span style={{ fontWeight: '600' }}>{signature.remarks}</span>
                     </p>
@@ -60,13 +60,14 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '9px', textAlign: 'left' }}>
+            <div style={{ fontSize: '10px', textAlign: 'left', padding: '4px' }}>
                 {checklist.map(item => (
-                    <li key={item.id} style={{ padding: '1px 0', wordWrap: 'break-word' }}>
-                        {item.checked ? '☑' : '☐'} {item.label}
-                    </li>
+                    <div key={item.id} style={{ padding: '1px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start' }}>
+                        <span style={{ marginRight: '4px', minWidth: '12px' }}>{item.checked ? '☑' : '☐'}</span>
+                        <span>{item.label}</span>
+                    </div>
                 ))}
-            </ul>
+            </div>
         );
     }
 
@@ -75,21 +76,21 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '16px', fontFamily: 'sans-serif' }}>
             <div style={{ width: '800px', margin: '0 auto' }}>
-                 <header style={{ marginBottom: '4px' }}>
+                 <header style={{ marginBottom: '8px', border: '1px solid black', padding: '4px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                             <tr>
-                                <td style={{ width: '50px', textAlign: 'center' }}>
-                                    <div style={{ border: '2px solid #1A237E', borderRadius: '50%', height: '40px', width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
-                                        <p style={{ color: '#1A237E', fontWeight: 'bold', fontSize: '10px', margin: 0 }}>ILCDB</p>
+                                <td style={{ width: '60px', textAlign: 'center' }}>
+                                    <div style={{ border: '2px solid #000080', borderRadius: '50%', height: '45px', width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+                                        <p style={{ color: '#000080', fontWeight: 'bold', fontSize: '10px', margin: 0 }}>ILCDB</p>
                                     </div>
                                 </td>
                                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <p style={{ fontWeight: 'bold', fontSize: '11px', lineHeight: '1.1', margin: 0 }}>DIGITAL TRANSFORMATION CENTERS</p>
-                                    <div style={{ backgroundColor: '#E53935', color: 'white', fontWeight: 'bold', fontSize: '10px', padding: '1px 4px', marginTop: '2px', display: 'inline-block' }}>TECH4ED</div>
+                                    <p style={{ fontWeight: 'bold', fontSize: '12px', lineHeight: '1.2', margin: 0 }}>DIGITAL TRANSFORMATION CENTERS</p>
+                                    <div style={{ backgroundColor: '#E53935', color: 'white', fontWeight: 'bold', fontSize: '10px', padding: '1px 6px', marginTop: '2px', display: 'inline-block' }}>TECH4ED</div>
                                 </td>
-                                <td style={{ width: '50px', textAlign: 'center' }}>
-                                    <div style={{ border: '2px solid #FBC02D', borderRadius: '50%', height: '40px', width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+                                <td style={{ width: '60px', textAlign: 'center' }}>
+                                    <div style={{ border: '2px solid #FBC02D', borderRadius: '50%', height: '45px', width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
                                         <p style={{ color: '#FBC02D', fontWeight: 'bold', fontSize: '10px', margin: 0 }}>SPARK</p>
                                     </div>
                                 </td>
@@ -98,41 +99,42 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </table>
                  </header>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '6px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '8px' }}>
                     <tbody>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '2px 4px', fontWeight: 'bold', width: '25%' }}>PROJECT</td>
-                            <td style={{ border: '1px solid black', padding: '2px 4px' }} colSpan={3}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', width: '25%' }}>PROJECT</td>
+                            <td style={{ border: '1px solid black', padding: '4px' }} colSpan={3}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                     {projectTypes.map(pt => (
-                                        <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                             <span style={{ fontSize: '12px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
-                                            <label style={{ fontSize: '9px', fontWeight: '600' }}>{pt}</label>
+                                            <label style={{ fontSize: '10px', fontWeight: '600' }}>{pt}</label>
                                         </div>
                                     ))}
+                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '10px'}}>: {procurement.otherProjectType}</span>}
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '2px 4px', fontWeight: 'bold' }}>ACTIVITY / PROCUREMENT (SVP)</td>
-                            <td style={{ border: '1px solid black', padding: '2px 4px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold' }}>ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '2px 4px', fontWeight: 'bold' }}>AMOUNT</td>
-                            <td style={{ border: '1px solid black', padding: '2px 4px', fontWeight: '600', width: '35%' }}>{formatCurrency(procurement.amount)}</td>
-                            <td style={{ border: '1px solid black', padding: '2px 4px', fontWeight: 'bold', width: '15%' }}>PR NUMBER:</td>
-                            <td style={{ border: '1px solid black', padding: '2px 4px', fontWeight: '600', width: '25%' }}>{procurement.prNumber}</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold' }}>AMOUNT</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: '600', width: '35%' }}>{formatCurrency(procurement.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', width: '15%' }}>PR NUMBER:</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: '600', width: '25%' }}>{procurement.prNumber}</td>
                         </tr>
                     </tbody>
                 </table>
                 
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', tableLayout: 'fixed' }}>
                      <thead>
-                        <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '9px' }}>
-                            <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', width: '8%' }}>PHASE</td>
-                            <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', width: '54%' }}>PARTICULARS</td>
-                            <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', width: '19%' }}>SUBMITTED BY</td>
-                            <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', width: '19%' }}>RECEIVED BY</td>
+                        <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
+                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '8%' }}>PHASE</td>
+                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '54%' }}>PARTICULARS</td>
+                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '19%' }}>SUBMITTED BY</td>
+                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '19%' }}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -140,21 +142,21 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                             <React.Fragment key={phase.id}>
                                 {index === 0 && (
                                     <tr>
-                                        <td colSpan={4} style={{ border: '1px solid black', padding: '2px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5' }}>
+                                        <td colSpan={4} style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5' }}>
                                             PRE-PROCUREMENT REQUIREMENTS
                                         </td>
                                     </tr>
                                 )}
                                 {index === 3 && (
                                      <tr>
-                                        <td colSpan={4} style={{ border: '1px solid black', padding: '2px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5' }}>
+                                        <td colSpan={4} style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5' }}>
                                             POST-PROCUREMENT REQUIREMENTS
                                         </td>
                                     </tr>
                                 )}
                                 <tr>
                                     <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'top' }}>{phase.id}</td>
-                                    <td style={{ border: '1px solid black', padding: '4px', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
+                                    <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
                                     <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy)}</td>
                                     <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy)}</td>
                                 </tr>
@@ -163,8 +165,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <footer style={{ marginTop: '8px', fontSize: '9px' }}>
-                    <p>Procurement Number: 2025-___</p>
+                <footer style={{ marginTop: '8px', fontSize: '10px', textAlign: 'left' }}>
+                    <p style={{margin: 0}}>Procurement Number: 2025-___</p>
                 </footer>
             </div>
         </div>
@@ -201,7 +203,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         const page_width = pdf.internal.pageSize.getWidth();
         const page_height = pdf.internal.pageSize.getHeight();
         
-        const marginX = 10;
+        const marginX = 5;
         const marginY = 5;
 
         let content_width = page_width - (marginX * 2);
