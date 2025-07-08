@@ -77,16 +77,16 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         <div ref={ref} className="bg-white text-black p-8 font-sans">
             <div className="w-[800px] mx-auto">
                  {/* Header */}
-                <header className="flex justify-between items-center mb-6">
-                    <div className="border-2 border-blue-800 rounded-full h-16 w-16 flex items-center justify-center flex-shrink-0">
-                        <p className="text-blue-800 font-bold text-base">ILCDB</p>
+                <header className="flex justify-between items-center mb-4">
+                    <div className="border-2 border-blue-800 rounded-full h-14 w-14 flex items-center justify-center flex-shrink-0">
+                        <p className="text-blue-800 font-bold text-sm">ILCDB</p>
                     </div>
                     <div className="text-center mx-4">
-                        <p className="font-bold text-lg leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
-                        <div className="bg-red-600 text-white font-bold text-xl p-1 mt-1 inline-block">TECH4ED</div>
+                        <p className="font-bold text-base leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
+                        <div className="bg-red-600 text-white font-bold text-base p-0.5 mt-1 inline-block">TECH4ED</div>
                     </div>
-                     <div className="border-2 border-yellow-500 rounded-full h-16 w-16 flex items-center justify-center flex-shrink-0">
-                        <p className="text-yellow-500 font-bold text-base">SPARK</p>
+                     <div className="border-2 border-yellow-500 rounded-full h-14 w-14 flex items-center justify-center flex-shrink-0">
+                        <p className="text-yellow-500 font-bold text-sm">SPARK</p>
                     </div>
                 </header>
 
