@@ -99,7 +99,7 @@ body {
   .radial-glow {
     background: radial-gradient(
       circle at var(--mouse-x) var(--mouse-y),
-      hsla(0, 0%, 100%, 0.04),
+      hsla(0, 0%, 100%, 0.08),
       transparent 20vw
     );
   }
