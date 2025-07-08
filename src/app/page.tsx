@@ -25,52 +25,52 @@ export default function Home() {
       <main className="w-full max-w-5xl px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          <Card className="hover:shadow-xl transition-shadow duration-300">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:bg-primary">
             <CardHeader className="items-center text-center">
-              <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary">
+              <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary group-hover:bg-white/20 group-hover:text-white transition-colors duration-300">
                 <Briefcase className="h-10 w-10" />
               </div>
-              <CardTitle className="text-foreground text-2xl">Procurement</CardTitle>
-              <CardDescription>Manage procurement of supplies and services.</CardDescription>
+              <CardTitle className="text-foreground text-2xl group-hover:text-white transition-colors duration-300">Procurement</CardTitle>
+              <CardDescription className="text-muted-foreground group-hover:text-primary-foreground/80 transition-colors duration-300">Manage procurement of supplies and services.</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button asChild className="group w-full">
+              <Button asChild className="group/button w-full bg-primary text-primary-foreground hover:bg-primary/90 group-hover:bg-white group-hover:text-primary group-hover:hover:bg-gray-200 transition-colors duration-300">
                 <Link href="/procurement">
-                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
                 </Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-xl transition-shadow duration-300">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:bg-primary">
              <CardHeader className="items-center text-center">
-              <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary">
+              <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary group-hover:bg-white/20 group-hover:text-white transition-colors duration-300">
                 <Award className="h-10 w-10" />
               </div>
-              <CardTitle className="text-foreground text-2xl">Honoraria</CardTitle>
-              <CardDescription>Process payments for professional fees.</CardDescription>
+              <CardTitle className="text-foreground text-2xl group-hover:text-white transition-colors duration-300">Honoraria</CardTitle>
+              <CardDescription className="text-muted-foreground group-hover:text-primary-foreground/80 transition-colors duration-300">Process payments for professional fees.</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-               <Button asChild className="group w-full">
+               <Button asChild className="group/button w-full bg-primary text-primary-foreground hover:bg-primary/90 group-hover:bg-white group-hover:text-primary group-hover:hover:bg-gray-200 transition-colors duration-300">
                 <Link href="/honoraria">
-                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
                 </Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-xl transition-shadow duration-300">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:bg-primary">
             <CardHeader className="items-center text-center">
-              <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary">
+              <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary group-hover:bg-white/20 group-hover:text-white transition-colors duration-300">
                 <Plane className="h-10 w-10" />
               </div>
-              <CardTitle className="text-foreground text-2xl">Travel Vouchers</CardTitle>
-              <CardDescription>Handle travel expense claims and reimbursements.</CardDescription>
+              <CardTitle className="text-foreground text-2xl group-hover:text-white transition-colors duration-300">Travel Vouchers</CardTitle>
+              <CardDescription className="text-muted-foreground group-hover:text-primary-foreground/80 transition-colors duration-300">Handle travel expense claims and reimbursements.</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-               <Button asChild className="group w-full">
+               <Button asChild className="group/button w-full bg-primary text-primary-foreground hover:bg-primary/90 group-hover:bg-white group-hover:text-primary group-hover:hover:bg-gray-200 transition-colors duration-300">
                 <Link href="/travel-voucher">
-                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
                 </Link>
               </Button>
             </CardContent>
