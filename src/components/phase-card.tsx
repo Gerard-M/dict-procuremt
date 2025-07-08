@@ -20,25 +20,25 @@ export function PhaseCard({
   onUpdate,
   disabled,
   onViewSummary,
-  previousPhaseChecklist,
+  carriedOverChecklist,
 }: {
   phase: ProcurementPhase;
   onUpdate: (updatedPhase: ProcurementPhase) => Promise<void>;
   disabled?: boolean;
   onViewSummary: (updatedPhase: ProcurementPhase) => void;
-  previousPhaseChecklist?: ChecklistItem[];
+  carriedOverChecklist?: ChecklistItem[];
 }) {
   const [currentPhase, setCurrentPhase] = useState<ProcurementPhase>(phase);
   const [isSaving, setIsSaving] = useState(false);
 
-  const previouslyCheckedLabels = useMemo(() => {
-    if (!previousPhaseChecklist) {
+  const carriedOverLabels = useMemo(() => {
+    if (!carriedOverChecklist) {
       return new Set<string>();
     }
     return new Set(
-      previousPhaseChecklist.filter((item) => item.checked).map((item) => item.label)
+      carriedOverChecklist.map((item) => item.label)
     );
-  }, [previousPhaseChecklist]);
+  }, [carriedOverChecklist]);
 
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export function PhaseCard({
           <h3 className="text-lg font-semibold mb-4 text-primary">Checklist</h3>
           <div className="space-y-3">
             {currentPhase.checklist.map((item: ChecklistItem) => {
-              const isCarriedOver = previouslyCheckedLabels.has(item.label);
+              const isCarriedOver = carriedOverLabels.has(item.label);
               const isLocked = isCarriedOver && item.checked;
               
               return (

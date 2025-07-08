@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Briefcase, ChevronLeft, Check, Circle } from 'lucide-react';
-import type { Procurement, ProcurementPhase } from '@/lib/types';
+import type { Procurement, ProcurementPhase, ChecklistItem } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -82,30 +82,57 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     
     const updatedPhaseIndex = newPhases.findIndex(p => p.id === phaseWithCompletion.id);
 
-    // If the phase is completed and it's not the last one, carry over checked items
-    if (isCompleted && updatedPhaseIndex < newPhases.length - 1) {
-      const currentPhaseChecklist = phaseWithCompletion.checklist;
-      const nextPhase = newPhases[updatedPhaseIndex + 1];
+    // If the phase is completed, handle carry-over logic
+    if (isCompleted) {
+        // Generic carry-over: if an item in the next phase has the same label as a checked item
+        // in the current phase, check it in the next phase.
+        if (updatedPhaseIndex < newPhases.length - 1) {
+            const currentPhaseChecklist = phaseWithCompletion.checklist;
+            const nextPhase = newPhases[updatedPhaseIndex + 1];
 
-      // Create a set of checked item labels from the current phase for efficient lookup
-      const checkedItemsLabels = new Set(
-        currentPhaseChecklist.filter(item => item.checked).map(item => item.label)
-      );
+            const checkedItemsLabels = new Set(
+                currentPhaseChecklist.filter(item => item.checked).map(item => item.label)
+            );
 
-      // Update the checklist of the next phase
-      const updatedNextPhaseChecklist = nextPhase.checklist.map(item => {
-        if (checkedItemsLabels.has(item.label)) {
-          return { ...item, checked: true };
+            const updatedNextPhaseChecklist = nextPhase.checklist.map(item => {
+                if (checkedItemsLabels.has(item.label)) {
+                    return { ...item, checked: true };
+                }
+                return item;
+            });
+
+            newPhases[updatedPhaseIndex + 1] = {
+                ...nextPhase,
+                checklist: updatedNextPhaseChecklist,
+            };
         }
-        return item;
-      });
 
-      // Update the next phase in our newPhases array
-      newPhases[updatedPhaseIndex + 1] = {
-        ...nextPhase,
-        checklist: updatedNextPhaseChecklist,
-      };
+        // Special carry-over: if all items in Phase 1 are checked,
+        // check the consolidated item in Phases 2 and 3.
+        if (phaseWithCompletion.id === 1) {
+            const phase1Checklist = phaseWithCompletion.checklist;
+            const allPhase1ItemsChecked = phase1Checklist.every(item => item.checked);
+
+            if (allPhase1ItemsChecked) {
+                const groupedItemLabel = 'Purchase Request, Quotations, APP/PPMP, SARO, Budget Breakdown, Distribution List, POI/Activity Design, Market Research';
+
+                // Update Phase 2
+                if (newPhases.length > 1) {
+                    newPhases[1].checklist = newPhases[1].checklist.map(item => 
+                        item.label === groupedItemLabel ? { ...item, checked: true } : item
+                    );
+                }
+
+                // Update Phase 3
+                if (newPhases.length > 2) {
+                     newPhases[2].checklist = newPhases[2].checklist.map(item => 
+                        item.label === groupedItemLabel ? { ...item, checked: true } : item
+                    );
+                }
+            }
+        }
     }
+
 
     let finalStatus = procurement.status;
     const isLastPhase = phaseWithCompletion.id === procurement.phases[procurement.phases.length - 1].id;
@@ -219,7 +246,9 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
             </TabsList>
             {procurement.phases.map((phase, index) => {
               const isUnlocked = index === 0 || procurement.phases[index - 1].isCompleted;
-              const previousPhase = index > 0 ? procurement.phases[index - 1] : null;
+              const allPreviouslyCheckedItems = index > 0 
+                ? procurement.phases.slice(0, index).flatMap(p => p.checklist.filter(i => i.checked)) 
+                : [];
 
               return (
                 <TabsContent key={phase.id} value={`phase-${phase.id}`} className="mt-4">
@@ -228,7 +257,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
                     onUpdate={handlePhaseUpdate}
                     disabled={!isUnlocked}
                     onViewSummary={handleViewSummary}
-                    previousPhaseChecklist={previousPhase?.checklist}
+                    carriedOverChecklist={allPreviouslyCheckedItems}
                   />
                 </TabsContent>
               );
