@@ -39,7 +39,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <div className="flex-grow my-1">
                     <p className="mb-1">Signature:</p>
                     {signature.signatureDataUrl && (
-                        <div className="h-10 flex items-center justify-center my-1">
+                        <div className="h-12 flex items-center justify-center my-1">
                              <img src={signature.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
                         </div>
                     )}
@@ -55,7 +55,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     // Renders the checklist for a given phase.
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <ul className="space-y-1 text-[10px] text-left">
+            <ul className="space-y-1.5 text-[10px] text-left">
                 {checklist.map(item => (
                     <li key={item.id} className="flex items-start gap-1.5">
                         {item.checked ? <CheckSquare className="w-3 h-3 text-primary flex-shrink-0 mt-px" /> : <Square className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-px" />}
@@ -78,23 +78,23 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
             <div className="w-[800px] mx-auto">
                  {/* Header */}
                 <header className="flex justify-between items-center mb-6">
-                    <div className="border-2 border-blue-800 rounded-full h-20 w-20 flex items-center justify-center flex-shrink-0">
-                        <p className="text-blue-800 font-bold text-lg">ILCDB</p>
+                    <div className="border-2 border-blue-800 rounded-full h-16 w-16 flex items-center justify-center flex-shrink-0">
+                        <p className="text-blue-800 font-bold text-base">ILCDB</p>
                     </div>
                     <div className="text-center mx-4">
                         <p className="font-bold text-lg leading-tight">DIGITAL TRANSFORMATION CENTERS</p>
                         <div className="bg-red-600 text-white font-bold text-xl p-1 mt-1 inline-block">TECH4ED</div>
                     </div>
-                     <div className="border-2 border-yellow-500 rounded-full h-20 w-20 flex items-center justify-center flex-shrink-0">
-                        <p className="text-yellow-500 font-bold text-lg">SPARK</p>
+                     <div className="border-2 border-yellow-500 rounded-full h-16 w-16 flex items-center justify-center flex-shrink-0">
+                        <p className="text-yellow-500 font-bold text-base">SPARK</p>
                     </div>
                 </header>
 
                 {/* Info Table */}
-                <table className="w-full border-collapse border border-black text-sm">
+                <table className="w-full border-collapse border border-black text-sm mb-4">
                     <tbody>
                         <tr>
-                            <td className="border border-black p-2 font-bold" style={{width: '20%'}}>PROJECT</td>
+                            <td className="border border-black p-2 font-bold" style={{width: '25%'}}>PROJECT</td>
                             <td className="border border-black p-2" colSpan={3}>
                                 <div className="flex items-center gap-x-4 flex-wrap">
                                     {projectTypes.map(pt => (
@@ -112,20 +112,21 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                         </tr>
                         <tr>
                             <td className="border border-black p-2 font-bold">AMOUNT</td>
-                            <td className="border border-black p-2 font-semibold" style={{width: '40%'}}>{formatCurrency(procurement.amount)}</td>
-                            <td className="border border-black p-2 font-bold" colSpan={2}>PR NUMBER: <span className="font-semibold">{procurement.prNumber}</span></td>
+                            <td className="border border-black p-2 font-semibold" style={{width: '35%'}}>{formatCurrency(procurement.amount)}</td>
+                            <td className="border border-black p-2 font-bold" style={{width: '15%'}}>PR NUMBER:</td>
+                            <td className="border border-black p-2 font-semibold" style={{width: '25%'}}>{procurement.prNumber}</td>
                         </tr>
                     </tbody>
                 </table>
 
                 {/* Main Content Table */}
-                <table className="w-full border-collapse border-t-0 border border-black text-xs mt-[-1px]">
+                <table className="w-full border-collapse border border-black text-sm">
                      <thead>
-                        <tr className="font-bold bg-gray-200 text-sm">
+                        <tr className="font-bold bg-gray-200">
                             <td className="border border-black p-2 text-center" style={{width: '20%'}}></td>
-                            <td className="border border-black p-2 text-center" style={{width: '40%'}}>PARTICULARS</td>
-                            <td className="border border-black p-2 text-center" style={{width: '20%'}}>SUBMITTED BY</td>
-                            <td className="border border-black p-2 text-center" style={{width: '20%'}}>RECEIVED BY</td>
+                            <td className="border border-black p-2 text-center" style={{width: '45%'}}>PARTICULARS</td>
+                            <td className="border border-black p-2 text-center" style={{width: '17.5%'}}>SUBMITTED BY</td>
+                            <td className="border border-black p-2 text-center" style={{width: '17.5%'}}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,7 +150,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <footer className="mt-8 text-sm">
+                <footer className="mt-6 text-sm">
                     <p>Procurement Number: 2025-___</p>
                 </footer>
             </div>

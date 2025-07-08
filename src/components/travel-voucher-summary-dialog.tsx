@@ -37,7 +37,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
                 <div className="flex-grow my-1">
                     <p className="mb-1">Signature:</p>
                     {signature.signatureDataUrl && (
-                        <div className="h-10 flex items-center justify-center my-1">
+                        <div className="h-12 flex items-center justify-center my-1">
                              <img src={signature.signatureDataUrl} alt="Signature" className="max-h-full max-w-full object-contain" />
                         </div>
                     )}
@@ -54,14 +54,14 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
         const checkedItems = checklist.filter(item => item.checked);
 
         if (checkedItems.length === 0) {
-            return <p className="text-[10px] text-left text-muted-foreground">No items checked.</p>;
+            return <p className="text-sm text-left text-muted-foreground p-2">No items checked.</p>;
         }
 
         return (
-            <ul className="space-y-1 text-[10px] text-left">
+            <ul className="space-y-1.5 text-sm text-left">
                 {checkedItems.map(item => (
                     <li key={item.id} className="flex items-start gap-1.5">
-                        <CheckSquare className="w-3 h-3 text-primary flex-shrink-0 mt-px" />
+                        <CheckSquare className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-px" />
                         <span>{item.label}</span>
                     </li>
                 ))}
@@ -74,28 +74,28 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
     return (
         <div ref={ref} className="bg-white text-black p-8 font-sans">
             <div className="w-[800px] mx-auto">
-                 <header className="text-center mb-6">
-                    <h1 className="text-2xl font-bold text-primary">Travel Voucher Summary</h1>
-                    <p className="text-muted-foreground">Generated on {format(new Date(), 'PPP')}</p>
+                 <header className="text-center mb-8">
+                    <h1 className="text-xl font-bold text-primary">Travel Voucher Summary</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Generated on {format(new Date(), 'PPP')}</p>
                  </header>
 
                 <table className="w-full border-collapse border border-black text-sm mb-6">
                     <tbody>
                          <tr>
-                            <td className="border border-black p-2 font-bold bg-gray-100">ACTIVITY / PROGRAM</td>
+                            <td className="border border-black p-2 font-bold bg-gray-100" style={{width: '30%'}}>ACTIVITY / PROGRAM</td>
                             <td className="border border-black p-2 font-semibold">{travelVoucher.activityTitle}</td>
                         </tr>
                         <tr>
-                            <td className="border border-black p-2 font-bold bg-gray-100" style={{width: '25%'}}>AMOUNT</td>
+                            <td className="border border-black p-2 font-bold bg-gray-100">AMOUNT</td>
                             <td className="border border-black p-2 font-semibold">{formatCurrency(travelVoucher.amount)}</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <h2 className="text-lg font-bold text-primary mb-2">Processing Details</h2>
-                <table className="w-full border-collapse border border-black text-xs">
+                <h2 className="text-lg font-bold text-primary mb-4">Processing Details</h2>
+                <table className="w-full border-collapse border border-black text-sm">
                      <thead>
-                        <tr className="font-bold bg-gray-200 text-sm">
+                        <tr className="font-bold bg-gray-200">
                             <td className="border border-black p-2 text-center" style={{width: '50%'}}>CHECKLIST (Completed Items)</td>
                             <td className="border border-black p-2 text-center" style={{width: '25%'}}>SUBMITTED BY</td>
                             <td className="border border-black p-2 text-center" style={{width: '25%'}}>RECEIVED BY</td>
