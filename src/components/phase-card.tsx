@@ -53,8 +53,21 @@ export function PhaseCard({
   const handleViewSummaryClick = () => {
     onViewSummary(currentPhase);
   };
+  
+  const handleCheckAll = (checked: boolean) => {
+    const updatedChecklist = currentPhase.checklist.map(item =>
+        !item.isLocked ? { ...item, checked } : item
+    );
+    setCurrentPhase({ ...currentPhase, checklist: updatedChecklist });
+  };
 
   const canContinue = !!currentPhase.submittedBy && !!currentPhase.receivedBy;
+
+  const showCheckAll = [1, 4, 5, 6].includes(phase.id);
+  const allItemsChecked = currentPhase.checklist.every(item => item.checked || item.isLocked);
+  const someItemsChecked = currentPhase.checklist.some(item => item.checked);
+  const checkAllState = allItemsChecked ? true : (someItemsChecked ? 'indeterminate' : false);
+
 
   if (disabled) {
     return (
@@ -86,6 +99,22 @@ export function PhaseCard({
       <CardContent className="space-y-8">
         <div>
           <h3 className="text-lg font-semibold mb-4 text-primary">Checklist</h3>
+           {showCheckAll && (
+            <div className="flex items-center space-x-3 border-b pb-3 mb-3">
+              <Checkbox
+                id={`${phase.id}-check-all`}
+                checked={checkAllState}
+                onCheckedChange={(checked) => handleCheckAll(!!checked)}
+                aria-label="Select all items"
+              />
+              <label
+                htmlFor={`${phase.id}-check-all`}
+                className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Select All
+              </label>
+            </div>
+          )}
           <div className="space-y-3">
             {currentPhase.checklist.map((item: ChecklistItem) => {
               const isLocked = !!item.isLocked;
