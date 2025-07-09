@@ -1,0 +1,6 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="64" height="64" rx="12" fill="hsl(var(--primary))"/>
+<path d="M16 49V20.5C16 18.0147 18.0147 16 20.5 16H43.5C45.9853 16 48 18.0147 48 20.5V49L40 43L32 49L24 43L16 49Z" stroke="hsl(var(--background))" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M28 26H36" stroke="hsl(var(--background))" stroke-width="4" stroke-linecap="round"/>
+<path d="M28 34H36" stroke="hsl(var(--background))" stroke-width="4" stroke-linecap="round"/>
+</svg>
