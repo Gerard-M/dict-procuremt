@@ -159,24 +159,15 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <table style={{ width: '100%', borderSpacing: '8px 0', borderCollapse: 'separate' }}>
-                    <tbody>
-                        <tr>
-                            <td style={{ width: '50%', verticalAlign: 'top', padding: 0 }}>
-                                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '0 0 8px 0' }}>
-                                    PRE-PROCUREMENT REQUIREMENTS
-                                </h3>
-                                {renderPhaseTable(preProcurementPhases)}
-                            </td>
-                            <td style={{ width: '50%', verticalAlign: 'top', padding: 0 }}>
-                                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '0 0 8px 0' }}>
-                                    POST-PROCUREMENT REQUIREMENTS
-                                </h3>
-                                {renderPhaseTable(postProcurementPhases)}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '8px 0 8px 0' }}>
+                    PRE-PROCUREMENT REQUIREMENTS
+                </h3>
+                {renderPhaseTable(preProcurementPhases)}
+                
+                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '16px 0 8px 0' }}>
+                    POST-PROCUREMENT REQUIREMENTS
+                </h3>
+                {renderPhaseTable(postProcurementPhases)}
                 
                 <footer style={{ marginTop: '8px', fontSize: '10px', textAlign: 'left' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
