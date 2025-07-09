@@ -104,9 +104,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
                 <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', width: '50%' }}>CHECKLIST (Completed Items)</td>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', width: '25%' }}>SUBMITTED BY</td>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', width: '25%' }}>RECEIVED BY</td>
+                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '50%' }}>CHECKLIST (Completed Items)</td>
+                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '25%' }}>SUBMITTED BY</td>
+                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '25%' }}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -153,23 +153,25 @@ export function TravelVoucherSummaryDialog({ travelVoucher, open, onOpenChange }
         const page_height = pdf.internal.pageSize.getHeight();
 
         const margin = 10;
-        let content_width = page_width - (margin * 2);
-
+        const content_width = page_width - (margin * 2);
+        const content_height = page_height - (margin * 2);
+        
         const img_width = canvas.width;
         const img_height = canvas.height;
         const aspect_ratio = img_height / img_width;
 
-        let content_height = content_width * aspect_ratio;
+        let final_width = content_width;
+        let final_height = content_width * aspect_ratio;
 
-        if (content_height > page_height - (margin * 2)) {
-            content_height = page_height - (margin * 2);
-            content_width = content_height / aspect_ratio;
+        if (final_height > content_height) {
+            final_height = content_height;
+            final_width = final_height / aspect_ratio;
         }
 
-        const finalX = (page_width - content_width) / 2;
-        const finalY = (page_height - content_height) / 2;
+        const finalX = (page_width - final_width) / 2;
+        const finalY = (page_height - final_height) / 2;
         
-        pdf.addImage(imgData, 'PNG', finalX, finalY, content_width, content_height, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', finalX, finalY, final_width, final_height, undefined, 'FAST');
         pdf.save(`travel-voucher-summary-${travelVoucher.activityTitle.replace(/\s/g, '_')}.pdf`);
 
     } catch (error) {

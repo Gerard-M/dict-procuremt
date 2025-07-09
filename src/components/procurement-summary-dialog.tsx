@@ -70,12 +70,43 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
             </div>
         );
     }
+    
+    const renderPhaseTable = (phases: Procurement['phases']) => {
+        const tableHeader = (
+            <thead>
+                <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '8%' }}>PHASE</td>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '54%' }}>PARTICULARS</td>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '19%' }}>SUBMITTED BY</td>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '19%' }}>RECEIVED BY</td>
+                </tr>
+            </thead>
+        );
+
+        return (
+            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', tableLayout: 'fixed' }}>
+                {tableHeader}
+                <tbody>
+                    {phases.map(phase => (
+                        <tr key={phase.id}>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'top' }}>{phase.id}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy)}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    }
 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
+    const preProcurementPhases = procurement.phases.slice(0, 3);
+    const postProcurementPhases = procurement.phases.slice(3);
     
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '16px', fontFamily: 'sans-serif' }}>
-            <div style={{ width: '800px', margin: '0 auto' }}>
+            <div style={{ width: '1120px', margin: '0 auto' }}>
                  <header style={{ marginBottom: '8px', border: '1px solid black', padding: '4px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
@@ -128,40 +159,22 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', tableLayout: 'fixed' }}>
-                     <thead>
-                        <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
-                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '8%' }}>PHASE</td>
-                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '54%' }}>PARTICULARS</td>
-                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '19%' }}>SUBMITTED BY</td>
-                            <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', width: '19%' }}>RECEIVED BY</td>
-                        </tr>
-                    </thead>
+                <table style={{ width: '100%', borderSpacing: '16px 0', borderCollapse: 'separate' }}>
                     <tbody>
-                         {procurement.phases.map((phase, index) => (
-                            <React.Fragment key={phase.id}>
-                                {index === 0 && (
-                                    <tr>
-                                        <td colSpan={4} style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5' }}>
-                                            PRE-PROCUREMENT REQUIREMENTS
-                                        </td>
-                                    </tr>
-                                )}
-                                {index === 3 && (
-                                     <tr>
-                                        <td colSpan={4} style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5' }}>
-                                            POST-PROCUREMENT REQUIREMENTS
-                                        </td>
-                                    </tr>
-                                )}
-                                <tr>
-                                    <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'top' }}>{phase.id}</td>
-                                    <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
-                                    <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy)}</td>
-                                    <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy)}</td>
-                                </tr>
-                            </React.Fragment>
-                        ))}
+                        <tr>
+                            <td style={{ width: '50%', verticalAlign: 'top', padding: 0 }}>
+                                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '0 0 8px 0' }}>
+                                    PRE-PROCUREMENT REQUIREMENTS
+                                </h3>
+                                {renderPhaseTable(preProcurementPhases)}
+                            </td>
+                            <td style={{ width: '50%', verticalAlign: 'top', padding: 0 }}>
+                                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '0 0 8px 0' }}>
+                                    POST-PROCUREMENT REQUIREMENTS
+                                </h3>
+                                {renderPhaseTable(postProcurementPhases)}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 
@@ -186,7 +199,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
     setIsDownloading(true);
 
     try {
-        const canvas = await html2canvas(printArea.querySelector('div[style*="width: 800px"]') || printArea, {
+        const canvas = await html2canvas(printArea.querySelector('div[style*="width: 1120px"]') || printArea, {
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
@@ -195,7 +208,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         const imgData = canvas.toDataURL('image/png');
         
         const pdf = new jsPDF({
-            orientation: 'portrait',
+            orientation: 'landscape',
             unit: 'mm',
             format: 'a4'
         });
@@ -203,25 +216,26 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         const page_width = pdf.internal.pageSize.getWidth();
         const page_height = pdf.internal.pageSize.getHeight();
         
-        const marginX = 5;
-        const marginY = 5;
-
-        let content_width = page_width - (marginX * 2);
+        const margin = 10;
+        const content_width = page_width - (margin * 2);
+        const content_height = page_height - (margin * 2);
         
         const img_width = canvas.width;
         const img_height = canvas.height;
         const aspect_ratio = img_height / img_width;
 
-        let content_height = content_width * aspect_ratio;
+        let final_width = content_width;
+        let final_height = content_width * aspect_ratio;
 
-        if (content_height > page_height - (marginY * 2)) {
-            content_height = page_height - (marginY * 2);
-            content_width = content_height / aspect_ratio;
+        if (final_height > content_height) {
+            final_height = content_height;
+            final_width = final_height / aspect_ratio;
         }
 
-        const finalX = (page_width - content_width) / 2;
+        const finalX = (page_width - final_width) / 2;
+        const finalY = (page_height - final_height) / 2;
 
-        pdf.addImage(imgData, 'PNG', finalX, marginY, content_width, content_height, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', finalX, finalY, final_width, final_height, undefined, 'FAST');
         pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
     } catch (error) {
