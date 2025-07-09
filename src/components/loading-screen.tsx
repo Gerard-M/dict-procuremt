@@ -9,6 +9,10 @@ const loadingTexts = [
   'Polishing the paperwork...',
   'Untangling the red tape...',
   'Counting the beans...',
+  'Aligning the pixels...',
+  'Fetching the latest updates...',
+  'Securing the data fortress...',
+  'Waking up the servers...',
 ];
 
 export function LoadingScreen() {
