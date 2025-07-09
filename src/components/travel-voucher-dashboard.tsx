@@ -12,6 +12,7 @@ import type { TravelVoucher } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 function Header() {
   return (
@@ -137,11 +138,34 @@ export function TravelVoucherDashboard() {
 
 function TableSkeleton() {
     return (
-        <div className="space-y-4 mt-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
+        <div className="rounded-md border mt-4">
+            <Table>
+                <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                        <TableHead><Skeleton className="h-5 w-48" /></TableHead>
+                        <TableHead className="w-[180px]"><Skeleton className="h-5 w-28" /></TableHead>
+                        <TableHead className="w-[150px]"><Skeleton className="h-5 w-20" /></TableHead>
+                        <TableHead className="w-[200px]"><Skeleton className="h-5 w-40" /></TableHead>
+                        <TableHead className="w-[100px] text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {[...Array(4)].map((_, i) => (
+                        <TableRow key={i} className="border-none">
+                            <TableCell><Skeleton className="h-5 w-56" /></TableCell>
+                            <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+                            <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                            <TableCell><div className="space-y-1"><Skeleton className="h-2 w-32" /><Skeleton className="h-3 w-16" /></div></TableCell>
+                            <TableCell>
+                                <div className="flex justify-end gap-2">
+                                    <Skeleton className="h-8 w-8" />
+                                    <Skeleton className="h-8 w-8" />
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
         </div>
     )
 }
