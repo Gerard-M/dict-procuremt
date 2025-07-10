@@ -17,9 +17,10 @@ interface SignatureUploadProps {
   signature: Signature | null;
   onUpdate: (signature: Signature | null) => void;
   disabled?: boolean;
+  description?: string;
 }
 
-export function SignatureUpload({ title, signature, onUpdate, disabled = false }: SignatureUploadProps) {
+export function SignatureUpload({ title, signature, onUpdate, disabled = false, description }: SignatureUploadProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
   const lastPositionRef = useRef<{ x: number, y: number } | null>(null);
@@ -192,8 +193,8 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
         <div className="space-y-2">
           <Label htmlFor={`name-${title}`}>Name</Label>
           <Input id={`name-${title}`} value={signature?.name || ''} onChange={(e) => handleFieldChange('name', e.target.value)} />
-          {title === 'Received by' && (
-            <p className="text-xs text-muted-foreground">Supply Unit/Assigned Personnel</p>
+          {description && (
+            <p className="text-xs text-muted-foreground">{description}</p>
           )}
         </div>
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -156,6 +157,7 @@ export function PhaseCard({
               title="Received by"
               signature={currentPhase.receivedBy}
               onUpdate={(sig) => handleSignatureUpdate('receivedBy', sig)}
+              description={phase.id === 1 ? 'Supply Unit/Assigned Personnel' : undefined}
             />
           </div>
         </div>

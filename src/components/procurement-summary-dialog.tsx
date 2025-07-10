@@ -26,7 +26,7 @@ interface ProcurementSummaryDialogProps {
 
 const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement }>(({ procurement }, ref) => {
     
-    const renderSignature = (signature: Signature | null) => {
+    const renderSignature = (signature: Signature | null, isPhase1ReceivedBy = false) => {
         if (!signature || !signature.name) {
             return <div style={{ height: '100%', boxSizing: 'border-box' }}></div>;
         }
@@ -35,6 +35,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
+                    {isPhase1ReceivedBy && <div style={{fontSize: '8px', fontStyle: 'italic', color: '#333'}}>Supply Unit/Assigned Personnel</div>}
                 </div>
                 <div style={{ flexGrow: 1, margin: '4px 0', display: 'flex', flexDirection: 'column' }}>
                     <span style={{ marginBottom: '2px' }}>Signature:</span>
@@ -71,7 +72,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         );
     }
     
-    const renderPhaseTable = (phases: Procurement['phases']) => {
+    const renderPhaseTable = (phases: Procurement['phases'], title: string) => {
         const tableHeader = (
             <thead>
                 <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
@@ -92,7 +93,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                             <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'top' }}>{phase.id}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy)}</td>
-                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy)}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy, phase.id === 1)}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -101,8 +102,6 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     }
 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
-    const preProcurementPhases = procurement.phases.slice(0, 3);
-    const postProcurementPhases = procurement.phases.slice(3);
     
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '16px', fontFamily: 'sans-serif' }}>
@@ -160,14 +159,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 </table>
                 
                 <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '8px 0 8px 0' }}>
-                    PRE-PROCUREMENT REQUIREMENTS
+                    PROCUREMENT REQUIREMENTS
                 </h3>
-                {renderPhaseTable(preProcurementPhases)}
-                
-                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '16px 0 8px 0' }}>
-                    POST-PROCUREMENT REQUIREMENTS
-                </h3>
-                {renderPhaseTable(postProcurementPhases)}
+                {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
                 
                 <footer style={{ marginTop: '8px', fontSize: '10px', textAlign: 'left' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
