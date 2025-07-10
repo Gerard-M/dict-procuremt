@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRef, useEffect } from 'react';
@@ -191,6 +192,9 @@ export function SignatureUpload({ title, signature, onUpdate, disabled = false }
         <div className="space-y-2">
           <Label htmlFor={`name-${title}`}>Name</Label>
           <Input id={`name-${title}`} value={signature?.name || ''} onChange={(e) => handleFieldChange('name', e.target.value)} />
+          {title === 'Received by' && (
+            <p className="text-xs text-muted-foreground">Supply Unit/Assigned Personnel</p>
+          )}
         </div>
 
         <div className="space-y-2">
