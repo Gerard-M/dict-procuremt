@@ -36,7 +36,7 @@ export default function Home() {
             <CardContent className="text-center">
               <Button asChild className="group/button w-full bg-primary text-primary-foreground hover:bg-primary/90 group-hover:bg-white group-hover:text-primary group-hover:hover:bg-gray-200 transition-colors duration-300">
                 <Link href="/procurement">
-                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
+                  Open <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
                 </Link>
               </Button>
             </CardContent>
@@ -53,7 +53,7 @@ export default function Home() {
             <CardContent className="text-center">
                <Button asChild className="group/button w-full bg-primary text-primary-foreground hover:bg-primary/90 group-hover:bg-white group-hover:text-primary group-hover:hover:bg-gray-200 transition-colors duration-300">
                 <Link href="/honoraria">
-                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
+                  Open <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
                 </Link>
               </Button>
             </CardContent>
@@ -70,7 +70,7 @@ export default function Home() {
             <CardContent className="text-center">
                <Button asChild className="group/button w-full bg-primary text-primary-foreground hover:bg-primary/90 group-hover:bg-white group-hover:text-primary group-hover:hover:bg-gray-200 transition-colors duration-300">
                 <Link href="/travel-voucher">
-                  Open Module <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
+                  Open <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/button:translate-x-1" />
                 </Link>
               </Button>
             </CardContent>
