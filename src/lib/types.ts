@@ -30,7 +30,7 @@ export interface Procurement {
   prNumber: string;
   projectType: ProjectType;
   otherProjectType?: string;
-  status: 'active' | 'archived';
+  status: 'active' | 'completed';
   phases: ProcurementPhase[];
   createdAt: Date;
   updatedAt: Date;
@@ -42,7 +42,7 @@ export interface Honoraria {
   amount: number;
   projectType: ProjectType;
   otherProjectType?: string;
-  status: 'active' | 'archived';
+  status: 'active' | 'completed';
   phase: ProcurementPhase;
   createdAt: Date;
   updatedAt: Date;
@@ -54,7 +54,7 @@ export interface TravelVoucher {
   amount: number;
   projectType: ProjectType;
   otherProjectType?: string;
-  status: 'active' | 'archived';
+  status: 'active' | 'completed';
   phase: ProcurementPhase;
   createdAt: Date;
   updatedAt: Date;

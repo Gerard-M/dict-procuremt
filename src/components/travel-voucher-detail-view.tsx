@@ -46,7 +46,7 @@ export function TravelVoucherDetailView({ initialTravelVoucher }: { initialTrave
 
     let finalStatus = travelVoucher.status;
     if (isCompleted) {
-        finalStatus = 'archived';
+        finalStatus = 'completed';
     }
 
     const updatedVoucherData = { ...travelVoucher, phase: phaseWithCompletion, status: finalStatus };

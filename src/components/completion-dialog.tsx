@@ -37,7 +37,7 @@ export function CompletionDialog({ open, onOpenChange, itemTitle, returnPath, it
           </div>
           <DialogTitle className="text-center text-2xl font-bold">Congratulations!</DialogTitle>
           <DialogDescription className="text-center px-4">
-            You have successfully completed the {itemType} for "{itemTitle}". This record has now been archived.
+            You have successfully completed the {itemType} for "{itemTitle}". This record has now been marked as completed.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4">

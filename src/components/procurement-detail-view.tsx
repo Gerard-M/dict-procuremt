@@ -113,7 +113,7 @@ export function ProcurementDetailView({ initialProcurement }: { initialProcureme
     const isLastPhase = phaseWithCompletion.id === procurement.phases[procurement.phases.length - 1].id;
 
     if (isLastPhase && phaseWithCompletion.isCompleted) {
-        finalStatus = 'archived';
+        finalStatus = 'completed';
     }
 
     const updatedProcurementData = { ...procurement, phases: newPhases, status: finalStatus };

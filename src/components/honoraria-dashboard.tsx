@@ -81,7 +81,7 @@ export function HonorariaDashboard() {
   }, [honoraria, searchTerm]);
 
   const activeHonoraria = useMemo(() => filteredHonoraria.filter(p => p.status === 'active'), [filteredHonoraria]);
-  const archivedHonoraria = useMemo(() => filteredHonoraria.filter(p => p.status === 'archived'), [filteredHonoraria]);
+  const completedHonoraria = useMemo(() => filteredHonoraria.filter(p => p.status === 'completed'), [filteredHonoraria]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -121,13 +121,13 @@ export function HonorariaDashboard() {
           <Tabs defaultValue="active" className="w-full">
             <TabsList className="grid w-full grid-cols-2 sm:w-[400px]">
               <TabsTrigger value="active">Active Records</TabsTrigger>
-              <TabsTrigger value="archived">Archived Records</TabsTrigger>
+              <TabsTrigger value="completed">Completed Records</TabsTrigger>
             </TabsList>
             <TabsContent value="active">
               {loading ? <TableSkeleton /> : <HonorariaTable honoraria={activeHonoraria} onEdit={openEditDialog} onDelete={handleHonorariaDelete} />}
             </TabsContent>
-            <TabsContent value="archived">
-              {loading ? <TableSkeleton /> : <HonorariaTable honoraria={archivedHonoraria} onEdit={openEditDialog} onDelete={handleHonorariaDelete} />}
+            <TabsContent value="completed">
+              {loading ? <TableSkeleton /> : <HonorariaTable honoraria={completedHonoraria} onEdit={openEditDialog} onDelete={handleHonorariaDelete} />}
             </TabsContent>
           </Tabs>
         </div>

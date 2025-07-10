@@ -82,7 +82,7 @@ export function Dashboard() {
   }, [procurements, searchTerm]);
 
   const activeProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'active'), [filteredProcurements]);
-  const archivedProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'archived'), [filteredProcurements]);
+  const completedProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'completed'), [filteredProcurements]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -122,13 +122,13 @@ export function Dashboard() {
           <Tabs defaultValue="active" className="w-full">
             <TabsList className="grid w-full grid-cols-2 sm:w-[400px]">
               <TabsTrigger value="active">Active Procurements</TabsTrigger>
-              <TabsTrigger value="archived">Archived Procurements</TabsTrigger>
+              <TabsTrigger value="completed">Completed Procurements</TabsTrigger>
             </TabsList>
             <TabsContent value="active">
               {loading ? <TableSkeleton /> : <ProcurementTable procurements={activeProcurements} onEdit={openEditDialog} onDelete={handleProcurementDelete} />}
             </TabsContent>
-            <TabsContent value="archived">
-              {loading ? <TableSkeleton /> : <ProcurementTable procurements={archivedProcurements} onEdit={openEditDialog} onDelete={handleProcurementDelete} />}
+            <TabsContent value="completed">
+              {loading ? <TableSkeleton /> : <ProcurementTable procurements={completedProcurements} onEdit={openEditDialog} onDelete={handleProcurementDelete} />}
             </TabsContent>
           </Tabs>
         </div>

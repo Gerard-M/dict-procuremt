@@ -81,7 +81,7 @@ export function TravelVoucherDashboard() {
   }, [travelVouchers, searchTerm]);
 
   const activeVouchers = useMemo(() => filteredVouchers.filter(p => p.status === 'active'), [filteredVouchers]);
-  const archivedVouchers = useMemo(() => filteredVouchers.filter(p => p.status === 'archived'), [filteredVouchers]);
+  const completedVouchers = useMemo(() => filteredVouchers.filter(p => p.status === 'completed'), [filteredVouchers]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -121,13 +121,13 @@ export function TravelVoucherDashboard() {
           <Tabs defaultValue="active" className="w-full">
             <TabsList className="grid w-full grid-cols-2 sm:w-[400px]">
               <TabsTrigger value="active">Active Records</TabsTrigger>
-              <TabsTrigger value="archived">Archived Records</TabsTrigger>
+              <TabsTrigger value="completed">Completed Records</TabsTrigger>
             </TabsList>
             <TabsContent value="active">
               {loading ? <TableSkeleton /> : <TravelVoucherTable vouchers={activeVouchers} onEdit={openEditDialog} onDelete={handleVoucherDelete} />}
             </TabsContent>
-            <TabsContent value="archived">
-              {loading ? <TableSkeleton /> : <TravelVoucherTable vouchers={archivedVouchers} onEdit={openEditDialog} onDelete={handleVoucherDelete} />}
+            <TabsContent value="completed">
+              {loading ? <TableSkeleton /> : <TravelVoucherTable vouchers={completedVouchers} onEdit={openEditDialog} onDelete={handleVoucherDelete} />}
             </TabsContent>
           </Tabs>
         </div>

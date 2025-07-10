@@ -46,7 +46,7 @@ export function HonorariaDetailView({ initialHonoraria }: { initialHonoraria: an
 
     let finalStatus = honoraria.status;
     if (isCompleted) {
-        finalStatus = 'archived';
+        finalStatus = 'completed';
     }
 
     const updatedHonorariaData = { ...honoraria, phase: phaseWithCompletion, status: finalStatus };
