@@ -26,7 +26,22 @@ interface ProcurementSummaryDialogProps {
 
 const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement }>(({ procurement }, ref) => {
     
-    const renderSignature = (signature: Signature | null, isPhase1ReceivedBy = false) => {
+    const getSignatureDescription = (phaseId: number, type: 'submittedBy' | 'receivedBy') => {
+        if (type === 'submittedBy') {
+            if (phaseId === 2 || phaseId === 5) return 'Supply Unit';
+        }
+        if (type === 'receivedBy') {
+            switch (phaseId) {
+                case 1: return 'Supply Unit/Assigned Personnel';
+                case 3: return 'Budget Unit';
+                case 4: return 'Supply Unit';
+                case 6: return 'Accounting Unit';
+            }
+        }
+        return null;
+    };
+
+    const renderSignature = (signature: Signature | null, description: string | null = null) => {
         if (!signature || !signature.name) {
             return <div style={{ height: '100%', boxSizing: 'border-box' }}></div>;
         }
@@ -35,7 +50,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
-                    {isPhase1ReceivedBy && <div style={{fontSize: '8px', fontStyle: 'italic', color: '#333'}}>Supply Unit/Assigned Personnel</div>}
+                    {description && <div style={{fontSize: '8px', fontStyle: 'italic', color: '#333'}}>{description}</div>}
                 </div>
                 <div style={{ flexGrow: 1, margin: '4px 0', display: 'flex', flexDirection: 'column' }}>
                     <span style={{ marginBottom: '2px' }}>Signature:</span>
@@ -92,8 +107,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                         <tr key={phase.id}>
                             <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'top' }}>{phase.id}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
-                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy)}</td>
-                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy, phase.id === 1)}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy, getSignatureDescription(phase.id, 'submittedBy'))}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy, getSignatureDescription(phase.id, 'receivedBy'))}</td>
                         </tr>
                     ))}
                 </tbody>

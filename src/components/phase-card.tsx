@@ -82,6 +82,22 @@ export function PhaseCard({
     );
   }
 
+  const getSubmittedByDescription = () => {
+    if (phase.id === 2 || phase.id === 5) return 'Supply Unit';
+    return undefined;
+  };
+  
+  const getReceivedByDescription = () => {
+      switch (phase.id) {
+          case 1: return 'Supply Unit/Assigned Personnel';
+          case 3: return 'Budget Unit';
+          case 4: return 'Supply Unit';
+          case 6: return 'Accounting Unit';
+          default: return undefined;
+      }
+  };
+
+
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -152,12 +168,13 @@ export function PhaseCard({
               title="Submitted by"
               signature={currentPhase.submittedBy}
               onUpdate={(sig) => handleSignatureUpdate('submittedBy', sig)}
+              description={getSubmittedByDescription()}
             />
             <SignatureUpload
               title="Received by"
               signature={currentPhase.receivedBy}
               onUpdate={(sig) => handleSignatureUpdate('receivedBy', sig)}
-              description={phase.id === 1 ? 'Supply Unit/Assigned Personnel' : undefined}
+              description={getReceivedByDescription()}
             />
           </div>
         </div>
