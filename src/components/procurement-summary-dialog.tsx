@@ -46,17 +46,17 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
             return <div style={{ height: '100%', boxSizing: 'border-box', verticalAlign: 'middle', textAlign: 'center' }}></div>;
         }
         return (
-            <div style={{ padding: '4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ padding: '2px', fontSize: '8px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
                 <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
-                    {description && <div style={{fontSize: '8px', fontStyle: 'italic', color: '#333'}}>{description}</div>}
+                    {description && <div style={{fontSize: '7px', fontStyle: 'italic', color: '#333'}}>{description}</div>}
                 </div>
-                <div style={{ flexGrow: 1, margin: '4px 0', display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ marginBottom: '2px' }}>Signature:</span>
+                <div style={{ flexGrow: 1, margin: '2px 0', display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ marginBottom: '1px' }}>Signature:</span>
                     {signature.signatureDataUrl && (
                         <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '35px', maxWidth: '100%', objectFit: 'contain' }} />
+                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '30px', maxWidth: '100%', objectFit: 'contain' }} />
                         </div>
                     )}
                 </div>
@@ -76,9 +76,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <div style={{ fontSize: '10px', textAlign: 'left', padding: '4px' }}>
+            <div style={{ fontSize: '9px', textAlign: 'left', padding: '2px' }}>
                 {checklist.map(item => (
-                    <div key={item.id} style={{ padding: '1px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start' }}>
+                    <div key={item.id} style={{ padding: '0.5px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start' }}>
                         <span style={{ marginRight: '4px', minWidth: '12px' }}>{item.checked ? '☑' : '☐'}</span>
                         <span>{item.label}</span>
                     </div>
@@ -90,11 +90,11 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const renderPhaseTable = (phases: Procurement['phases'], title: string) => {
         const tableHeader = (
             <thead>
-                <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
+                <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '9px' }}>
+                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
+                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
+                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
+                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
                 </tr>
             </thead>
         );
@@ -105,7 +105,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <tbody>
                     {phases.map(phase => (
                         <tr key={phase.id}>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle' }}>{phase.id}</td>
+                            <td style={{ border: '1px solid black', padding: '2px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle' }}>{phase.id}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy, getSignatureDescription(phase.id, 'submittedBy'))}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy, getSignatureDescription(phase.id, 'receivedBy'))}</td>
@@ -119,8 +119,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '16px', fontFamily: 'Helvetica, sans-serif' }}>
-            <div style={{ width: '800px', margin: '0 auto' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif' }}>
+            <div style={{ width: '210mm', height: '297mm', padding: '10mm', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
                  <header style={{ marginBottom: '8px', padding: '8px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
@@ -171,7 +171,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 </h3>
                 {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
                 
-                <footer style={{ marginTop: '8px', fontSize: '10px', textAlign: 'left' }}>
+                <footer style={{ marginTop: 'auto', fontSize: '10px', textAlign: 'left' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
                 </footer>
             </div>
@@ -206,46 +206,31 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
             format: 'a4'
         });
 
-        const page_width = pdf.internal.pageSize.getWidth();
-        const page_height = pdf.internal.pageSize.getHeight();
-        
-        const img_width = canvas.width;
-        const img_height = canvas.height;
-        const aspect_ratio = img_width / img_height;
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const canvasAspectRatio = canvasWidth / canvasHeight;
+        const pdfAspectRatio = pdfWidth / pdfHeight;
 
-        const pdf_content_width = page_width - 20; // margin 10 on each side
-        const pdf_content_height = pdf_content_width / aspect_ratio;
+        let renderWidth, renderHeight;
 
-        let y = 10;
-        let remaining_height_px = img_height;
-
-        while (remaining_height_px > 0) {
-            const page_height_px = (img_width * (page_height - y*2)) / (page_width - 20);
-            
-            const pageCanvas = document.createElement('canvas');
-            pageCanvas.width = img_width;
-            pageCanvas.height = Math.min(page_height_px, remaining_height_px);
-            
-            const pageCtx = pageCanvas.getContext('2d');
-            pageCtx?.drawImage(canvas, 0, img_height - remaining_height_px, img_width, pageCanvas.height, 0, 0, img_width, pageCanvas.height);
-            
-            if (y > 10) {
-                pdf.addPage();
-                y = 10;
-            }
-            
-            const page_img_width_mm = page_width - 20;
-            const page_img_height_mm = (pageCanvas.height * page_img_width_mm) / pageCanvas.width;
-            
-            pdf.addImage(pageCanvas.toDataURL('image/png', 1.0), 'PNG', 10, y, page_img_width_mm, page_img_height_mm, undefined, 'FAST');
-            
-            remaining_height_px -= page_height_px;
+        if (canvasAspectRatio > pdfAspectRatio) {
+            renderWidth = pdfWidth;
+            renderHeight = pdfWidth / canvasAspectRatio;
+        } else {
+            renderHeight = pdfHeight;
+            renderWidth = pdfHeight * canvasAspectRatio;
         }
 
+        const xOffset = (pdfWidth - renderWidth) / 2;
+        const yOffset = (pdfHeight - renderHeight) / 2;
+
+        pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', xOffset, yOffset, renderWidth, renderHeight, undefined, 'FAST');
         pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
     } catch (error) {
-        console.error(`Error generating PDF:`, error);
+        console.error('Error generating PDF:', error);
     } finally {
         setIsDownloading(false);
     }
