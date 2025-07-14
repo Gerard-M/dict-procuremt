@@ -190,6 +190,8 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         useCORS: true,
         backgroundColor: '#ffffff',
         scale: 2, // Capture at a higher resolution
+        width: printArea.scrollWidth,
+        height: printArea.scrollHeight,
       });
       const imgData = canvas.toDataURL('image/png');
       
