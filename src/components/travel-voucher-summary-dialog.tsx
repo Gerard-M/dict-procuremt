@@ -86,7 +86,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
                     <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', margin: 0 }}>Generated on {format(new Date(), 'PPP')}</p>
                  </header>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px' }}>
+                <table style={{ width: '95%', margin: '0 auto', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px' }}>
                     <tbody>
                          <tr>
                             <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%' }}>ACTIVITY / PROGRAM</td>
@@ -99,8 +99,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
                     </tbody>
                 </table>
 
-                <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px' }}>Processing Details</h2>
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed' }}>
+                <h2 style={{ width: '95%', margin: '0 auto 16px auto', fontSize: '16px', fontWeight: 'bold', color: '#1A237E' }}>Processing Details</h2>
+                <table style={{ width: '95%', margin: '0 auto', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
                             <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '50%' }}>CHECKLIST (Completed Items)</td>
