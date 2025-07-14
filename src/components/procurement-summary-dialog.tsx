@@ -137,7 +137,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'nowrap' }}>
                                     {projectTypes.map(pt => (
                                         <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-                                            <span style={{ fontSize: '14px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
+                                            <span style={{ fontSize: '14px', lineHeight: '1', display: 'inline-block', transform: 'translateY(-1px)' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
                                             <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
                                         </div>
                                     ))}
