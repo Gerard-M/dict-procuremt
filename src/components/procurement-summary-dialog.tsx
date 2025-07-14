@@ -121,20 +121,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
             <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '0.25in', boxSizing: 'border-box' }}>
-                 <header style={{ marginBottom: '16px', padding: '8px', width: '100%' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <tbody>
-                            <tr>
-                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                                        <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
-                                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
-                                        <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                 <header style={{ marginBottom: '16px', padding: '8px 0', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                        <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
+                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
+                        <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
+                    </div>
                 </header>
 
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '16px', margin: '0 auto' }}>
@@ -142,14 +134,14 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                         <tr>
                             <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>PROJECT</td>
                             <td style={{ border: '1px solid black', padding: '8px', boxSizing: 'border-box' }} colSpan={3}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'nowrap' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'nowrap' }}>
                                     {projectTypes.map(pt => (
-                                        <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <span style={{ fontSize: '14px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
-                                            <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
+                                        <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
+                                            <span style={{ fontSize: '14px', verticalAlign: 'middle' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
+                                            <label style={{ fontSize: '12px', fontWeight: '600', verticalAlign: 'middle' }}>{pt}</label>
                                         </div>
                                     ))}
-                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '12px'}}>: {procurement.otherProjectType}</span>}
+                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '12px', whiteSpace: 'nowrap'}}>: {procurement.otherProjectType}</span>}
                                 </div>
                             </td>
                         </tr>
