@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
   Dialog,
@@ -185,7 +184,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
   const summaryRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = React.useState(false);
 
-  const handleDownloadPdf = async () => {
+  const handleDownloadPng = async () => {
     const printArea = summaryRef.current;
     if (!printArea) return;
 
@@ -198,43 +197,16 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
             backgroundColor: '#ffffff',
         });
         
-        const imgData = canvas.toDataURL('image/png');
-        
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'in',
-            format: [8.27, 11.69]
-        });
-
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        
-        // Calculate the aspect ratio
-        const canvasAspectRatio = canvasWidth / canvasHeight;
-        const pdfAspectRatio = pdfWidth / pdfHeight;
-
-        let renderWidth = pdfWidth;
-        let renderHeight = pdfHeight;
-        let xOffset = 0;
-        let yOffset = 0;
-
-        // Fit the image to the PDF page, maintaining aspect ratio
-        if (canvasAspectRatio > pdfAspectRatio) {
-            renderHeight = pdfWidth / canvasAspectRatio;
-            yOffset = (pdfHeight - renderHeight) / 2;
-        } else {
-            renderWidth = pdfHeight * canvasAspectRatio;
-            xOffset = (pdfWidth - renderWidth) / 2;
-        }
-        
-        pdf.addImage(imgData, 'PNG', xOffset, yOffset, renderWidth, renderHeight);
-        pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `procurement-summary-${procurement.prNumber}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     } catch (error) {
-        console.error('Error generating PDF:', error);
+        console.error('Error generating PNG:', error);
     } finally {
         setIsDownloading(false);
     }
@@ -258,9 +230,9 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         </div>
         
         <DialogFooter>
-          <Button onClick={handleDownloadPdf} disabled={isDownloading}>
+          <Button onClick={handleDownloadPng} disabled={isDownloading}>
             {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-            Download PDF
+            Download PNG
           </Button>
         </DialogFooter>
       </DialogContent>
