@@ -119,7 +119,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', minHeight: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
             <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '0.25in', boxSizing: 'border-box' }}>
                  <header style={{ marginBottom: '16px', padding: '8px 0', width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
@@ -137,8 +137,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'nowrap' }}>
                                     {projectTypes.map(pt => (
                                         <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-                                            <span style={{ fontSize: '14px', verticalAlign: 'middle' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
-                                            <label style={{ fontSize: '12px', fontWeight: '600', verticalAlign: 'middle' }}>{pt}</label>
+                                            <span style={{ fontSize: '14px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
+                                            <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
                                         </div>
                                     ))}
                                     {procurement.projectType === 'OTHERS' && <span style={{fontSize: '12px', whiteSpace: 'nowrap'}}>: {procurement.otherProjectType}</span>}
@@ -196,11 +196,11 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'in',
-        format: [8.27, 11.69] // A4 paper size in inches
+        format: 'a4'
       });
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
