@@ -128,7 +128,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '32px' }}>
                                         <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
-                                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
+                                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '45px', width: 'auto' }}/>
                                         <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
                                     </div>
                                 </td>
@@ -137,7 +137,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </table>
                  </header>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '11px', marginBottom: '16px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '16px' }}>
                     <tbody>
                         <tr>
                             <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle' }}>PROJECT</td>
@@ -146,10 +146,10 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                                     {projectTypes.map(pt => (
                                         <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                             <span style={{ fontSize: '14px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
-                                            <label style={{ fontSize: '11px', fontWeight: '600' }}>{pt}</label>
+                                            <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
                                         </div>
                                     ))}
-                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '11px'}}>: {procurement.otherProjectType}</span>}
+                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '12px'}}>: {procurement.otherProjectType}</span>}
                                 </div>
                             </td>
                         </tr>
@@ -166,12 +166,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <h3 style={{ border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '12px', backgroundColor: '#F5F5F5', margin: '16px 0 16px 0' }}>
+                <h3 style={{ border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5', margin: '16px 0 16px 0' }}>
                     PROCUREMENT REQUIREMENTS
                 </h3>
                 {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
                 
-                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '11px', textAlign: 'left' }}>
+                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
                 </footer>
             </div>
@@ -193,13 +193,14 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
 
     try {
         const canvas = await html2canvas(printArea, {
-            scale: 2,
+            scale: 3, // Increased scale for better resolution
             useCORS: true,
             backgroundColor: '#ffffff',
-            windowWidth: printArea.scrollWidth,
-            windowHeight: printArea.scrollHeight,
         });
         
+        const imgData = canvas.toDataURL('image/png');
+        
+        // A4 dimensions in mm: 210 x 297
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -208,25 +209,27 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
+        
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const canvasAspectRatio = canvasWidth / canvasHeight;
-        const pdfAspectRatio = pdfWidth / pdfHeight;
 
-        let renderWidth, renderHeight;
+        // Use the width of the PDF as the basis for scaling, but leave a margin
+        const margin = 10; // 10mm margin on each side
+        const contentWidth = pdfWidth - (margin * 2);
+        const contentHeight = contentWidth / canvasAspectRatio;
 
-        if (canvasAspectRatio > pdfAspectRatio) {
-            renderWidth = pdfWidth;
-            renderHeight = pdfWidth / canvasAspectRatio;
+        // If the content is too tall, scale it down to fit the height
+        if (contentHeight > pdfHeight - (margin * 2)) {
+            const newContentHeight = pdfHeight - (margin * 2);
+            const newContentWidth = newContentHeight * canvasAspectRatio;
+            const xOffset = (pdfWidth - newContentWidth) / 2;
+            pdf.addImage(imgData, 'PNG', xOffset, margin, newContentWidth, newContentHeight);
         } else {
-            renderHeight = pdfHeight;
-            renderWidth = pdfHeight * canvasAspectRatio;
+            const yOffset = (pdfHeight - contentHeight) / 2;
+            pdf.addImage(imgData, 'PNG', margin, yOffset, contentWidth, contentHeight);
         }
-
-        const xOffset = (pdfWidth - renderWidth) / 2;
-        const yOffset = (pdfHeight - renderHeight) / 2;
-
-        pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', xOffset, yOffset, renderWidth, renderHeight, undefined, 'FAST');
+        
         pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
     } catch (error) {

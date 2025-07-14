@@ -135,8 +135,8 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
     setIsDownloading(true);
 
     try {
-        const canvas = await html2canvas(printArea.querySelector('div[style*="width: 800px"]') || printArea, {
-            scale: 2,
+        const canvas = await html2canvas(printArea, {
+            scale: 3,
             useCORS: true,
             backgroundColor: '#ffffff',
         });
@@ -149,29 +149,27 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
             format: 'a4'
         });
 
-        const page_width = pdf.internal.pageSize.getWidth();
-        const page_height = pdf.internal.pageSize.getHeight();
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
         
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const canvasAspectRatio = canvasWidth / canvasHeight;
+
         const margin = 10;
-        const content_width = page_width - (margin * 2);
-        const content_height = page_height - (margin * 2);
-        
-        const img_width = canvas.width;
-        const img_height = canvas.height;
-        const aspect_ratio = img_height / img_width;
+        const contentWidth = pdfWidth - (margin * 2);
+        const contentHeight = contentWidth / canvasAspectRatio;
 
-        let final_width = content_width;
-        let final_height = content_width * aspect_ratio;
-
-        if (final_height > content_height) {
-            final_height = content_height;
-            final_width = final_height / aspect_ratio;
+        if (contentHeight > pdfHeight - (margin * 2)) {
+            const newContentHeight = pdfHeight - (margin * 2);
+            const newContentWidth = newContentHeight * canvasAspectRatio;
+            const xOffset = (pdfWidth - newContentWidth) / 2;
+            pdf.addImage(imgData, 'PNG', xOffset, margin, newContentWidth, newContentHeight);
+        } else {
+            const yOffset = (pdfHeight - contentHeight) / 2;
+            pdf.addImage(imgData, 'PNG', margin, yOffset, contentWidth, contentHeight);
         }
-
-        const finalX = (page_width - final_width) / 2;
-        const finalY = (page_height - final_height) / 2;
-
-        pdf.addImage(imgData, 'PNG', finalX, finalY, final_width, final_height, undefined, 'FAST');
+        
         pdf.save(`honoraria-summary-${honoraria.activityTitle.replace(/\s/g, '_')}.pdf`);
 
     } catch (error) {
