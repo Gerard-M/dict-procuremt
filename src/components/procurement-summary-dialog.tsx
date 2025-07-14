@@ -125,14 +125,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                             <tr>
-                                <td style={{ width: '33.33%', textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '45px', width: 'auto', margin: '0 auto' }} />
-                                </td>
-                                <td style={{ width: '33.33%', textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '45px', width: 'auto', margin: '0 auto' }}/>
-                                </td>
-                                <td style={{ width: '33.33%', textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '45px', width: 'auto', margin: '0 auto' }} />
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '32px' }}>
+                                        <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '45px', width: 'auto' }} />
+                                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '45px', width: 'auto' }}/>
+                                        <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '45px', width: 'auto' }} />
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
