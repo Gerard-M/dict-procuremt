@@ -27,7 +27,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
     
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
-            return <div style={{ height: '100%', boxSizing: 'border-box' }}></div>;
+            return <div style={{ height: '100%', boxSizing: 'border-box', padding: '4px' }}></div>;
         }
         return (
             <div style={{ padding: '4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
@@ -137,6 +137,7 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         const canvas = await html2canvas(printArea, {
             useCORS: true,
             backgroundColor: '#ffffff',
+            scale: 2,
         });
 
         const dataUrl = canvas.toDataURL('image/png');

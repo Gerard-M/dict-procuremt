@@ -42,10 +42,10 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
 
     const renderSignature = (signature: Signature | null, description: string | null = null) => {
         if (!signature || !signature.name) {
-            return <div style={{ height: '100%', boxSizing: 'border-box', verticalAlign: 'middle', textAlign: 'center' }}></div>;
+            return <div style={{ height: '100%', boxSizing: 'border-box', padding: '4px' }}></div>;
         }
         return (
-            <div style={{ padding: '2px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ padding: '4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
                 <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
@@ -75,7 +75,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <div style={{ fontSize: '10px', textAlign: 'left', padding: '2px' }}>
+            <div style={{ fontSize: '10px', textAlign: 'left', padding: '4px' }}>
                 {checklist.map(item => (
                     <div key={item.id} style={{ padding: '1px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start' }}>
                         <span style={{ marginRight: '4px', minWidth: '12px' }}>{item.checked ? '☑' : '☐'}</span>
@@ -90,10 +90,10 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         const tableHeader = (
             <thead>
                 <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
-                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
-                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
-                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
-                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
+                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
                 </tr>
             </thead>
         );
@@ -104,7 +104,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <tbody>
                     {phases.map(phase => (
                         <tr key={phase.id}>
-                            <td style={{ border: '1px solid black', padding: '2px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle' }}>{phase.id}</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle' }}>{phase.id}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy, getSignatureDescription(phase.id, 'submittedBy'))}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy, getSignatureDescription(phase.id, 'receivedBy'))}</td>
@@ -196,6 +196,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         const canvas = await html2canvas(printArea, {
             useCORS: true,
             backgroundColor: '#ffffff',
+            scale: 2,
         });
         
         const dataUrl = canvas.toDataURL('image/png');
