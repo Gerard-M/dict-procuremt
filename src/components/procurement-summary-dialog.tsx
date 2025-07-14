@@ -118,62 +118,64 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
-            <header style={{ marginBottom: '16px', padding: '8px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', height: '100%', alignItems: 'center' }}>
+                 <header style={{ marginBottom: '16px', padding: '8px', width: '100%' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <tbody>
+                            <tr>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '32px' }}>
+                                        <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
+                                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
+                                        <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </header>
+
+                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '16px' }}>
                     <tbody>
                         <tr>
-                            <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '32px' }}>
-                                    <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
-                                    <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
-                                    <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle' }}>PROJECT</td>
+                            <td style={{ border: '1px solid black', padding: '5px' }} colSpan={3}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'nowrap' }}>
+                                    {projectTypes.map(pt => (
+                                        <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <span style={{ fontSize: '14px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
+                                            <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
+                                        </div>
+                                    ))}
+                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '12px'}}>: {procurement.otherProjectType}</span>}
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
+                        </tr>
+                        <tr>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>AMOUNT</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '35%' }}>{formatCurrency(procurement.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '15%' }}>PR NUMBER:</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '25%' }}>{procurement.prNumber}</td>
+                        </tr>
                     </tbody>
                 </table>
-            </header>
-
-            <table style={{ width: '95%', margin: '0 auto 16px auto', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px' }}>
-                <tbody>
-                    <tr>
-                        <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle' }}>PROJECT</td>
-                        <td style={{ border: '1px solid black', padding: '5px' }} colSpan={3}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'nowrap' }}>
-                                {projectTypes.map(pt => (
-                                    <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                        <span style={{ fontSize: '14px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
-                                        <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
-                                    </div>
-                                ))}
-                                {procurement.projectType === 'OTHERS' && <span style={{fontSize: '12px'}}>: {procurement.otherProjectType}</span>}
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>ACTIVITY / PROCUREMENT (SVP)</td>
-                        <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
-                    </tr>
-                    <tr>
-                        <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>AMOUNT</td>
-                        <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '35%' }}>{formatCurrency(procurement.amount)}</td>
-                        <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '15%' }}>PR NUMBER:</td>
-                        <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '25%' }}>{procurement.prNumber}</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h3 style={{ width: '95%', margin: '0 auto 16px auto', border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5' }}>
-                PROCUREMENT REQUIREMENTS
-            </h3>
-            <div style={{ width: '95%', margin: '0 auto' }}>
-                {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
+                
+                <h3 style={{ width: '95%', border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5', marginBottom: '16px' }}>
+                    PROCUREMENT REQUIREMENTS
+                </h3>
+                <div style={{ width: '95%' }}>
+                    {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
+                </div>
+                
+                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left', width: '95%' }}>
+                    <p style={{margin: 0}}>Procurement Number: 2025-___</p>
+                </footer>
             </div>
-            
-            <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left', width: '95%', margin: '0 auto' }}>
-                <p style={{margin: 0}}>Procurement Number: 2025-___</p>
-            </footer>
         </div>
     );
 });
