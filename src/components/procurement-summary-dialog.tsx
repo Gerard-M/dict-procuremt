@@ -125,14 +125,13 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                             <tr>
-                                <td style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                <td style={{ width: '33.33%', textAlign: 'center', verticalAlign: 'middle' }}>
                                     <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '45px', width: 'auto', margin: '0 auto' }} />
                                 </td>
-                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <p style={{ fontWeight: 'bold', fontSize: '12px', lineHeight: '1.2', margin: 0 }}>DIGITAL TRANSFORMATION CENTERS</p>
-                                    <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '20px', width: 'auto', marginTop: '4px' }}/>
+                                <td style={{ width: '33.33%', textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '25px', width: 'auto', margin: '0 auto' }}/>
                                 </td>
-                                <td style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                <td style={{ width: '33.33%', textAlign: 'center', verticalAlign: 'middle' }}>
                                     <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '45px', width: 'auto', margin: '0 auto' }} />
                                 </td>
                             </tr>
@@ -195,10 +194,12 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
     setIsDownloading(true);
 
     try {
-        const canvas = await html2canvas(printArea.querySelector('div[style*="width: 800px"]') || printArea, {
+        const canvas = await html2canvas(printArea, {
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
+            windowWidth: printArea.scrollWidth,
+            windowHeight: printArea.scrollHeight,
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -223,15 +224,46 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         let final_width = content_width;
         let final_height = content_width * aspect_ratio;
 
-        if (final_height > content_height) {
-            final_height = content_height;
+        if (final_height > page_height) {
+            final_height = page_height;
             final_width = final_height / aspect_ratio;
         }
 
-        const finalX = (page_width - final_width) / 2;
-        const finalY = (page_height - final_height) / 2;
+        let y = 0;
+        let remaining_height = img_height;
+        const page_height_px = (page_height * img_width) / page_width;
 
-        pdf.addImage(imgData, 'PNG', finalX, finalY, final_width, final_height, undefined, 'FAST');
+        while (remaining_height > 0) {
+            const pageCanvas = document.createElement('canvas');
+            pageCanvas.width = img_width;
+            pageCanvas.height = Math.min(page_height_px, remaining_height);
+            const pageCtx = pageCanvas.getContext('2d');
+            pageCtx?.drawImage(canvas, 0, y, img_width, Math.min(page_height_px, remaining_height), 0, 0, img_width, Math.min(page_height_px, remaining_height));
+            
+            const pageImgData = pageCanvas.toDataURL('image/png');
+            
+            if (y > 0) {
+                pdf.addPage();
+            }
+
+            const page_img_height_mm = (pageCanvas.height * page_width) / pageCanvas.width;
+            let final_page_height = content_height;
+            let final_page_width = content_height / (pageCanvas.height / pageCanvas.width);
+
+            if (final_page_width > content_width) {
+                 final_page_width = content_width;
+                 final_page_height = content_width * (pageCanvas.height / pageCanvas.width);
+            }
+            
+            const finalX = (page_width - final_page_width) / 2;
+            const finalY = (page_height - final_page_height) / 2;
+            
+            pdf.addImage(pageImgData, 'PNG', finalX, finalY, final_page_width, final_page_height, undefined, 'FAST');
+            
+            remaining_height -= page_height_px;
+            y += page_height_px;
+        }
+
         pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
     } catch (error) {
@@ -253,7 +285,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         </DialogHeader>
         
         <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted">
-            <div className="bg-gray-200">
+            <div className="bg-white">
                 <PDFDocument ref={summaryRef} procurement={procurement} />
             </div>
         </div>
