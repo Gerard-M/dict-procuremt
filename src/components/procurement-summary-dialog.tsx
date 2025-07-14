@@ -119,13 +119,13 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', height: '100%', alignItems: 'center' }}>
+            <div style={{ width: '100%', height: '100%' }}>
                  <header style={{ marginBottom: '16px', padding: '8px', width: '100%' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                             <tr>
                                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '32px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
                                         <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
                                         <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
                                         <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
@@ -136,7 +136,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </table>
                 </header>
 
-                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '16px' }}>
+                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '16px', margin: '0 auto' }}>
                     <tbody>
                         <tr>
                             <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle' }}>PROJECT</td>
@@ -165,14 +165,14 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </tbody>
                 </table>
                 
-                <h3 style={{ width: '95%', border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5', marginBottom: '16px' }}>
+                <h3 style={{ width: '95%', border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5', marginBottom: '16px', margin: '16px auto' }}>
                     PROCUREMENT REQUIREMENTS
                 </h3>
-                <div style={{ width: '95%' }}>
+                <div style={{ width: '95%', margin: '0 auto' }}>
                     {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
                 </div>
                 
-                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left', width: '95%' }}>
+                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left', width: '95%', margin: 'auto' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
                 </footer>
             </div>
@@ -194,7 +194,6 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
 
     try {
         const canvas = await html2canvas(printArea, {
-            scale: 3,
             useCORS: true,
             backgroundColor: '#ffffff',
         });

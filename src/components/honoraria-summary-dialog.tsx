@@ -80,13 +80,13 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
 
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', height: '100%', alignItems: 'center' }}>
+            <div style={{ width: '100%', height: '100%' }}>
                  <header style={{ textAlign: 'center', marginBottom: '32px', width: '100%' }}>
                     <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1A237E', margin: 0 }}>Honoraria Payment Summary</h1>
                     <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', margin: 0 }}>Generated on {format(new Date(), 'PPP')}</p>
                  </header>
 
-                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px' }}>
+                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px', margin: '0 auto' }}>
                     <tbody>
                          <tr>
                             <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%' }}>ACTIVITY / PROGRAM</td>
@@ -99,8 +99,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
                     </tbody>
                 </table>
 
-                <h2 style={{ width: '95%', fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px' }}>Processing Details</h2>
-                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed' }}>
+                <h2 style={{ width: '95%', fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px', margin: '16px auto 0' }}>Processing Details</h2>
+                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed', margin: '0 auto' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
                             <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '50%' }}>CHECKLIST (Completed Items)</td>
@@ -135,7 +135,6 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
 
     try {
         const canvas = await html2canvas(printArea, {
-            scale: 3,
             useCORS: true,
             backgroundColor: '#ffffff',
         });
