@@ -153,7 +153,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>ACTIVITY / PROCUREMENT (SVP)</td>
                             <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
                         </tr>
                         <tr>
