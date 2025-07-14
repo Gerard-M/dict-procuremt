@@ -42,10 +42,10 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
 
     const renderSignature = (signature: Signature | null, description: string | null = null) => {
         if (!signature || !signature.name) {
-            return <div style={{ height: '100%', boxSizing: 'border-box', padding: '4px' }}></div>;
+            return <div style={{ height: '100%', boxSizing: 'border-box', padding: '5px' }}></div>;
         }
         return (
-            <div style={{ padding: '4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ padding: '5px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
                 <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
@@ -75,7 +75,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <div style={{ fontSize: '10px', textAlign: 'left', padding: '4px' }}>
+            <div style={{ fontSize: '10px', textAlign: 'left', padding: '5px' }}>
                 {checklist.map(item => (
                     <div key={item.id} style={{ padding: '1px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start' }}>
                         <span style={{ marginRight: '4px', minWidth: '12px' }}>{item.checked ? '☑' : '☐'}</span>
@@ -86,14 +86,14 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         );
     }
     
-    const renderPhaseTable = (phases: Procurement['phases'], title: string) => {
+    const renderPhaseTable = (phases: Procurement['phases']) => {
         const tableHeader = (
             <thead>
                 <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
-                    <td style={{ border: '1px solid black', padding: '4px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
+                    <td style={{ border: '1px solid black', padding: '5px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
+                    <td style={{ border: '1px solid black', padding: '5px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
+                    <td style={{ border: '1px solid black', padding: '5px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
+                    <td style={{ border: '1px solid black', padding: '5px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
                 </tr>
             </thead>
         );
@@ -104,7 +104,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <tbody>
                     {phases.map(phase => (
                         <tr key={phase.id}>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle' }}>{phase.id}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle' }}>{phase.id}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderChecklist(phase.checklist)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.submittedBy, getSignatureDescription(phase.id, 'submittedBy'))}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top' }}>{renderSignature(phase.receivedBy, getSignatureDescription(phase.id, 'receivedBy'))}</td>
@@ -119,7 +119,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
-            <div style={{ width: '100%', height: '100%' }}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                  <header style={{ marginBottom: '16px', padding: '8px', width: '100%' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
@@ -153,26 +153,26 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>ACTIVITY / PROCUREMENT (SVP)</td>
-                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', verticalAlign: 'middle' }} colSpan={3}>{procurement.title}</td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>AMOUNT</td>
-                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '35%' }}>{formatCurrency(procurement.amount)}</td>
-                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '15%' }}>PR NUMBER:</td>
-                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '25%' }}>{procurement.prNumber}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', verticalAlign: 'middle' }}>AMOUNT</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '35%', verticalAlign: 'middle' }}>{formatCurrency(procurement.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '15%', verticalAlign: 'middle' }}>PR NUMBER:</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '25%', verticalAlign: 'middle' }}>{procurement.prNumber}</td>
                         </tr>
                     </tbody>
                 </table>
                 
-                <h3 style={{ width: '95%', border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5', marginBottom: '16px', margin: '16px auto' }}>
+                <h3 style={{ width: '95%', border: '1px solid black', padding: '5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5', margin: '0 auto 16px auto' }}>
                     PROCUREMENT REQUIREMENTS
                 </h3>
                 <div style={{ width: '95%', margin: '0 auto' }}>
-                    {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
+                    {renderPhaseTable(procurement.phases)}
                 </div>
                 
-                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left', width: '95%', margin: 'auto' }}>
+                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left', width: '95%', margin: '0 auto' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
                 </footer>
             </div>

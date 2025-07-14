@@ -27,10 +27,10 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
     
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
-            return <div style={{ height: '100%', boxSizing: 'border-box', padding: '4px' }}></div>;
+            return <div style={{ height: '100%', boxSizing: 'border-box', padding: '5px' }}></div>;
         }
         return (
-            <div style={{ padding: '4px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ padding: '5px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
                 <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
@@ -65,7 +65,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
         }
 
         return (
-             <div style={{ fontSize: '10px', textAlign: 'left', padding: '4px' }}>
+             <div style={{ fontSize: '10px', textAlign: 'left', padding: '5px' }}>
                 {checkedItems.map(item => (
                     <div key={item.id} style={{ padding: '2px 0', display: 'flex', alignItems: 'start', gap: '4px' }}>
                         <span style={{flexShrink: 0}}>☑</span>
@@ -80,7 +80,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
 
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
-            <div style={{ width: '100%', height: '100%' }}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                  <header style={{ textAlign: 'center', marginBottom: '32px', width: '100%' }}>
                     <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1A237E', margin: 0 }}>Travel Voucher Summary</h1>
                     <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', margin: 0 }}>Generated on {format(new Date(), 'PPP')}</p>
@@ -89,12 +89,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px', margin: '0 auto' }}>
                     <tbody>
                          <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%' }}>ACTIVITY / PROGRAM</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600' }}>{travelVoucher.activityTitle}</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%', verticalAlign: 'middle' }}>ACTIVITY / PROGRAM</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle' }}>{travelVoucher.activityTitle}</td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5' }}>AMOUNT</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600' }}>{formatCurrency(travelVoucher.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', verticalAlign: 'middle' }}>AMOUNT</td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle' }}>{formatCurrency(travelVoucher.amount)}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -103,9 +103,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed', margin: '0 auto' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
-                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '50%' }}>CHECKLIST (Completed Items)</td>
-                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '25%' }}>SUBMITTED BY</td>
-                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '25%' }}>RECEIVED BY</td>
+                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '50%', verticalAlign: 'middle' }}>CHECKLIST (Completed Items)</td>
+                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle' }}>SUBMITTED BY</td>
+                            <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle' }}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
