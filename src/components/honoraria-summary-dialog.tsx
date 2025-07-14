@@ -80,8 +80,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
     const { phase } = honoraria;
 
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '32px', fontFamily: 'sans-serif' }}>
-            <div style={{ width: '800px', margin: '0 auto' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'sans-serif', width: '8.27in', height: '11.69in', padding: '0.5in', boxSizing: 'border-box' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                  <header style={{ textAlign: 'center', marginBottom: '32px' }}>
                     <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1A237E', margin: 0 }}>Honoraria Payment Summary</h1>
                     <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', margin: 0 }}>Generated on {format(new Date(), 'PPP')}</p>
@@ -145,8 +145,8 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         
         const pdf = new jsPDF({
             orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
+            unit: 'in',
+            format: [8.27, 11.69]
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -155,21 +155,22 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const canvasAspectRatio = canvasWidth / canvasHeight;
+        const pdfAspectRatio = pdfWidth / pdfHeight;
 
-        const margin = 10;
-        const contentWidth = pdfWidth - (margin * 2);
-        const contentHeight = contentWidth / canvasAspectRatio;
+        let renderWidth = pdfWidth;
+        let renderHeight = pdfHeight;
+        let xOffset = 0;
+        let yOffset = 0;
 
-        if (contentHeight > pdfHeight - (margin * 2)) {
-            const newContentHeight = pdfHeight - (margin * 2);
-            const newContentWidth = newContentHeight * canvasAspectRatio;
-            const xOffset = (pdfWidth - newContentWidth) / 2;
-            pdf.addImage(imgData, 'PNG', xOffset, margin, newContentWidth, newContentHeight);
+        if (canvasAspectRatio > pdfAspectRatio) {
+            renderHeight = pdfWidth / canvasAspectRatio;
+            yOffset = (pdfHeight - renderHeight) / 2;
         } else {
-            const yOffset = (pdfHeight - contentHeight) / 2;
-            pdf.addImage(imgData, 'PNG', margin, yOffset, contentWidth, contentHeight);
+            renderWidth = pdfHeight * canvasAspectRatio;
+            xOffset = (pdfWidth - renderWidth) / 2;
         }
         
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, renderWidth, renderHeight);
         pdf.save(`honoraria-summary-${honoraria.activityTitle.replace(/\s/g, '_')}.pdf`);
 
     } catch (error) {
@@ -191,7 +192,7 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         </DialogHeader>
         
         <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted">
-            <div className="bg-gray-200">
+            <div className="bg-white">
                 <PDFDocument ref={summaryRef} honoraria={honoraria} />
             </div>
         </div>

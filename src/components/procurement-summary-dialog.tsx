@@ -119,8 +119,8 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif' }}>
-            <div style={{ width: '800px', padding: '20px', boxSizing: 'border-box' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.5in', boxSizing: 'border-box' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                  <header style={{ marginBottom: '16px', padding: '8px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
@@ -128,7 +128,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '32px' }}>
                                         <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
-                                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '45px', width: 'auto' }}/>
+                                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
                                         <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
                                     </div>
                                 </td>
@@ -193,18 +193,17 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
 
     try {
         const canvas = await html2canvas(printArea, {
-            scale: 3, // Increased scale for better resolution
+            scale: 3,
             useCORS: true,
             backgroundColor: '#ffffff',
         });
         
         const imgData = canvas.toDataURL('image/png');
         
-        // A4 dimensions in mm: 210 x 297
         const pdf = new jsPDF({
             orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
+            unit: 'in',
+            format: [8.27, 11.69]
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -212,24 +211,26 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
+        
+        // Calculate the aspect ratio
         const canvasAspectRatio = canvasWidth / canvasHeight;
+        const pdfAspectRatio = pdfWidth / pdfHeight;
 
-        // Use the width of the PDF as the basis for scaling, but leave a margin
-        const margin = 10; // 10mm margin on each side
-        const contentWidth = pdfWidth - (margin * 2);
-        const contentHeight = contentWidth / canvasAspectRatio;
+        let renderWidth = pdfWidth;
+        let renderHeight = pdfHeight;
+        let xOffset = 0;
+        let yOffset = 0;
 
-        // If the content is too tall, scale it down to fit the height
-        if (contentHeight > pdfHeight - (margin * 2)) {
-            const newContentHeight = pdfHeight - (margin * 2);
-            const newContentWidth = newContentHeight * canvasAspectRatio;
-            const xOffset = (pdfWidth - newContentWidth) / 2;
-            pdf.addImage(imgData, 'PNG', xOffset, margin, newContentWidth, newContentHeight);
+        // Fit the image to the PDF page, maintaining aspect ratio
+        if (canvasAspectRatio > pdfAspectRatio) {
+            renderHeight = pdfWidth / canvasAspectRatio;
+            yOffset = (pdfHeight - renderHeight) / 2;
         } else {
-            const yOffset = (pdfHeight - contentHeight) / 2;
-            pdf.addImage(imgData, 'PNG', margin, yOffset, contentWidth, contentHeight);
+            renderWidth = pdfHeight * canvasAspectRatio;
+            xOffset = (pdfWidth - renderWidth) / 2;
         }
         
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, renderWidth, renderHeight);
         pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
     } catch (error) {
