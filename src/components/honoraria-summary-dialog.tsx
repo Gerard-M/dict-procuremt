@@ -81,7 +81,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
 
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
-            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '0.25in', boxSizing: 'border-box' }}>
                  <header style={{ textAlign: 'center', marginBottom: '32px', width: '100%' }}>
                     <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1A237E', margin: 0 }}>Honoraria Payment Summary</h1>
                     <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', margin: 0 }}>Generated on {format(new Date(), 'PPP')}</p>

@@ -120,7 +120,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
-            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '0.25in', boxSizing: 'border-box' }}>
                  <header style={{ marginBottom: '16px', padding: '8px', width: '100%' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
