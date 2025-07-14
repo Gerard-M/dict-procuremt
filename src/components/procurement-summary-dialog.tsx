@@ -121,7 +121,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '16px', fontFamily: 'Helvetica, sans-serif' }}>
             <div style={{ width: '800px', margin: '0 auto' }}>
-                 <header style={{ marginBottom: '8px', border: '1px solid black', padding: '8px' }}>
+                 <header style={{ marginBottom: '8px', padding: '8px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                             <tr>
