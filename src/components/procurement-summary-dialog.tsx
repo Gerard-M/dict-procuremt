@@ -46,17 +46,17 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
             return <div style={{ height: '100%', boxSizing: 'border-box', verticalAlign: 'middle', textAlign: 'center' }}></div>;
         }
         return (
-            <div style={{ padding: '2px', fontSize: '8px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ padding: '2px', fontSize: '9px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxSizing: 'border-box' }}>
                 <div style={{ wordWrap: 'break-word' }}>
                     <span>Name: </span>
                     <span style={{ fontWeight: '600' }}>{signature.name}</span>
-                    {description && <div style={{fontSize: '7px', fontStyle: 'italic', color: '#333'}}>{description}</div>}
+                    {description && <div style={{fontSize: '8px', fontStyle: 'italic', color: '#333'}}>{description}</div>}
                 </div>
                 <div style={{ flexGrow: 1, margin: '2px 0', display: 'flex', flexDirection: 'column' }}>
                     <span style={{ marginBottom: '1px' }}>Signature:</span>
                     {signature.signatureDataUrl && (
                         <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '30px', maxWidth: '100%', objectFit: 'contain' }} />
+                             <img src={signature.signatureDataUrl} alt="Signature" style={{ maxHeight: '35px', maxWidth: '100%', objectFit: 'contain' }} />
                         </div>
                     )}
                 </div>
@@ -76,9 +76,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     
     const renderChecklist = (checklist: ChecklistItem[]) => {
         return (
-            <div style={{ fontSize: '9px', textAlign: 'left', padding: '2px' }}>
+            <div style={{ fontSize: '10px', textAlign: 'left', padding: '2px' }}>
                 {checklist.map(item => (
-                    <div key={item.id} style={{ padding: '0.5px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start' }}>
+                    <div key={item.id} style={{ padding: '1px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start' }}>
                         <span style={{ marginRight: '4px', minWidth: '12px' }}>{item.checked ? '☑' : '☐'}</span>
                         <span>{item.label}</span>
                     </div>
@@ -90,17 +90,17 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const renderPhaseTable = (phases: Procurement['phases'], title: string) => {
         const tableHeader = (
             <thead>
-                <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '9px' }}>
-                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
-                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
-                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
-                    <td style={{ border: '1px solid black', padding: '2px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
+                <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
+                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '10%' }}>PHASE</td>
+                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '40%' }}>PARTICULARS</td>
+                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>SUBMITTED BY</td>
+                    <td style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle', width: '25%' }}>RECEIVED BY</td>
                 </tr>
             </thead>
         );
 
         return (
-            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', tableLayout: 'fixed' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '11px', tableLayout: 'fixed' }}>
                 {tableHeader}
                 <tbody>
                     {phases.map(phase => (
@@ -119,9 +119,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ width: '210mm', height: '297mm', padding: '10mm', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
-                 <header style={{ marginBottom: '8px', padding: '8px' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif' }}>
+            <div style={{ width: '800px', padding: '20px', boxSizing: 'border-box' }}>
+                 <header style={{ marginBottom: '16px', padding: '8px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                             <tr>
@@ -137,41 +137,41 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                     </table>
                  </header>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '8px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '11px', marginBottom: '16px' }}>
                     <tbody>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle' }}>PROJECT</td>
-                            <td style={{ border: '1px solid black', padding: '4px' }} colSpan={3}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle' }}>PROJECT</td>
+                            <td style={{ border: '1px solid black', padding: '5px' }} colSpan={3}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'nowrap' }}>
                                     {projectTypes.map(pt => (
                                         <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <span style={{ fontSize: '12px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
-                                            <label style={{ fontSize: '10px', fontWeight: '600' }}>{pt}</label>
+                                            <span style={{ fontSize: '14px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
+                                            <label style={{ fontSize: '11px', fontWeight: '600' }}>{pt}</label>
                                         </div>
                                     ))}
-                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '10px'}}>: {procurement.otherProjectType}</span>}
+                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '11px'}}>: {procurement.otherProjectType}</span>}
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold' }}>ACTIVITY / PROCUREMENT (SVP)</td>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600' }} colSpan={3}>{procurement.title}</td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold' }}>AMOUNT</td>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: '600', width: '35%' }}>{formatCurrency(procurement.amount)}</td>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', width: '15%' }}>PR NUMBER:</td>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: '600', width: '25%' }}>{procurement.prNumber}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}>AMOUNT</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '35%' }}>{formatCurrency(procurement.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold', width: '15%' }}>PR NUMBER:</td>
+                            <td style={{ border: '1px solid black', padding: '5px', fontWeight: '600', width: '25%' }}>{procurement.prNumber}</td>
                         </tr>
                     </tbody>
                 </table>
                 
-                <h3 style={{ border: '1px solid black', padding: '3px 4px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '11px', backgroundColor: '#F5F5F5', margin: '8px 0 8px 0' }}>
+                <h3 style={{ border: '1px solid black', padding: '4px 5px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '12px', backgroundColor: '#F5F5F5', margin: '16px 0 16px 0' }}>
                     PROCUREMENT REQUIREMENTS
                 </h3>
                 {renderPhaseTable(procurement.phases, "PROCUREMENT REQUIREMENTS")}
                 
-                <footer style={{ marginTop: 'auto', fontSize: '10px', textAlign: 'left' }}>
+                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '11px', textAlign: 'left' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
                 </footer>
             </div>
