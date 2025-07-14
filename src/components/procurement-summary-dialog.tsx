@@ -119,7 +119,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ width: '210mm', height: '297mm', padding: '10mm', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
                  <header style={{ marginBottom: '8px', padding: '8px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
