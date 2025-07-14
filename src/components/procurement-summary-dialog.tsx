@@ -121,23 +121,19 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
     return (
         <div ref={ref} style={{ backgroundColor: 'white', color: 'black', padding: '16px', fontFamily: 'sans-serif' }}>
             <div style={{ width: '800px', margin: '0 auto' }}>
-                 <header style={{ marginBottom: '8px', border: '1px solid black', padding: '4px' }}>
+                 <header style={{ marginBottom: '8px', border: '1px solid black', padding: '8px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                             <tr>
-                                <td style={{ width: '60px', textAlign: 'center' }}>
-                                    <div style={{ border: '2px solid #000080', borderRadius: '50%', height: '45px', width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
-                                        <p style={{ color: '#000080', fontWeight: 'bold', fontSize: '10px', margin: 0 }}>ILCDB</p>
-                                    </div>
+                                <td style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '45px', width: 'auto', margin: '0 auto' }} />
                                 </td>
                                 <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                     <p style={{ fontWeight: 'bold', fontSize: '12px', lineHeight: '1.2', margin: 0 }}>DIGITAL TRANSFORMATION CENTERS</p>
-                                    <div style={{ backgroundColor: '#E53935', color: 'white', fontWeight: 'bold', fontSize: '10px', padding: '1px 6px', marginTop: '2px', display: 'inline-block' }}>TECH4ED</div>
+                                    <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '20px', width: 'auto', marginTop: '4px' }}/>
                                 </td>
-                                <td style={{ width: '60px', textAlign: 'center' }}>
-                                    <div style={{ border: '2px solid #FBC02D', borderRadius: '50%', height: '45px', width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
-                                        <p style={{ color: '#FBC02D', fontWeight: 'bold', fontSize: '10px', margin: 0 }}>SPARK</p>
-                                    </div>
+                                <td style={{ width: '80px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '45px', width: 'auto', margin: '0 auto' }} />
                                 </td>
                             </tr>
                         </tbody>
@@ -147,9 +143,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '8px' }}>
                     <tbody>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', width: '25%' }}>PROJECT</td>
+                            <td style={{ border: '1px solid black', padding: '4px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle' }}>PROJECT</td>
                             <td style={{ border: '1px solid black', padding: '4px' }} colSpan={3}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
                                     {projectTypes.map(pt => (
                                         <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                             <span style={{ fontSize: '12px' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
