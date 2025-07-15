@@ -22,9 +22,10 @@ interface HonorariaSummaryDialogProps {
   honoraria: Honoraria;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isForExport?: boolean;
 }
 
-const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>(({ honoraria }, ref) => {
+const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria, isForExport?: boolean }>(({ honoraria, isForExport }, ref) => {
     
     const renderSignature = (signature: Signature | null) => {
         if (!signature || !signature.name) {
@@ -90,12 +91,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px', margin: '0 auto' }}>
                     <tbody>
                          <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%', verticalAlign: 'middle', boxSizing: 'border-box' }}>ACTIVITY / PROGRAM</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}>{honoraria.activityTitle}</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>ACTIVITY / PROGRAM</div></td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>{honoraria.activityTitle}</div></td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', verticalAlign: 'middle', boxSizing: 'border-box' }}>AMOUNT</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}>{formatCurrency(honoraria.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>AMOUNT</div></td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>{formatCurrency(honoraria.amount)}</div></td>
                         </tr>
                     </tbody>
                 </table>
@@ -104,9 +105,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria }>((
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed', margin: '0 auto' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '50%', verticalAlign: 'middle', boxSizing: 'border-box' }}>CHECKLIST (Completed Items)</td>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>SUBMITTED BY</td>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>RECEIVED BY</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', textAlign: 'center', fontSize: '11px', width: '50%', verticalAlign: 'middle', boxSizing: 'border-box' }}>CHECKLIST (Completed Items)</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>SUBMITTED BY</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>RECEIVED BY</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,18 +128,28 @@ PDFDocument.displayName = 'PDFDocument';
 export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: HonorariaSummaryDialogProps) {
   const summaryRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const [isExporting, setIsExporting] = React.useState(false);
 
   const handleDownloadPdf = async () => {
-    const printArea = summaryRef.current;
-    if (!printArea) return;
-
+    setIsExporting(true);
     setIsDownloading(true);
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const printArea = summaryRef.current;
+    if (!printArea) {
+        setIsDownloading(false);
+        setIsExporting(false);
+        return;
+    };
 
     try {
         const canvas = await html2canvas(printArea, {
             useCORS: true,
             backgroundColor: '#ffffff',
             scale: 2,
+            width: printArea.scrollWidth,
+            height: printArea.scrollHeight,
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -146,19 +157,40 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'in',
-          format: [8.27, 11.69]
+          format: 'a4'
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        const pageHeightInCanvas = (canvasWidth / pdfWidth) * pdfHeight;
+        
+        let position = 0;
+        while (position < canvasHeight) {
+            const pageCanvas = document.createElement('canvas');
+            pageCanvas.width = canvasWidth;
+            pageCanvas.height = pageHeightInCanvas;
+            const pageCtx = pageCanvas.getContext('2d');
+            if (pageCtx) {
+                pageCtx.drawImage(canvas, 0, position, canvasWidth, pageHeightInCanvas, 0, 0, canvasWidth, pageHeightInCanvas);
+                const pageImgData = pageCanvas.toDataURL('image/png');
+                if (position > 0) {
+                    pdf.addPage();
+                }
+                pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            }
+            position += pageHeightInCanvas;
+        }
+
         pdf.save(`honoraria-summary-${honoraria.activityTitle.replace(/\s/g, '_')}.pdf`);
         
     } catch (error) {
         console.error(`Error generating PDF:`, error);
     } finally {
         setIsDownloading(false);
+        setIsExporting(false);
     }
   };
 
@@ -175,7 +207,7 @@ export function HonorariaSummaryDialog({ honoraria, open, onOpenChange }: Honora
         
         <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted">
             <div className="bg-white">
-                <PDFDocument ref={summaryRef} honoraria={honoraria} />
+                <PDFDocument ref={summaryRef} honoraria={honoraria} isForExport={isExporting} />
             </div>
         </div>
         

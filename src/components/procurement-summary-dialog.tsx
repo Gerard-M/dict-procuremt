@@ -22,9 +22,10 @@ interface ProcurementSummaryDialogProps {
   procurement: Procurement;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isForExport?: boolean;
 }
 
-const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement }>(({ procurement }, ref) => {
+const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement; isForExport?: boolean }>(({ procurement, isForExport }, ref) => {
     
     const getSignatureDescription = (phaseId: number, type: 'submittedBy' | 'receivedBy') => {
         if (type === 'submittedBy') {
@@ -91,10 +92,10 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
         const tableHeader = (
             <thead>
                 <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '10%', boxSizing: 'border-box' }}>PHASE</td>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '40%', boxSizing: 'border-box' }}>PARTICULARS</td>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}>SUBMITTED BY</td>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}>RECEIVED BY</td>
+                    <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', textAlign: 'center', verticalAlign: 'middle', width: '10%', boxSizing: 'border-box' }}>PHASE</td>
+                    <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', textAlign: 'center', verticalAlign: 'middle', width: '40%', boxSizing: 'border-box' }}>PARTICULARS</td>
+                    <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}>SUBMITTED BY</td>
+                    <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}>RECEIVED BY</td>
                 </tr>
             </thead>
         );
@@ -105,7 +106,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <tbody>
                     {phases.map(phase => (
                         <tr key={phase.id}>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', boxSizing: 'border-box' }}>{phase.id}</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>{phase.id}</div></td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderChecklist(phase.checklist)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(phase.submittedBy, getSignatureDescription(phase.id, 'submittedBy'))}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(phase.receivedBy, getSignatureDescription(phase.id, 'receivedBy'))}</td>
@@ -132,12 +133,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '16px', margin: '0 auto' }}>
                     <tbody>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>PROJECT</td>
-                            <td style={{ border: '1px solid black', padding: '8px', boxSizing: 'border-box' }} colSpan={3}>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>PROJECT</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', boxSizing: 'border-box', verticalAlign: 'middle' }} colSpan={3}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'nowrap' }}>
                                     {projectTypes.map(pt => (
                                         <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-                                            <span style={{ fontSize: '14px', lineHeight: '1', display: 'inline-block', transform: 'translateY(-1px)' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
+                                            <span style={{ fontSize: '14px', lineHeight: '1', display: 'inline-block' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
                                             <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
                                         </div>
                                     ))}
@@ -146,21 +147,27 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement 
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', whiteSpace: 'nowrap', verticalAlign: 'middle', boxSizing: 'border-box' }}>ACTIVITY / PROCUREMENT (SVP)</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }} colSpan={3}>{procurement.title}</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: 'bold', whiteSpace: 'nowrap', verticalAlign: 'middle', boxSizing: 'border-box' }}>ACTIVITY / PROCUREMENT (SVP)</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }} colSpan={3}>{procurement.title}</td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', verticalAlign: 'middle', boxSizing: 'border-box' }}>AMOUNT</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', width: '35%', verticalAlign: 'middle', boxSizing: 'border-box' }}>{formatCurrency(procurement.amount)}</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', width: '15%', verticalAlign: 'middle', boxSizing: 'border-box' }}>PR NUMBER:</td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>{procurement.prNumber}</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: 'bold', verticalAlign: 'middle', boxSizing: 'border-box' }}>AMOUNT</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: '600', width: '35%', verticalAlign: 'middle', boxSizing: 'border-box' }}>{formatCurrency(procurement.amount)}</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: 'bold', width: '15%', verticalAlign: 'middle', boxSizing: 'border-box' }}>PR NUMBER:</td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '4px 8px' : '8px', fontWeight: '600', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}>{procurement.prNumber}</td>
                         </tr>
                     </tbody>
                 </table>
                 
-                <h3 style={{ width: '95%', border: '1px solid black', padding: '8px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', fontSize: '13px', backgroundColor: '#F5F5F5', margin: '0 auto 16px auto' }}>
-                    PROCUREMENT REQUIREMENTS
-                </h3>
+                <div style={{ width: '95%', margin: '0 auto 16px auto', border: '1px solid black', padding: isForExport ? '7px 10px' : '8px', textAlign: 'center', backgroundColor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <h3 style={{
+                        fontWeight: 'bold',
+                        fontSize: '13px',
+                    }}>
+                        PROCUREMENT&nbsp;&nbsp;&nbsp;REQUIREMENTS
+                    </h3>
+                </div>
+
                 <div style={{ width: '95%', margin: '0 auto' }}>
                     {renderPhaseTable(procurement.phases)}
                 </div>
@@ -178,23 +185,32 @@ PDFDocument.displayName = 'PDFDocument';
 export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: ProcurementSummaryDialogProps) {
   const summaryRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const [isExporting, setIsExporting] = React.useState(false);
 
   const handleDownloadPdf = async () => {
-    const printArea = summaryRef.current;
-    if (!printArea) return;
-
+    setIsExporting(true); // Trigger re-render with export styles
     setIsDownloading(true);
+
+    // Short delay to allow the component to re-render with export styles
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const printArea = summaryRef.current;
+    if (!printArea) {
+      setIsDownloading(false);
+      setIsExporting(false);
+      return;
+    }
 
     try {
       const canvas = await html2canvas(printArea, {
         useCORS: true,
         backgroundColor: '#ffffff',
-        scale: 2, // Capture at a higher resolution
+        scale: 2,
         width: printArea.scrollWidth,
         height: printArea.scrollHeight,
       });
+
       const imgData = canvas.toDataURL('image/png');
-      
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'in',
@@ -202,15 +218,46 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
       });
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const canvasAspectRatio = canvasWidth / canvasHeight;
+      const pageAspectRatio = pdfWidth / pdfHeight;
+
+      let imgHeight = pdfWidth / canvasAspectRatio;
+      let imgWidth = pdfWidth;
+
+      if(imgHeight < pdfHeight){
+        imgHeight = pdfHeight;
+        imgWidth = pdfHeight * canvasAspectRatio;
+      }
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      let position = 0;
+      const pageHeightInCanvas = (canvasWidth / pdfWidth) * pdfHeight;
+      
+      while (position < canvasHeight) {
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvasWidth;
+        pageCanvas.height = pageHeightInCanvas;
+        const pageCtx = pageCanvas.getContext('2d');
+        if (pageCtx) {
+          pageCtx.drawImage(canvas, 0, position, canvasWidth, pageHeightInCanvas, 0, 0, canvasWidth, pageHeightInCanvas);
+          const pageImgData = pageCanvas.toDataURL('image/png');
+          if (position > 0) {
+            pdf.addPage();
+          }
+          pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        }
+        position += pageHeightInCanvas;
+      }
+
       pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
 
     } catch (error) {
         console.error('Error generating PDF:', error);
     } finally {
         setIsDownloading(false);
+        setIsExporting(false); // Revert to preview styles
     }
   };
 
@@ -227,7 +274,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         
         <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted">
             <div className="bg-white">
-                <PDFDocument ref={summaryRef} procurement={procurement} />
+                <PDFDocument ref={summaryRef} procurement={procurement} isForExport={isExporting} />
             </div>
         </div>
         
