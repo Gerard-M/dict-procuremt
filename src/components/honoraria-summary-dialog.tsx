@@ -91,12 +91,12 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria, isF
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px', margin: '0 auto' }}>
                     <tbody>
                          <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>ACTIVITY / PROGRAM</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>{honoraria.activityTitle}</div></td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '2px 8px' : '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', width: '30%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>ACTIVITY / PROGRAM</div></td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '2px 8px' : '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>{honoraria.activityTitle}</div></td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>AMOUNT</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>{formatCurrency(honoraria.amount)}</div></td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '2px 8px' : '8px', fontWeight: 'bold', backgroundColor: '#F5F5F5', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>AMOUNT</div></td>
+                            <td style={{ border: '1px solid black', padding: isForExport ? '2px 8px' : '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>{formatCurrency(honoraria.amount)}</div></td>
                         </tr>
                     </tbody>
                 </table>
@@ -105,9 +105,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria, isF
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed', margin: '0 auto' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '50%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>CHECKLIST (Completed Items)</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>SUBMITTED BY</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>RECEIVED BY</div></td>
+                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '50%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>CHECKLIST (Completed Items)</div></td>
+                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>SUBMITTED BY</div></td>
+                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', fontSize: '11px', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>RECEIVED BY</div></td>
                         </tr>
                     </thead>
                     <tbody>

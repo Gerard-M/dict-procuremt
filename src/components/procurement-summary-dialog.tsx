@@ -80,7 +80,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
             <div style={{ fontSize: '10px', textAlign: 'left', padding: '8px', boxSizing: 'border-box' }}>
                 {checklist.map(item => (
                     <div key={item.id} style={{ padding: '1px 0', wordWrap: 'break-word', display: 'flex', alignItems: 'start', boxSizing: 'border-box' }}>
-                        <span style={{ marginRight: '4px', minWidth: '12px' }}>{item.checked ? '☑' : '☐'}</span>
+                        <span style={{ marginRight: '4px', minWidth: '10px' }}>{item.checked ? '☑' : '☐'}</span>
                         <span>{item.label}</span>
                     </div>
                 ))}
@@ -92,10 +92,10 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
         const tableHeader = (
             <thead>
                 <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '10%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>PHASE</div></td>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '40%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>PARTICULARS</div></td>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>SUBMITTED BY</div></td>
-                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>RECEIVED BY</div></td>
+                    <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', verticalAlign: 'middle', width: '10%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PHASE</div></td>
+                    <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', verticalAlign: 'middle', width: '40%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PARTICULARS</div></td>
+                    <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>SUBMITTED BY</div></td>
+                    <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>RECEIVED BY</div></td>
                 </tr>
             </thead>
         );
@@ -106,7 +106,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                 <tbody>
                     {phases.map(phase => (
                         <tr key={phase.id}>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>{phase.id}</div></td>
+                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>{phase.id}</div></td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderChecklist(phase.checklist)}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(phase.submittedBy, getSignatureDescription(phase.id, 'submittedBy'))}</td>
                             <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(phase.receivedBy, getSignatureDescription(phase.id, 'receivedBy'))}</td>
@@ -130,39 +130,39 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                     </div>
                 </header>
 
-                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '16px', margin: '0 auto' }}>
+                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '16px', margin: '0 auto' }}>
                     <tbody>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>PROJECT</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', boxSizing: 'border-box', verticalAlign: 'middle' }} colSpan={3}>
+                            <td style={{ border: '1px solid black', padding: '6px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PROJECT</div></td>
+                            <td style={{ border: '1px solid black', padding: '6px', boxSizing: 'border-box', verticalAlign: 'middle' }} colSpan={3}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'nowrap' }}>
                                     {projectTypes.map(pt => (
                                         <div key={pt} style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-                                            <span style={{ fontSize: '14px', lineHeight: '1', display: 'inline-block' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
-                                            <label style={{ fontSize: '12px', fontWeight: '600' }}>{pt}</label>
+                                            <span style={{ fontSize: '10px', lineHeight: '1', display: 'inline-block' }}>{procurement.projectType === pt ? '☑' : '☐'}</span>
+                                            <label style={{ fontSize: '10px', fontWeight: '600' }}>{pt}</label>
                                         </div>
                                     ))}
-                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '12px', whiteSpace: 'nowrap'}}>: {procurement.otherProjectType}</span>}
+                                    {procurement.projectType === 'OTHERS' && <span style={{fontSize: '10px', whiteSpace: 'nowrap'}}>: {procurement.otherProjectType}</span>}
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', whiteSpace: 'nowrap', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>ACTIVITY / PROCUREMENT (SVP)</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }} colSpan={3}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>{procurement.title}</div></td>
+                            <td style={{ border: '1px solid black', padding: '6px', fontWeight: 'bold', whiteSpace: 'nowrap', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>ACTIVITY / PROCUREMENT (SVP)</div></td>
+                            <td style={{ border: '1px solid black', padding: '6px', fontWeight: '600', verticalAlign: 'middle', boxSizing: 'border-box' }} colSpan={3}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>{procurement.title}</div></td>
                         </tr>
                         <tr>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>AMOUNT</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', width: '35%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>{formatCurrency(procurement.amount)}</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: 'bold', width: '15%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>PR NUMBER:</div></td>
-                            <td style={{ border: '1px solid black', padding: '8px', fontWeight: '600', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-2px' : '0px'}}>{procurement.prNumber}</div></td>
+                            <td style={{ border: '1px solid black', padding: '6px', fontWeight: 'bold', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>AMOUNT</div></td>
+                            <td style={{ border: '1px solid black', padding: '6px', fontWeight: '600', width: '35%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>{formatCurrency(procurement.amount)}</div></td>
+                            <td style={{ border: '1px solid black', padding: '6px', fontWeight: 'bold', width: '15%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PR NUMBER:</div></td>
+                            <td style={{ border: '1px solid black', padding: '6px', fontWeight: '600', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>{procurement.prNumber}</div></td>
                         </tr>
                     </tbody>
                 </table>
                 
-                <div style={{ width: '95%', margin: '0 auto 16px auto', border: '1px solid black', padding: '8px', textAlign: 'center', backgroundColor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '95%', margin: '0 auto 8px auto', border: '1px solid black', padding: '0px', textAlign: 'center', backgroundColor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <h3 style={{
                         fontWeight: 'bold',
-                        fontSize: '13px',
+                        fontSize: '10px',
                     }}>
                         PROCUREMENT&nbsp;&nbsp;&nbsp;REQUIREMENTS
                     </h3>
@@ -172,7 +172,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                     {renderPhaseTable(procurement.phases)}
                 </div>
                 
-                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '12px', textAlign: 'left', width: '95%', margin: '0 auto' }}>
+                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '10px', textAlign: 'left', width: '95%', margin: '0 auto' }}>
                     <p style={{margin: 0}}>Procurement Number: 2025-___</p>
                 </footer>
             </div>
