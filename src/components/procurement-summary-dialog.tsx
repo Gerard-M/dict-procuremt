@@ -91,7 +91,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
     const renderPhaseTable = (phases: Procurement['phases']) => {
         const tableHeader = (
             <thead>
-                <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '8px' }}>
+                <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0', fontSize: '10px' }}>
                     <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', verticalAlign: 'middle', width: '10%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PHASE</div></td>
                     <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', verticalAlign: 'middle', width: '40%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PARTICULARS</div></td>
                     <td style={{ border: '1px solid black', padding: '6px', textAlign: 'center', verticalAlign: 'middle', width: '25%', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>SUBMITTED BY</div></td>
@@ -124,13 +124,13 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
             <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
                  <header style={{ marginBottom: '16px', padding: '8px 0', width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                        <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '47px', width: 'auto' }} />
-                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '47px', width: 'auto' }}/>
-                        <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '47px', width: 'auto' }} />
+                        <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
+                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
+                        <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
                     </div>
                 </header>
 
-                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '8px', margin: '0 auto' }}>
+                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '16px', margin: '0 auto' }}>
                     <tbody>
                         <tr>
                             <td style={{ border: '1px solid black', padding: '6px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PROJECT</div></td>
@@ -159,7 +159,6 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                     </tbody>
                 </table>
 
-                <h2 style={{ width: '95%', fontSize: '10px', fontWeight: 'bold', color: '#1A237E', margin: '2px auto 0', textAlign: 'center', marginBottom: '8px' }}>PROCUREMENT&nbsp;&nbsp;REQUIREMENTS</h2>
                 <div style={{ width: '95%', margin: '0 auto' }}>
                     {renderPhaseTable(procurement.phases)}
                 </div>
