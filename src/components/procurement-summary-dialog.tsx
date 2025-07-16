@@ -162,10 +162,6 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                 <div style={{ width: '95%', margin: '0 auto' }}>
                     {renderPhaseTable(procurement.phases)}
                 </div>
-                
-                <footer style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '10px', textAlign: 'left', width: '95%', margin: '0 auto' }}>
-                    <p style={{margin: 0}}>Procurement Number: 2025-___</p>
-                </footer>
             </div>
         </div>
     );
