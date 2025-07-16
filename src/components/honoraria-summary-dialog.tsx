@@ -101,7 +101,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { honoraria: Honoraria, isF
                     </tbody>
                 </table>
 
-                <h2 style={{ width: '95%', fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px', margin: '16px auto 0' }}>Processing Details</h2>
+                <h2 style={{ width: '95%', fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px', margin: '16px auto 0' }}>Processing Details</h2><br></br>
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed', margin: '0 auto' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
