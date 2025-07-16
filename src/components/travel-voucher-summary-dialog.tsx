@@ -81,12 +81,15 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
     const { phase } = travelVoucher;
 
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'sans-serif', width: '8.27in', height: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'sans-serif', width: '8.27in', height: '11.69in', padding: '0.5in', boxSizing: 'border-box' }}>
             <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '0.25in', boxSizing: 'border-box' }}>
-                 <header style={{ textAlign: 'center', marginBottom: '32px', width: '100%' }}>
-                    <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1A237E', margin: 0 }}>Travel Voucher Summary</h1>
-                    <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', margin: 0 }}>Generated on {format(new Date(), 'PPP')}</p>
-                 </header>
+            <header style={{ marginBottom: '16px', padding: '8px 0', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                        <img src="/logos/ilcdb.png" alt="ILCDB Logo" style={{ height: '55px', width: 'auto' }} />
+                        <img src="/logos/dtc.png" alt="DTC Logo" style={{ height: '55px', width: 'auto' }}/>
+                        <img src="/logos/spark.png" alt="SPARK Logo" style={{ height: '55px', width: 'auto' }} />
+                    </div>
+                </header>
 
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', marginBottom: '24px', margin: '0 auto' }}>
                     <tbody>
@@ -101,7 +104,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { travelVoucher: TravelVouc
                     </tbody>
                 </table>
 
-                <h2 style={{ width: '95%', fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px', margin: '16px auto 0' }}>Processing Details</h2>
+                <h2 style={{ width: '95%', fontSize: '16px', fontWeight: 'bold', color: '#1A237E', marginBottom: '16px', margin: '16px auto 0' }}>Processing Details</h2><br></br>
                 <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '12px', tableLayout: 'fixed', margin: '0 auto' }}>
                      <thead>
                         <tr style={{ fontWeight: 'bold', backgroundColor: '#E0E0E0' }}>
