@@ -120,7 +120,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
     return (
-        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', minHeight: '11.69in', padding: '0.25in', boxSizing: 'border-box' }}>
+        <div ref={ref} style={{ backgroundColor: 'white', color: 'black', fontFamily: 'Helvetica, sans-serif', width: '8.27in', minHeight: '11.69in', padding: '0.5in', boxSizing: 'border-box' }}>
             <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '0.25in', boxSizing: 'border-box' }}>
                  <header style={{ marginBottom: '16px', padding: '8px 0', width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
@@ -159,7 +159,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                     </tbody>
                 </table>
                 
-                <div style={{ width: '95%', margin: '0 auto 8px auto', border: '1px solid black', padding: '0px', textAlign: 'center', backgroundColor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '95%', margin: '0 auto 8px auto', padding: '0px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <h3 style={{
                         fontWeight: 'bold',
                         fontSize: '10px',
