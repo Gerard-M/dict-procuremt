@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProcurementTable } from "@/components/procurement-table";
 import { CreateProcurementDialog } from "@/components/create-procurement-dialog";
-import { getProcurements, deleteProcurement } from "@/lib/data";
+import { getProcurements, deleteProcurement, updateProcurement } from "@/lib/data";
 import type { Procurement } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -59,15 +59,18 @@ export function Dashboard() {
     setProcurementToEdit(null);
   };
 
-  const handleProcurementDelete = async (id: string) => {
+  const handleStatusChange = async (id: string, status: 'paid' | 'cancelled') => {
     try {
-      await deleteProcurement(id);
-      setProcurements(prev => prev.filter(p => p.id !== id));
-      toast({ title: "Success", description: "Procurement has been deleted." });
+      const updatedProcurement = await updateProcurement(id, { status });
+      if (updatedProcurement) {
+        setProcurements(prev => prev.map(p => p.id === id ? updatedProcurement : p));
+        toast({ title: "Success", description: `Procurement has been marked as ${status}.` });
+      }
     } catch (error) {
-      toast({ title: "Error", description: "Failed to delete procurement.", variant: "destructive" });
+      toast({ title: "Error", description: `Failed to update procurement status.`, variant: "destructive" });
     }
   };
+
 
   const openEditDialog = (procurement: Procurement) => {
     setProcurementToEdit(procurement);
@@ -83,6 +86,9 @@ export function Dashboard() {
 
   const activeProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'active'), [filteredProcurements]);
   const completedProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'completed'), [filteredProcurements]);
+  const paidProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'paid'), [filteredProcurements]);
+  const cancelledProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'cancelled'), [filteredProcurements]);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -120,15 +126,23 @@ export function Dashboard() {
           </div>
 
           <Tabs defaultValue="active" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:w-[400px]">
-              <TabsTrigger value="active">Active Procurements</TabsTrigger>
-              <TabsTrigger value="completed">Completed Procurements</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 sm:w-auto sm:grid-cols-4">
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="completed">Completed</TabsTrigger>
+              <TabsTrigger value="paid">Paid</TabsTrigger>
+              <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
             </TabsList>
             <TabsContent value="active">
-              {loading ? <TableSkeleton /> : <ProcurementTable procurements={activeProcurements} onEdit={openEditDialog} onDelete={handleProcurementDelete} />}
+              {loading ? <TableSkeleton /> : <ProcurementTable procurements={activeProcurements} onEdit={openEditDialog} onStatusChange={handleStatusChange} />}
             </TabsContent>
             <TabsContent value="completed">
-              {loading ? <TableSkeleton /> : <ProcurementTable procurements={completedProcurements} onEdit={openEditDialog} onDelete={handleProcurementDelete} />}
+              {loading ? <TableSkeleton /> : <ProcurementTable procurements={completedProcurements} onEdit={openEditDialog} onStatusChange={handleStatusChange} />}
+            </TabsContent>
+            <TabsContent value="paid">
+              {loading ? <TableSkeleton /> : <ProcurementTable procurements={paidProcurements} onEdit={openEditDialog} onStatusChange={handleStatusChange} />}
+            </TabsContent>
+            <TabsContent value="cancelled">
+              {loading ? <TableSkeleton /> : <ProcurementTable procurements={cancelledProcurements} onEdit={openEditDialog} onStatusChange={handleStatusChange} />}
             </TabsContent>
           </Tabs>
         </div>

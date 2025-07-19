@@ -30,7 +30,7 @@ export interface Procurement {
   prNumber: string;
   projectType: ProjectType;
   otherProjectType?: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'completed' | 'paid' | 'cancelled';
   phases: ProcurementPhase[];
   createdAt: Date;
   updatedAt: Date;
