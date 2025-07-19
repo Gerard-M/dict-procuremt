@@ -88,13 +88,13 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
     const handleClear = () => {
         setTempProjectTypes([]);
         setTempAmountRange([0, maxAmount]);
-        setTempProgressRange([0, 100]);
+        setTempProgressRange([0, 6]);
     };
 
     const activeFiltersCount = [
         initialFilters.projectTypes.length > 0 ? 1 : 0,
         initialFilters.amountRange[0] > 0 || initialFilters.amountRange[1] < maxAmount ? 1 : 0,
-        initialFilters.progressRange[0] > 0 || initialFilters.progressRange[1] < 100 ? 1 : 0
+        initialFilters.progressRange[0] > 0 || initialFilters.progressRange[1] < 6 ? 1 : 0
     ].reduce((sum, count) => sum + count, 0);
 
     return (
@@ -130,31 +130,37 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
              <Separator />
             <div className="space-y-2">
                 <Label>Amount Range</Label>
-                <Slider
-                    min={0}
-                    max={maxAmount}
-                    step={100}
-                    value={tempAmountRange}
-                    onValueChange={(value) => setTempAmountRange(value as [number, number])}
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{formatCurrency(tempAmountRange[0])}</span>
-                    <span>{formatCurrency(tempAmountRange[1])}</span>
+                <div className="flex items-center gap-2">
+                    <Input
+                        type="number"
+                        placeholder="Min amount"
+                        value={tempAmountRange[0]}
+                        onChange={(e) => setTempAmountRange([Number(e.target.value), tempAmountRange[1]])}
+                        className="text-sm"
+                    />
+                     <span className="text-muted-foreground">-</span>
+                    <Input
+                        type="number"
+                        placeholder="Max amount"
+                        value={tempAmountRange[1] === maxAmount ? '' : tempAmountRange[1]}
+                        onChange={(e) => setTempAmountRange([tempAmountRange[0], Number(e.target.value) || maxAmount])}
+                        className="text-sm"
+                    />
                 </div>
             </div>
              <Separator />
             <div className="space-y-2">
-                <Label>Progress Range</Label>
+                <Label>Progress (Phases Completed)</Label>
                  <Slider
                     min={0}
-                    max={100}
+                    max={6}
                     step={1}
                     value={tempProgressRange}
                     onValueChange={(value) => setTempProgressRange(value as [number, number])}
                  />
                  <div className="flex justify-between text-xs text-muted-foreground">
-                     <span>{tempProgressRange[0]}%</span>
-                     <span>{tempProgressRange[1]}%</span>
+                     <span>Phase {tempProgressRange[0]}</span>
+                     <span>Phase {tempProgressRange[1]}</span>
                  </div>
             </div>
             <Button onClick={handleApply} className="w-full">Apply Filters</Button>
@@ -176,7 +182,7 @@ export function Dashboard() {
   const [selectedProjectTypes, setSelectedProjectTypes] = useState<ProjectType[]>([]);
   const [maxAmount, setMaxAmount] = useState(100000);
   const [amountRange, setAmountRange] = useState<[number, number]>([0, 100000]);
-  const [progressRange, setProgressRange] = useState<[number, number]>([0, 100]);
+  const [progressRange, setProgressRange] = useState<[number, number]>([0, 6]);
   
   const initialFilters = { projectTypes: selectedProjectTypes, amountRange, progressRange };
 
@@ -226,9 +232,8 @@ export function Dashboard() {
     setProcurementToEdit(procurement);
   };
   
-  const getProgress = (procurement: Procurement) => {
-    const completedPhases = procurement.phases.filter(p => p.isCompleted).length;
-    return (completedPhases / procurement.phases.length) * 100;
+  const getCompletedPhases = (procurement: Procurement) => {
+    return procurement.phases.filter(p => p.isCompleted).length;
   };
 
   const filteredProcurements = useMemo(() => {
@@ -252,8 +257,8 @@ export function Dashboard() {
 
     // Progress range filter
     filtered = filtered.filter(p => {
-        const progress = getProgress(p);
-        return progress >= progressRange[0] && progress <= progressRange[1];
+        const completedPhases = getCompletedPhases(p);
+        return completedPhases >= progressRange[0] && completedPhases <= progressRange[1];
     });
 
     return filtered;
@@ -366,3 +371,6 @@ function TableSkeleton() {
         </div>
     )
 }
+
+
+    
