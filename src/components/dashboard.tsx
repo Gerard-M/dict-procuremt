@@ -361,12 +361,12 @@ export function Dashboard() {
             </div>
           </div>
 
-          <Tabs defaultValue="all" className="w-full">
+          <Tabs defaultValue="active" className="w-full">
             <TabsList className="grid w-full grid-cols-2 sm:w-auto sm:grid-cols-4">
-              <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
               <TabsTrigger value="archived">Archived</TabsTrigger>
+              <TabsTrigger value="completed">Completed</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
               {loading ? <TableSkeleton /> : <ProcurementTable procurements={filteredProcurements} onEdit={openEditDialog} onStatusChange={handleStatusChange} onDelete={handleProcurementDelete} />}
