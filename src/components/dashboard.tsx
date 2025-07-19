@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "./ui/separator";
 
 const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
-
+const statusTypes: ('paid' | 'cancelled')[] = ['paid', 'cancelled'];
 
 function Header() {
   return (
@@ -48,12 +48,14 @@ interface ProcurementFiltersProps {
     projectTypes: ProjectType[];
     amountRange: [number, number];
     progressRange: [number, number];
+    statuses: ('paid' | 'cancelled')[];
   }) => void;
   maxAmount: number;
   initialFilters: {
     projectTypes: ProjectType[];
     amountRange: [number, number];
     progressRange: [number, number];
+    statuses: ('paid' | 'cancelled')[];
   }
 }
 
@@ -64,6 +66,7 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
     const [tempProjectTypes, setTempProjectTypes] = useState<ProjectType[]>(initialFilters.projectTypes);
     const [tempAmountRange, setTempAmountRange] = useState<[number, number]>(initialFilters.amountRange);
     const [tempProgressRange, setTempProgressRange] = useState<[number, number]>(initialFilters.progressRange);
+    const [tempStatuses, setTempStatuses] = useState<('paid' | 'cancelled')[]>(initialFilters.statuses);
 
     useEffect(() => {
         setTempAmountRange(initialFilters.amountRange)
@@ -76,11 +79,19 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
         setTempProjectTypes(newSelection);
     };
 
+    const handleStatusToggle = (status: 'paid' | 'cancelled') => {
+        const newSelection = tempStatuses.includes(status)
+            ? tempStatuses.filter(s => s !== status)
+            : [...tempStatuses, status];
+        setTempStatuses(newSelection);
+    };
+
     const handleApply = () => {
         onApplyFilters({
             projectTypes: tempProjectTypes,
             amountRange: tempAmountRange,
             progressRange: tempProgressRange,
+            statuses: tempStatuses,
         });
         setOpen(false);
     };
@@ -89,12 +100,14 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
         setTempProjectTypes([]);
         setTempAmountRange([0, maxAmount]);
         setTempProgressRange([0, 6]);
+        setTempStatuses([]);
     };
 
     const activeFiltersCount = [
         initialFilters.projectTypes.length > 0 ? 1 : 0,
         initialFilters.amountRange[0] > 0 || initialFilters.amountRange[1] < maxAmount ? 1 : 0,
-        initialFilters.progressRange[0] > 0 || initialFilters.progressRange[1] < 6 ? 1 : 0
+        initialFilters.progressRange[0] > 0 || initialFilters.progressRange[1] < 6 ? 1 : 0,
+        initialFilters.statuses.length > 0 ? 1 : 0,
     ].reduce((sum, count) => sum + count, 0);
 
     return (
@@ -128,6 +141,22 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
                 </div>
             </div>
              <Separator />
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {statusTypes.map(status => (
+                  <div key={status} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`filter-${status}`}
+                      checked={tempStatuses.includes(status)}
+                      onCheckedChange={() => handleStatusToggle(status)}
+                    />
+                    <Label htmlFor={`filter-${status}`} className="font-normal capitalize">{status}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Separator />
             <div className="space-y-2">
                 <Label>Amount Range</Label>
                 <div className="flex items-center gap-2">
@@ -183,8 +212,9 @@ export function Dashboard() {
   const [maxAmount, setMaxAmount] = useState(100000);
   const [amountRange, setAmountRange] = useState<[number, number]>([0, 100000]);
   const [progressRange, setProgressRange] = useState<[number, number]>([0, 6]);
+  const [selectedStatuses, setSelectedStatuses] = useState<('paid' | 'cancelled')[]>([]);
   
-  const initialFilters = { projectTypes: selectedProjectTypes, amountRange, progressRange };
+  const initialFilters = { projectTypes: selectedProjectTypes, amountRange, progressRange, statuses: selectedStatuses };
 
   useEffect(() => {
     async function loadProcurements() {
@@ -205,6 +235,7 @@ export function Dashboard() {
     setSelectedProjectTypes(filters.projectTypes);
     setAmountRange(filters.amountRange);
     setProgressRange(filters.progressRange);
+    setSelectedStatuses(filters.statuses);
   }
 
   const handleProcurementCreated = (newProcurement: Procurement) => {
@@ -268,6 +299,11 @@ export function Dashboard() {
         filtered = filtered.filter(p => selectedProjectTypes.includes(p.projectType));
     }
 
+    // Status filter
+    if (selectedStatuses.length > 0) {
+        filtered = filtered.filter(p => selectedStatuses.includes(p.status as 'paid' | 'cancelled'));
+    }
+
     // Amount range filter
     filtered = filtered.filter(p => p.amount >= amountRange[0] && p.amount <= amountRange[1]);
 
@@ -278,7 +314,7 @@ export function Dashboard() {
     });
 
     return filtered;
-  }, [procurements, searchTerm, selectedProjectTypes, amountRange, progressRange]);
+  }, [procurements, searchTerm, selectedProjectTypes, amountRange, progressRange, selectedStatuses]);
 
   const activeProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'active' && !p.isArchived), [filteredProcurements]);
   const completedProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'completed' && !p.isArchived), [filteredProcurements]);
@@ -386,3 +422,5 @@ function TableSkeleton() {
         </div>
     )
 }
+
+    
