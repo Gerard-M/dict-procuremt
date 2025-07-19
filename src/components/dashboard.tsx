@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Briefcase, PlusCircle, Search, LayoutGrid, Filter } from "lucide-react";
+import { Briefcase, PlusCircle, Search, LayoutGrid, Filter, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProcurementTable } from "@/components/procurement-table";
@@ -14,20 +14,13 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DateRange } from "react-day-picker";
 import { Slider } from "@/components/ui/slider";
 import { formatCurrency } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Separator } from "./ui/separator";
 
 const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
 
@@ -52,143 +45,142 @@ function Header() {
 }
 
 interface ProcurementFiltersProps {
-  dateRange: DateRange | undefined;
-  setDateRange: (date: DateRange | undefined) => void;
-  selectedProjectTypes: ProjectType[];
-  setSelectedProjectTypes: (types: ProjectType[]) => void;
-  amountRange: [number, number];
-  setAmountRange: (range: [number, number]) => void;
+  onApplyFilters: (filters: {
+    dateRange?: DateRange;
+    projectTypes: ProjectType[];
+    amountRange: [number, number];
+    progressRange: [number, number];
+  }) => void;
   maxAmount: number;
-  progressRange: [number, number];
-  setProgressRange: (range: [number, number]) => void;
-  activeFilters: number;
+  initialFilters: {
+    dateRange?: DateRange;
+    projectTypes: ProjectType[];
+    amountRange: [number, number];
+    progressRange: [number, number];
+  }
 }
 
-function ProcurementFilters({
-    dateRange,
-    setDateRange,
-    selectedProjectTypes,
-    setSelectedProjectTypes,
-    amountRange,
-    setAmountRange,
-    maxAmount,
-    progressRange,
-    setProgressRange,
-    activeFilters
-}: ProcurementFiltersProps) {
+function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: ProcurementFiltersProps) {
+    const [open, setOpen] = useState(false);
+    
+    // Temporary states for filters inside the popover
+    const [tempDateRange, setTempDateRange] = useState<DateRange | undefined>(initialFilters.dateRange);
+    const [tempProjectTypes, setTempProjectTypes] = useState<ProjectType[]>(initialFilters.projectTypes);
+    const [tempAmountRange, setTempAmountRange] = useState<[number, number]>(initialFilters.amountRange);
+    const [tempProgressRange, setTempProgressRange] = useState<[number, number]>(initialFilters.progressRange);
+
+    useEffect(() => {
+        setTempAmountRange(initialFilters.amountRange)
+    }, [initialFilters.amountRange])
 
     const handleProjectTypeToggle = (type: ProjectType) => {
-        const newSelection = selectedProjectTypes.includes(type)
-            ? selectedProjectTypes.filter(t => t !== type)
-            : [...selectedProjectTypes, type];
-        setSelectedProjectTypes(newSelection);
-    }
+        const newSelection = tempProjectTypes.includes(type)
+            ? tempProjectTypes.filter(t => t !== type)
+            : [...tempProjectTypes, type];
+        setTempProjectTypes(newSelection);
+    };
+
+    const handleApply = () => {
+        onApplyFilters({
+            dateRange: tempDateRange,
+            projectTypes: tempProjectTypes,
+            amountRange: tempAmountRange,
+            progressRange: tempProgressRange,
+        });
+        setOpen(false);
+    };
+
+    const handleClear = () => {
+        setTempDateRange(undefined);
+        setTempProjectTypes([]);
+        setTempAmountRange([0, maxAmount]);
+        setTempProgressRange([0, 100]);
+    };
+
+    const activeFiltersCount = [
+        initialFilters.dateRange?.from ? 1 : 0,
+        initialFilters.projectTypes.length > 0 ? 1 : 0,
+        initialFilters.amountRange[0] > 0 || initialFilters.amountRange[1] < maxAmount ? 1 : 0,
+        initialFilters.progressRange[0] > 0 || initialFilters.progressRange[1] < 100 ? 1 : 0
+    ].reduce((sum, count) => sum + count, 0);
 
     return (
-        <div className="flex items-center gap-2">
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" className="gap-2 relative">
-                        <CalendarIcon className="h-4 w-4" />
-                        <span>Date</span>
-                        {dateRange?.from && (
-                            <div className="hidden lg:block text-xs text-muted-foreground ml-2">
-                                {format(dateRange.from, "LLL dd, y")} - {dateRange.to ? format(dateRange.to, "LLL dd, y") : '...'}
-                            </div>
-                        )}
-                        {activeFilters > 0 && (dateRange?.from) && <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-primary-foreground text-[8px]">1</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        initialFocus
-                        mode="range"
-                        defaultMonth={dateRange?.from}
-                        selected={dateRange}
-                        onSelect={setDateRange}
-                        numberOfMonths={2}
-                    />
-                </PopoverContent>
-            </Popover>
-
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                     <Button variant="outline" className="gap-2 relative">
-                        <Filter className="h-4 w-4" />
-                        <span>Project Type</span>
-                        {selectedProjectTypes.length > 0 && <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-primary-foreground text-[8px]">{selectedProjectTypes.length}</span>}
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuLabel>Filter by Project Type</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {projectTypes.map(type => (
-                        <DropdownMenuCheckboxItem
-                            key={type}
-                            checked={selectedProjectTypes.includes(type)}
-                            onSelect={(e) => e.preventDefault()}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="gap-2 relative">
+            <Filter className="h-4 w-4" />
+            <span>Filter</span>
+            {activeFiltersCount > 0 && <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-primary-foreground text-[8px]">{activeFiltersCount}</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[400px] p-4" align="end">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="font-medium">Filters</h4>
+            <Button variant="ghost" size="sm" onClick={handleClear}>Clear all</Button>
+          </div>
+          <div className="space-y-6">
+            <div className="space-y-2">
+                <Label>Date Created</Label>
+                <Calendar
+                    mode="range"
+                    selected={tempDateRange}
+                    onSelect={setTempDateRange}
+                    className="p-0"
+                />
+            </div>
+             <Separator />
+            <div className="space-y-2">
+                <Label>Project Type</Label>
+                <div className="grid grid-cols-2 gap-2">
+                {projectTypes.map(type => (
+                    <div key={type} className="flex items-center space-x-2">
+                        <Checkbox 
+                            id={`filter-${type}`}
+                            checked={tempProjectTypes.includes(type)} 
                             onCheckedChange={() => handleProjectTypeToggle(type)}
-                        >
-                            {type}
-                        </DropdownMenuCheckboxItem>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" className="gap-2 relative">
-                        <Filter className="h-4 w-4" />
-                        <span>Amount</span>
-                        {(amountRange[0] > 0 || amountRange[1] < maxAmount) && <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-primary-foreground text-[8px]">!</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 p-4" align="start">
-                    <div className="space-y-4">
-                         <label className="text-sm font-medium">Amount Range</label>
-                         <Slider
-                            min={0}
-                            max={maxAmount}
-                            step={100}
-                            value={amountRange}
-                            onValueChange={(value) => setAmountRange(value as [number, number])}
-                         />
-                         <div className="flex justify-between text-xs text-muted-foreground">
-                             <span>{formatCurrency(amountRange[0])}</span>
-                             <span>{formatCurrency(amountRange[1])}</span>
-                         </div>
+                        />
+                        <Label htmlFor={`filter-${type}`} className="font-normal">{type}</Label>
                     </div>
-                </PopoverContent>
-            </Popover>
-            
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" className="gap-2 relative">
-                        <Filter className="h-4 w-4" />
-                        <span>Progress</span>
-                        {(progressRange[0] > 0 || progressRange[1] < 100) && <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-primary-foreground text-[8px]">!</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 p-4" align="start">
-                    <div className="space-y-4">
-                         <label className="text-sm font-medium">Progress Range (%)</label>
-                         <Slider
-                            min={0}
-                            max={100}
-                            step={1}
-                            value={progressRange}
-                            onValueChange={(value) => setProgressRange(value as [number, number])}
-                         />
-                         <div className="flex justify-between text-xs text-muted-foreground">
-                             <span>{progressRange[0]}%</span>
-                             <span>{progressRange[1]}%</span>
-                         </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
-        </div>
-    )
+                ))}
+                </div>
+            </div>
+             <Separator />
+            <div className="space-y-2">
+                <Label>Amount Range</Label>
+                <Slider
+                    min={0}
+                    max={maxAmount}
+                    step={100}
+                    value={tempAmountRange}
+                    onValueChange={(value) => setTempAmountRange(value as [number, number])}
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>{formatCurrency(tempAmountRange[0])}</span>
+                    <span>{formatCurrency(tempAmountRange[1])}</span>
+                </div>
+            </div>
+             <Separator />
+            <div className="space-y-2">
+                <Label>Progress Range</Label>
+                 <Slider
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={tempProgressRange}
+                    onValueChange={(value) => setTempProgressRange(value as [number, number])}
+                 />
+                 <div className="flex justify-between text-xs text-muted-foreground">
+                     <span>{tempProgressRange[0]}%</span>
+                     <span>{tempProgressRange[1]}%</span>
+                 </div>
+            </div>
+            <Button onClick={handleApply} className="w-full">Apply Filters</Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    );
 }
+
 
 export function Dashboard() {
   const [procurements, setProcurements] = useState<Procurement[]>([]);
@@ -203,6 +195,8 @@ export function Dashboard() {
   const [maxAmount, setMaxAmount] = useState(100000);
   const [amountRange, setAmountRange] = useState<[number, number]>([0, 100000]);
   const [progressRange, setProgressRange] = useState<[number, number]>([0, 100]);
+  
+  const initialFilters = { dateRange, projectTypes: selectedProjectTypes, amountRange, progressRange };
 
   useEffect(() => {
     async function loadProcurements() {
@@ -218,6 +212,13 @@ export function Dashboard() {
     }
     loadProcurements();
   }, []);
+  
+  const handleApplyFilters = (filters: typeof initialFilters) => {
+    setDateRange(filters.dateRange);
+    setSelectedProjectTypes(filters.projectTypes);
+    setAmountRange(filters.amountRange);
+    setProgressRange(filters.progressRange);
+  }
 
   const handleProcurementCreated = (newProcurement: Procurement) => {
     setProcurements(prev => [newProcurement, ...prev]);
@@ -265,7 +266,8 @@ export function Dashboard() {
         filtered = filtered.filter(p => {
             const createdAt = new Date(p.createdAt);
             const from = dateRange.from!;
-            const to = dateRange.to ? new Date(dateRange.to.getTime() + 86400000 - 1) : from; // include the whole "to" day
+            // if 'to' is not selected, consider it a single day selection
+            const to = dateRange.to ? new Date(dateRange.to.getTime() + 86400000 - 1) : new Date(from.getTime() + 86400000 - 1);
             return createdAt >= from && createdAt <= to;
         });
     }
@@ -292,12 +294,6 @@ export function Dashboard() {
   const paidProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'paid'), [filteredProcurements]);
   const cancelledProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'cancelled'), [filteredProcurements]);
 
-  const activeFiltersCount = [
-    dateRange?.from ? 1 : 0,
-    selectedProjectTypes.length > 0 ? 1 : 0,
-    amountRange[0] > 0 || amountRange[1] < maxAmount ? 1 : 0,
-    progressRange[0] > 0 || progressRange[1] < 100 ? 1 : 0
-  ].reduce((a, b) => a + b, 0);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -308,16 +304,9 @@ export function Dashboard() {
             <h2 className="text-3xl font-bold font-headline text-primary">Procurement Dashboard</h2>
             <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
                <ProcurementFilters
-                    dateRange={dateRange}
-                    setDateRange={setDateRange}
-                    selectedProjectTypes={selectedProjectTypes}
-                    setSelectedProjectTypes={setSelectedProjectTypes}
-                    amountRange={amountRange}
-                    setAmountRange={setAmountRange}
-                    maxAmount={maxAmount}
-                    progressRange={progressRange}
-                    setProgressRange={setProgressRange}
-                    activeFilters={activeFiltersCount}
+                  onApplyFilters={handleApplyFilters}
+                  maxAmount={maxAmount}
+                  initialFilters={initialFilters}
                 />
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -407,5 +396,3 @@ function TableSkeleton() {
         </div>
     )
 }
-
-    
