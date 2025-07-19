@@ -34,6 +34,7 @@ export interface Procurement {
   phases: ProcurementPhase[];
   createdAt: Date;
   updatedAt: Date;
+  isArchived?: boolean;
 }
 
 export interface Honoraria {

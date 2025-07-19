@@ -17,13 +17,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit, Loader2, CheckCircle, XCircle, MoreVertical } from 'lucide-react';
+import { ArrowUpDown, Edit, Loader2, CheckCircle, XCircle, MoreVertical, Trash2 } from 'lucide-react';
 import type { Procurement, ProjectType } from "@/lib/types";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -44,6 +45,7 @@ interface ProcurementTableProps {
   procurements: Procurement[];
   onEdit: (procurement: Procurement) => void;
   onStatusChange: (id: string, status: 'paid' | 'cancelled') => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
 }
 
 const getProjectTypeStyles = (projectType: ProjectType): string => {
@@ -63,11 +65,11 @@ const getProjectTypeStyles = (projectType: ProjectType): string => {
 };
 
 
-export function ProcurementTable({ procurements, onEdit, onStatusChange }: ProcurementTableProps) {
+export function ProcurementTable({ procurements, onEdit, onStatusChange, onDelete }: ProcurementTableProps) {
   const [sortKey, setSortKey] = React.useState<SortKey>('createdAt');
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
   const [isUpdating, setIsUpdating] = React.useState<string | null>(null);
-  const [alertInfo, setAlertInfo] = React.useState<{ open: boolean; id?: string; status?: 'paid' | 'cancelled' }>({ open: false });
+  const [alertInfo, setAlertInfo] = React.useState<{ open: boolean; id?: string; type?: 'paid' | 'cancelled' | 'delete' }>({ open: false });
 
   const getProgress = (procurement: Procurement) => {
     const completedPhases = procurement.phases.filter(p => p.isCompleted).length;
@@ -106,25 +108,41 @@ export function ProcurementTable({ procurements, onEdit, onStatusChange }: Procu
     return sortDirection === 'asc' ? '▲' : '▼';
   };
 
-  const handleStatusChangeClick = (id: string, status: 'paid' | 'cancelled') => {
-    setAlertInfo({ open: true, id, status });
+  const openAlertDialog = (id: string, type: 'paid' | 'cancelled' | 'delete') => {
+    setAlertInfo({ open: true, id, type });
   };
 
-  const handleConfirmStatusChange = async () => {
-    if (alertInfo.id && alertInfo.status) {
-      setIsUpdating(alertInfo.id);
-      await onStatusChange(alertInfo.id, alertInfo.status);
-      setAlertInfo({ open: false });
-      setIsUpdating(null);
+  const handleConfirmAction = async () => {
+    if (!alertInfo.id || !alertInfo.type) return;
+
+    setIsUpdating(alertInfo.id);
+    if (alertInfo.type === 'paid' || alertInfo.type === 'cancelled') {
+      await onStatusChange(alertInfo.id, alertInfo.type);
+    } else if (alertInfo.type === 'delete') {
+      await onDelete(alertInfo.id);
     }
+    setAlertInfo({ open: false });
+    setIsUpdating(null);
   };
+
+  const getAlertContent = () => {
+    if (!alertInfo.type) return { title: '', description: '' };
+    switch (alertInfo.type) {
+        case 'paid':
+            return { title: 'Mark as Paid?', description: 'This action will mark the procurement as "Paid". This can be changed later if needed.' };
+        case 'cancelled':
+            return { title: 'Mark as Cancelled?', description: 'This will archive the procurement record. This can be changed later if needed.' };
+        case 'delete':
+            return { title: 'Are you absolutely sure?', description: 'This action cannot be undone. This will permanently delete the procurement record.' };
+    }
+  }
 
 
   if (procurements.length === 0) {
     return (
       <Card className="mt-4">
         <CardContent className="p-10 text-center text-muted-foreground">
-          No procurements found.
+          No procurements found for the selected filters.
         </CardContent>
       </Card>
     );
@@ -163,6 +181,11 @@ export function ProcurementTable({ procurements, onEdit, onStatusChange }: Procu
                       Phase Progress {renderSortArrow('progress')}
                     </Button>
                   </TableHead>
+                   <TableHead>
+                    <Button variant="ghost" onClick={() => handleSort('status')}>
+                      Status {renderSortArrow('status')}
+                    </Button>
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -174,7 +197,6 @@ export function ProcurementTable({ procurements, onEdit, onStatusChange }: Procu
                   const projectDisplayName = procurement.projectType === 'OTHERS'
                     ? (procurement.otherProjectType || 'Others')
                     : procurement.projectType;
-                  const canBeModified = procurement.status === 'active' || procurement.status === 'completed';
 
                   return (
                     <TableRow key={procurement.id}>
@@ -200,6 +222,10 @@ export function ProcurementTable({ procurements, onEdit, onStatusChange }: Procu
                           </span>
                         </div>
                       </TableCell>
+                      <TableCell>
+                        {procurement.status === 'paid' && <Badge variant="secondary" className="bg-green-100 text-green-800">Paid</Badge>}
+                        {procurement.status === 'cancelled' && <Badge variant="destructive">Cancelled</Badge>}
+                      </TableCell>
                       <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
                             {isUpdating === procurement.id ? (
@@ -213,17 +239,23 @@ export function ProcurementTable({ procurements, onEdit, onStatusChange }: Procu
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onSelect={() => onEdit(procurement)} disabled={!canBeModified}>
+                                  <DropdownMenuItem onSelect={() => onEdit(procurement)}>
                                     <Edit className="mr-2 h-4 w-4" />
                                     <span>Edit</span>
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleStatusChangeClick(procurement.id, 'paid')} disabled={!canBeModified}>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onSelect={() => openAlertDialog(procurement.id, 'paid')} disabled={procurement.status === 'paid' || procurement.status === 'cancelled'}>
                                     <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
                                     <span>Mark as Paid</span>
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleStatusChangeClick(procurement.id, 'cancelled')} disabled={!canBeModified} className="text-destructive">
+                                  <DropdownMenuItem onSelect={() => openAlertDialog(procurement.id, 'cancelled')} disabled={procurement.status === 'cancelled'}>
                                     <XCircle className="mr-2 h-4 w-4" />
                                     <span>Mark as Cancelled</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onSelect={() => openAlertDialog(procurement.id, 'delete')} className="text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <span>Delete</span>
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -241,16 +273,16 @@ export function ProcurementTable({ procurements, onEdit, onStatusChange }: Procu
       <AlertDialog open={alertInfo.open} onOpenChange={(open) => setAlertInfo({ ...alertInfo, open })}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>{getAlertContent().title}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action will mark the procurement as "{alertInfo.status}". This can be changed later, but it will move the item to the corresponding tab.
+              {getAlertContent().description}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleConfirmStatusChange}
-              className={cn(alertInfo.status === 'cancelled' && 'bg-destructive hover:bg-destructive/90')}
+              onClick={handleConfirmAction}
+              className={cn((alertInfo.type === 'cancelled' || alertInfo.type === 'delete') && 'bg-destructive hover:bg-destructive/90')}
             >
               Confirm
             </AlertDialogAction>
