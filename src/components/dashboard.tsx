@@ -1,8 +1,9 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Briefcase, PlusCircle, Search, LayoutGrid, Filter, X } from "lucide-react";
+import { Briefcase, PlusCircle, Search, LayoutGrid, Filter, X, Calendar as CalendarIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProcurementTable } from "@/components/procurement-table";
@@ -17,10 +18,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { Slider } from "@/components/ui/slider";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "./ui/separator";
+import { format } from "date-fns";
 
 const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
 
@@ -46,14 +48,14 @@ function Header() {
 
 interface ProcurementFiltersProps {
   onApplyFilters: (filters: {
-    dateRange?: DateRange;
+    selectedMonth?: Date;
     projectTypes: ProjectType[];
     amountRange: [number, number];
     progressRange: [number, number];
   }) => void;
   maxAmount: number;
   initialFilters: {
-    dateRange?: DateRange;
+    selectedMonth?: Date;
     projectTypes: ProjectType[];
     amountRange: [number, number];
     progressRange: [number, number];
@@ -64,7 +66,7 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
     const [open, setOpen] = useState(false);
     
     // Temporary states for filters inside the popover
-    const [tempDateRange, setTempDateRange] = useState<DateRange | undefined>(initialFilters.dateRange);
+    const [tempSelectedMonth, setTempSelectedMonth] = useState<Date | undefined>(initialFilters.selectedMonth);
     const [tempProjectTypes, setTempProjectTypes] = useState<ProjectType[]>(initialFilters.projectTypes);
     const [tempAmountRange, setTempAmountRange] = useState<[number, number]>(initialFilters.amountRange);
     const [tempProgressRange, setTempProgressRange] = useState<[number, number]>(initialFilters.progressRange);
@@ -82,7 +84,7 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
 
     const handleApply = () => {
         onApplyFilters({
-            dateRange: tempDateRange,
+            selectedMonth: tempSelectedMonth,
             projectTypes: tempProjectTypes,
             amountRange: tempAmountRange,
             progressRange: tempProgressRange,
@@ -91,14 +93,14 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
     };
 
     const handleClear = () => {
-        setTempDateRange(undefined);
+        setTempSelectedMonth(undefined);
         setTempProjectTypes([]);
         setTempAmountRange([0, maxAmount]);
         setTempProgressRange([0, 100]);
     };
 
     const activeFiltersCount = [
-        initialFilters.dateRange?.from ? 1 : 0,
+        initialFilters.selectedMonth ? 1 : 0,
         initialFilters.projectTypes.length > 0 ? 1 : 0,
         initialFilters.amountRange[0] > 0 || initialFilters.amountRange[1] < maxAmount ? 1 : 0,
         initialFilters.progressRange[0] > 0 || initialFilters.progressRange[1] < 100 ? 1 : 0
@@ -121,12 +123,19 @@ function ProcurementFilters({ onApplyFilters, maxAmount, initialFilters }: Procu
           <div className="space-y-6">
             <div className="space-y-2">
                 <Label>Date Created</Label>
-                <Calendar
-                    mode="range"
-                    selected={tempDateRange}
-                    onSelect={setTempDateRange}
-                    className="p-0"
-                />
+                <div className="flex flex-col gap-2">
+                    <Input
+                        readOnly
+                        value={tempSelectedMonth ? format(tempSelectedMonth, 'MMMM yyyy') : 'Select a month...'}
+                        className="text-center"
+                    />
+                    <Calendar
+                        mode="single"
+                        selected={tempSelectedMonth}
+                        onSelect={setTempSelectedMonth}
+                        className="p-0"
+                    />
+                </div>
             </div>
              <Separator />
             <div className="space-y-2">
@@ -190,13 +199,13 @@ export function Dashboard() {
   const { toast } = useToast();
 
   // Filter states
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [selectedMonth, setSelectedMonth] = useState<Date | undefined>();
   const [selectedProjectTypes, setSelectedProjectTypes] = useState<ProjectType[]>([]);
   const [maxAmount, setMaxAmount] = useState(100000);
   const [amountRange, setAmountRange] = useState<[number, number]>([0, 100000]);
   const [progressRange, setProgressRange] = useState<[number, number]>([0, 100]);
   
-  const initialFilters = { dateRange, projectTypes: selectedProjectTypes, amountRange, progressRange };
+  const initialFilters = { selectedMonth, projectTypes: selectedProjectTypes, amountRange, progressRange };
 
   useEffect(() => {
     async function loadProcurements() {
@@ -204,7 +213,7 @@ export function Dashboard() {
       const data = await getProcurements();
       setProcurements(data);
       if (data.length > 0) {
-        const max = Math.max(...data.map(p => p.amount));
+        const max = Math.max(...data.map(p => p.amount), 100000);
         setMaxAmount(max);
         setAmountRange([0, max]);
       }
@@ -214,7 +223,7 @@ export function Dashboard() {
   }, []);
   
   const handleApplyFilters = (filters: typeof initialFilters) => {
-    setDateRange(filters.dateRange);
+    setSelectedMonth(filters.selectedMonth);
     setSelectedProjectTypes(filters.projectTypes);
     setAmountRange(filters.amountRange);
     setProgressRange(filters.progressRange);
@@ -261,14 +270,12 @@ export function Dashboard() {
         );
     }
 
-    // Date range filter
-    if (dateRange?.from) {
+    // Month filter
+    if (selectedMonth) {
         filtered = filtered.filter(p => {
             const createdAt = new Date(p.createdAt);
-            const from = dateRange.from!;
-            // if 'to' is not selected, consider it a single day selection
-            const to = dateRange.to ? new Date(dateRange.to.getTime() + 86400000 - 1) : new Date(from.getTime() + 86400000 - 1);
-            return createdAt >= from && createdAt <= to;
+            return createdAt.getFullYear() === selectedMonth.getFullYear() &&
+                   createdAt.getMonth() === selectedMonth.getMonth();
         });
     }
 
@@ -287,7 +294,7 @@ export function Dashboard() {
     });
 
     return filtered;
-  }, [procurements, searchTerm, dateRange, selectedProjectTypes, amountRange, progressRange]);
+  }, [procurements, searchTerm, selectedMonth, selectedProjectTypes, amountRange, progressRange]);
 
   const activeProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'active'), [filteredProcurements]);
   const completedProcurements = useMemo(() => filteredProcurements.filter(p => p.status === 'completed'), [filteredProcurements]);
