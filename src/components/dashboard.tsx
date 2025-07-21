@@ -15,6 +15,12 @@ import { CreateProcurementDialog } from "./create-procurement-dialog";
 import { Button } from "./ui/button";
 import { Download, Loader2 } from "lucide-react";
 import { generateBatchProcurementPdf } from "@/lib/pdf-generators";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 
 const getProjectTypeStyles = (projectType: ProjectType): string => {
@@ -174,18 +180,27 @@ export function Dashboard() {
   const renderTabActions = (activeTab: string, filteredData: Procurement[]) => {
     if (activeTab === 'all' && filteredData.length > 0) {
       return (
-        <Button
-          onClick={() => handleDownloadAll(filteredData)}
-          disabled={isDownloadingPdf}
-          className="fixed bottom-6 right-6 z-50 rounded-full h-14 w-14 p-4 shadow-lg"
-        >
-          {isDownloadingPdf ? (
-            <Loader2 className="h-6 w-6 animate-spin" />
-          ) : (
-            <Download className="h-6 w-6" />
-          )}
-          <span className="sr-only">Download All</span>
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => handleDownloadAll(filteredData)}
+                disabled={isDownloadingPdf}
+                className="fixed bottom-6 right-6 z-50 rounded-full h-14 w-14 p-4 shadow-lg"
+              >
+                {isDownloadingPdf ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  <Download className="h-6 w-6" />
+                )}
+                <span className="sr-only">Download Filtered Procurements</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Download PDF of all currently filtered procurements.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     }
     return null;
