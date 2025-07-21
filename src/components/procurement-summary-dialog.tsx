@@ -2,8 +2,6 @@
 'use client';
 
 import React, { useRef } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import {
   Dialog,
   DialogContent,
@@ -17,15 +15,16 @@ import { Download, Loader2 } from 'lucide-react';
 import type { Procurement, Signature, ChecklistItem } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
+import { generatePdf } from '@/lib/pdf';
+
 
 interface ProcurementSummaryDialogProps {
   procurement: Procurement;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isForExport?: boolean;
 }
 
-const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement; isForExport?: boolean }>(({ procurement, isForExport }, ref) => {
+export const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement; isForExport?: boolean }>(({ procurement, isForExport }, ref) => {
     
     const getSignatureDescription = (phaseId: number, type: 'submittedBy' | 'receivedBy') => {
         if (type === 'submittedBy') {
@@ -116,6 +115,34 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
             </table>
         );
     }
+    
+    const renderInspectionTable = () => {
+        if (!procurement.inspectionDetails) return null;
+        const { ors, accountingStaff, accountant, regionalDirector, supply, purchaseOrderAbstracts, philgeps } = procurement.inspectionDetails;
+        
+        return (
+            <div style={{ marginTop: '16px' }}>
+                <h2 style={{ fontSize: '14px', fontWeight: 'bold', backgroundColor: '#E0E0E0', padding: '4px 8px', border: '1px solid black', borderBottom: 'none', margin: 0 }}>Inspection & Acceptance Report</h2>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '11px', tableLayout: 'fixed' }}>
+                     <tbody>
+                        <tr>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(ors, 'ORS')}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(accountingStaff, 'Accounting Staff')}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(accountant, 'Accountant')}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(regionalDirector, 'Regional Director')}</td>
+                            <td style={{ border: '1px solid black', padding: '0', verticalAlign: 'top', boxSizing: 'border-box' }}>{renderSignature(supply, 'Supply')}</td>
+                        </tr>
+                        <tr>
+                            <td colSpan={5} style={{ border: '1px solid black', padding: '8px', fontSize: '9px' }}>
+                                <div><span style={{ fontWeight: 'bold' }}>Purchase Order Abstracts:</span> {purchaseOrderAbstracts}</div>
+                                <div style={{marginTop: '4px'}}><span style={{ fontWeight: 'bold' }}>PhilGEPS:</span> {philgeps}</div>
+                            </td>
+                        </tr>
+                     </tbody>
+                </table>
+            </div>
+        )
+    }
 
     const projectTypes: Procurement['projectType'][] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
     
@@ -130,7 +157,7 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                     </div>
                 </header>
 
-                <table style={{ width: '95%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '16px', margin: '0 auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', marginBottom: '16px' }}>
                     <tbody>
                         <tr>
                             <td style={{ border: '1px solid black', padding: '6px', fontWeight: 'bold', width: '25%', verticalAlign: 'middle', boxSizing: 'border-box' }}><div style={{position: 'relative', top: isForExport ? '-4px' : '0px'}}>PROJECT</div></td>
@@ -159,9 +186,9 @@ const PDFDocument = React.forwardRef<HTMLDivElement, { procurement: Procurement;
                     </tbody>
                 </table>
 
-                <div style={{ width: '95%', margin: '0 auto' }}>
-                    {renderPhaseTable(procurement.phases)}
-                </div>
+                {procurement.phases && renderPhaseTable(procurement.phases)}
+
+                {renderInspectionTable()}
             </div>
         </div>
     );
@@ -172,79 +199,15 @@ PDFDocument.displayName = 'PDFDocument';
 export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: ProcurementSummaryDialogProps) {
   const summaryRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = React.useState(false);
-  const [isExporting, setIsExporting] = React.useState(false);
 
   const handleDownloadPdf = async () => {
-    setIsExporting(true); // Trigger re-render with export styles
     setIsDownloading(true);
-
-    // Short delay to allow the component to re-render with export styles
-    await new Promise(resolve => setTimeout(resolve, 50));
-
-    const printArea = summaryRef.current;
-    if (!printArea) {
-      setIsDownloading(false);
-      setIsExporting(false);
-      return;
-    }
-
     try {
-      const canvas = await html2canvas(printArea, {
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        scale: 2,
-        width: printArea.scrollWidth,
-        height: printArea.scrollHeight,
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'in',
-        format: 'a4'
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const canvasAspectRatio = canvasWidth / canvasHeight;
-      const pageAspectRatio = pdfWidth / pdfHeight;
-
-      let imgHeight = pdfWidth / canvasAspectRatio;
-      let imgWidth = pdfWidth;
-
-      if(imgHeight < pdfHeight){
-        imgHeight = pdfHeight;
-        imgWidth = pdfHeight * canvasAspectRatio;
-      }
-      
-      let position = 0;
-      const pageHeightInCanvas = (canvasWidth / pdfWidth) * pdfHeight;
-      
-      while (position < canvasHeight) {
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvasWidth;
-        pageCanvas.height = pageHeightInCanvas;
-        const pageCtx = pageCanvas.getContext('2d');
-        if (pageCtx) {
-          pageCtx.drawImage(canvas, 0, position, canvasWidth, pageHeightInCanvas, 0, 0, canvasWidth, pageHeightInCanvas);
-          const pageImgData = pageCanvas.toDataURL('image/png');
-          if (position > 0) {
-            pdf.addPage();
-          }
-          pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        }
-        position += pageHeightInCanvas;
-      }
-
-      pdf.save(`procurement-summary-${procurement.prNumber}.pdf`);
-
-    } catch (error) {
-        console.error('Error generating PDF:', error);
+        await generatePdf(summaryRef, `procurement-summary-${procurement.prNumber}.pdf`);
+    } catch(e) {
+        console.error("Error generating PDF", e);
     } finally {
         setIsDownloading(false);
-        setIsExporting(false); // Revert to preview styles
     }
   };
 
@@ -261,7 +224,7 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
         
         <div className="max-h-[80vh] overflow-y-auto p-2 border rounded-md bg-muted">
             <div className="bg-white">
-                <PDFDocument ref={summaryRef} procurement={procurement} isForExport={isExporting} />
+                <PDFDocument ref={summaryRef} procurement={procurement} />
             </div>
         </div>
         
@@ -275,7 +238,3 @@ export function ProcurementSummaryDialog({ procurement, open, onOpenChange }: Pr
     </Dialog>
   );
 }
-
-    
-
-    
