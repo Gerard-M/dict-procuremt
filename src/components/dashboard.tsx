@@ -6,7 +6,7 @@ import type { Procurement, ProjectType, Status } from "@/lib/types";
 import { getProcurements, updateProcurement, deleteProcurement } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { DashboardLayout, type FilterState } from "@/components/dashboard-layout";
-import { DataTable, type ColumnDef } from "@/components/data-table";
+import { type ColumnDef } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { formatCurrency, cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ import Link from "next/link";
 import { CreateProcurementDialog } from "./create-procurement-dialog";
 import { Button } from "./ui/button";
 import { Download, Loader2 } from "lucide-react";
-import { generateBatchProcurementPdf } from "@/lib/pdf";
+import { generateBatchProcurementPdf } from "@/lib/pdf-generators";
 
 
 const getProjectTypeStyles = (projectType: ProjectType): string => {

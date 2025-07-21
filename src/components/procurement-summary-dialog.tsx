@@ -15,7 +15,7 @@ import { Download, Loader2 } from 'lucide-react';
 import type { Procurement, Signature, ChecklistItem } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
-import { generatePdf } from '@/lib/pdf';
+import { generatePdf } from '@/lib/pdf-utils';
 
 
 interface ProcurementSummaryDialogProps {
