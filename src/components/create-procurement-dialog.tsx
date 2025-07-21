@@ -34,8 +34,7 @@ import { addProcurement, getExistingPrNumbers, updateProcurement } from '@/lib/d
 import { getNewProcurementPhases } from '@/lib/constants';
 import type { Procurement, ProjectType } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
-import { correctPrNumber } from '@/ai/flows/correct-pr-number';
-import { Lightbulb, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const projectTypes: ProjectType[] = ['ILCDB-DWIA', 'SPARK', 'TECH4ED-DTC', 'PROJECT CLICK', 'OTHERS'];
 
@@ -70,8 +69,6 @@ interface CreateProcurementDialogProps {
 export function CreateProcurementDialog({ onProcurementCreated, onProcurementUpdated, procurementToEdit, children, onOpenChange }: CreateProcurementDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [correctionSuggestion, setCorrectionSuggestion] = useState<string | null>(null);
-  const [isCheckingPr, setIsCheckingPr] = useState(false);
   const { toast } = useToast();
   
   const isEditMode = !!procurementToEdit;
@@ -102,28 +99,6 @@ export function CreateProcurementDialog({ onProcurementCreated, onProcurementUpd
   }, [procurementToEdit, form]);
 
   const selectedProjectType = form.watch('projectType');
-
-  const handlePrNumberBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-    const prNumber = e.target.value;
-    setCorrectionSuggestion(null);
-    const prNumberRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    if (!prNumberRegex.test(prNumber) && prNumber.length > 0) {
-      setIsCheckingPr(true);
-      try {
-        const existingPrNumbers = await getExistingPrNumbers();
-        const result = await correctPrNumber({ prNumber, existingPrNumbers });
-        if (result.confidence > 0.7 && result.correctedPrNumber !== prNumber) {
-          setCorrectionSuggestion(result.correctedPrNumber);
-        }
-      } catch (error) {
-        console.error("Failed to correct PR number:", error);
-        toast({ title: "AI Error", description: "Could not suggest a PR number correction.", variant: 'destructive' });
-      } finally {
-        setIsCheckingPr(false);
-      }
-    }
-  };
 
   async function onSubmit(values: FormData) {
     setIsSubmitting(true);
@@ -165,7 +140,6 @@ export function CreateProcurementDialog({ onProcurementCreated, onProcurementUpd
     onOpenChange?.(isOpen);
     if (!isOpen) {
         form.reset();
-        setCorrectionSuggestion(null);
     }
   }
 
@@ -209,31 +183,9 @@ export function CreateProcurementDialog({ onProcurementCreated, onProcurementUpd
                         
                         field.onChange(formatted);
                       }}
-                      onBlur={(e) => {
-                          field.onBlur(); // From react-hook-form
-                          handlePrNumberBlur(e); // Custom AI suggestion
-                      }}
                     />
                   </FormControl>
-                  {isCheckingPr && <Loader2 className="animate-spin absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />}
                 </div>
-                 {correctionSuggestion && (
-                    <div className="text-sm bg-accent/20 p-2 rounded-md flex items-center gap-2 mt-2">
-                        <Lightbulb className="h-4 w-4 text-accent-foreground/80" />
-                        <span className="text-muted-foreground">Did you mean:</span>
-                        <Button
-                            type="button"
-                            variant="link"
-                            className="p-0 h-auto"
-                            onClick={() => {
-                                form.setValue('prNumber', correctionSuggestion, { shouldValidate: true });
-                                setCorrectionSuggestion(null);
-                            }}
-                        >
-                            {correctionSuggestion}
-                        </Button>?
-                    </div>
-                )}
                 <FormMessage />
               </FormItem>
             )} />
