@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -17,7 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit, Loader2, Trash2 } from 'lucide-react';
+import { ArrowUpDown, Edit, Loader2, MoreVertical, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import type { Honoraria, ProjectType } from "@/lib/types";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
@@ -29,14 +30,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type SortKey = keyof Omit<Honoraria, 'speakerName'> | 'progress';
 
 interface HonorariaTableProps {
   honoraria: Honoraria[];
   onEdit: (honoraria: Honoraria) => void;
+  onStatusChange: (id: string, status: 'paid' | 'cancelled') => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
@@ -56,10 +64,12 @@ const getProjectTypeStyles = (projectType?: ProjectType): string => {
   }
 };
 
-export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTableProps) {
+export function HonorariaTable({ honoraria, onEdit, onDelete, onStatusChange }: HonorariaTableProps) {
   const [sortKey, setSortKey] = React.useState<SortKey>('createdAt');
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
-  const [isDeleting, setIsDeleting] = React.useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = React.useState<string | null>(null);
+  const [alertInfo, setAlertInfo] = React.useState<{ open: boolean; id?: string; type?: 'paid' | 'cancelled' | 'delete' }>({ open: false });
+
 
   const getProgress = (record: Honoraria) => {
     return record.phase.isCompleted ? 100 : 0;
@@ -97,22 +107,48 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
     return sortDirection === 'asc' ? '▲' : '▼';
   };
   
-  const handleDeleteConfirm = async (id: string) => {
-    setIsDeleting(id);
-    await onDelete(id);
+  const openAlertDialog = (id: string, type: 'paid' | 'cancelled' | 'delete') => {
+    setAlertInfo({ open: true, id, type });
   };
+
+  const handleConfirmAction = async () => {
+    if (!alertInfo.id || !alertInfo.type) return;
+
+    setIsUpdating(alertInfo.id);
+    if (alertInfo.type === 'paid' || alertInfo.type === 'cancelled') {
+      await onStatusChange(alertInfo.id, alertInfo.type);
+    } else if (alertInfo.type === 'delete') {
+      await onDelete(alertInfo.id);
+    }
+    setAlertInfo({ open: false });
+    setIsUpdating(null);
+  };
+
+  const getAlertContent = () => {
+    if (!alertInfo.type) return { title: '', description: '' };
+    switch (alertInfo.type) {
+        case 'paid':
+            return { title: 'Mark as Paid?', description: 'This action will mark the honoraria as "Paid". This can be changed later if needed.' };
+        case 'cancelled':
+            return { title: 'Mark as Cancelled?', description: 'This will archive the honoraria record. This can be changed later if needed.' };
+        case 'delete':
+            return { title: 'Are you absolutely sure?', description: 'This action cannot be undone. This will permanently delete the honoraria record.' };
+    }
+  }
+
 
   if (honoraria.length === 0) {
     return (
       <Card className="mt-4">
         <CardContent className="p-10 text-center text-muted-foreground">
-          No honoraria records found.
+          No honoraria records found for the selected filters.
         </CardContent>
       </Card>
     );
   }
 
   return (
+    <>
     <Card className="mt-4">
       <CardContent className="p-0">
         <div className="overflow-x-auto">
@@ -137,6 +173,11 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
                 <TableHead>
                   <Button variant="ghost" onClick={() => handleSort('progress')}>
                     Progress {renderSortArrow('progress')}
+                  </Button>
+                </TableHead>
+                 <TableHead>
+                  <Button variant="ghost" onClick={() => handleSort('status')}>
+                    Status {renderSortArrow('status')}
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -172,38 +213,44 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
                         </span>
                       </div>
                     </TableCell>
+                    <TableCell>
+                        {record.status === 'paid' && <Badge variant="secondary" className="bg-green-100 text-green-800">Paid</Badge>}
+                        {record.status === 'cancelled' && <Badge variant="destructive">Cancelled</Badge>}
+                    </TableCell>
                     <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => onEdit(record)}>
-                                <Edit className="h-4 w-4" />
-                                <span className="sr-only">Edit</span>
-                            </Button>
-                             <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" disabled={isDeleting === record.id}>
-                                  {isDeleting === record.id ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                  ) : (
-                                    <Trash2 className="h-4 w-4" />
-                                  )}
-                                  <span className="sr-only">Delete</span>
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the honoraria record.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteConfirm(record.id)} className="bg-destructive hover:bg-destructive/90">
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                             {isUpdating === record.id ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <MoreVertical className="h-4 w-4" />
+                                    <span className="sr-only">Actions</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onSelect={() => onEdit(record)}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    <span>Edit</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onSelect={() => openAlertDialog(record.id, 'paid')} disabled={record.status === 'paid' || record.status === 'cancelled'}>
+                                    <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+                                    <span>Mark as Paid</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => openAlertDialog(record.id, 'cancelled')} disabled={record.status === 'cancelled'}>
+                                    <XCircle className="mr-2 h-4 w-4" />
+                                    <span>Mark as Cancelled</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onSelect={() => openAlertDialog(record.id, 'delete')} className="text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <span>Delete</span>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
                         </div>
                     </TableCell>
                   </TableRow>
@@ -214,5 +261,27 @@ export function HonorariaTable({ honoraria, onEdit, onDelete }: HonorariaTablePr
         </div>
       </CardContent>
     </Card>
+      <AlertDialog open={alertInfo.open} onOpenChange={(open) => setAlertInfo({ ...alertInfo, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{getAlertContent().title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {getAlertContent().description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmAction}
+              className={cn((alertInfo.type === 'cancelled' || alertInfo.type === 'delete') && 'bg-destructive hover:bg-destructive/90')}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
+
+    

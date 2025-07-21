@@ -1,3 +1,4 @@
+
 export interface Signature {
   name: string;
   date: Date | null;
@@ -23,6 +24,17 @@ export interface ProcurementPhase {
 
 export type ProjectType = 'ILCDB-DWIA' | 'SPARK' | 'TECH4ED-DTC' | 'PROJECT CLICK' | 'OTHERS';
 
+export interface InspectionDetails {
+  ors: Signature | null;
+  accountingStaff: Signature | null;
+  accountant: Signature | null;
+  regionalDirector: Signature | null;
+  supply: Signature | null;
+  purchaseOrderAbstracts: string;
+  philgeps: string;
+  isCompleted: boolean;
+}
+
 export interface Procurement {
   id: string;
   title: string;
@@ -32,6 +44,7 @@ export interface Procurement {
   otherProjectType?: string;
   status: 'active' | 'completed' | 'paid' | 'cancelled';
   phases: ProcurementPhase[];
+  inspectionDetails: InspectionDetails | null;
   createdAt: Date;
   updatedAt: Date;
   isArchived?: boolean;
@@ -43,10 +56,11 @@ export interface Honoraria {
   amount: number;
   projectType: ProjectType;
   otherProjectType?: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'completed' | 'paid' | 'cancelled';
   phase: ProcurementPhase;
   createdAt: Date;
   updatedAt: Date;
+  isArchived?: boolean;
 }
 
 export interface TravelVoucher {
@@ -55,8 +69,11 @@ export interface TravelVoucher {
   amount: number;
   projectType: ProjectType;
   otherProjectType?: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'completed' | 'paid' | 'cancelled';
   phase: ProcurementPhase;
   createdAt: Date;
   updatedAt: Date;
+  isArchived?: boolean;
 }
+
+    
